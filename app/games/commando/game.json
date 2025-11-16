@@ -2,8 +2,8 @@
   "things": [
     {
       "id": "player-thing",
-      "x": 498.3750000000002,
-      "y": 464.92578125000136,
+      "x": 374.2382812500002,
+      "y": 375.08593750000136,
       "angle": 0,
       "velocity": {
         "x": 0,
@@ -14,8 +14,8 @@
     },
     {
       "id": "mkcosj2c5zzv",
-      "x": 154.95312499999994,
-      "y": 352.7812500000006,
+      "x": 27.402343749999943,
+      "y": 242.73828125000063,
       "angle": 0,
       "velocity": {
         "x": 0,
@@ -26,15 +26,15 @@
     },
     {
       "id": "zhbyn5swjmbe",
-      "x": 378.55859375,
-      "y": 261.7578125,
+      "x": 280.96484375,
+      "y": 137.57421875,
       "angle": 0,
       "velocity": {
         "x": 0,
         "y": 0
       },
       "physicsType": "dynamic",
-      "blueprintName": "Wall2"
+      "blueprintName": "Wall"
     }
   ],
   "blueprints": [
@@ -46,7 +46,7 @@
       "color": "#b399ff"
     },
     {
-      "name": "Wall2",
+      "name": "Wall",
       "width": 50,
       "height": 64,
       "z": 1,

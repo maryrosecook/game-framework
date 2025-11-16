@@ -116,7 +116,7 @@ export function Game() {
           onRename={setActiveBlueprintName}
         />
       ) : null}
-      <div className="pointer-events-auto absolute bottom-0 left-0 right-0 px-6 pb-4">
+      <div className="pointer-events-auto absolute bottom-0 left-0 right-0 flex justify-center px-6 pb-4">
         <Toolbar
           blueprints={blueprints ?? []}
           selectedBlueprintName={activeBlueprintName}
@@ -213,16 +213,6 @@ function BlueprintPanel({
       </header>
       <div className="space-y-3">
         <Field
-          label="Width"
-          value={blueprint.width}
-          onChange={(value) => updateField("width", value)}
-        />
-        <Field
-          label="Height"
-          value={blueprint.height}
-          onChange={(value) => updateField("height", value)}
-        />
-        <Field
           label="Z"
           value={blueprint.z}
           onChange={(value) => updateField("z", value)}
@@ -271,7 +261,7 @@ function ColorGrid({
         <button
           key={color}
           type="button"
-          className={`size-6 rounded-full border transition ${
+          className={`size-6 cursor-pointer rounded-full border transition ${
             selected === color
               ? "border-slate-500 ring-2 ring-slate-200"
               : "border-slate-200 hover:border-slate-400"

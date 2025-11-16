@@ -24,7 +24,7 @@ export function Toolbar({
   isPaused,
 }: ToolbarProps) {
   return (
-    <div className="flex items-center gap-3 rounded-t-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-lg">
+    <div className="inline-flex max-w-[800px] min-w-fit items-center gap-3 rounded-t-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-lg">
       <Button
         type="button"
         size="icon"
@@ -81,7 +81,7 @@ function BlueprintChip({
         event.dataTransfer.setData("text/plain", blueprint.name);
       }}
       onClick={onSelect}
-      className={`flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold transition ${
+      className={`flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold transition ${
         selected
           ? "border-slate-400 bg-slate-100 text-slate-900"
           : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200"

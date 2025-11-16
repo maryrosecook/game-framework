@@ -55,6 +55,7 @@ export type GameState = {
   screen: { width: number; height: number };
   isPaused: boolean;
   selectedThingId: string | null;
+  selectedThingIds: string[];
 };
 
 export type PersistedGameState = Omit<GameState, "blueprints"> & {
@@ -82,7 +83,8 @@ export type GameAction =
   | { type: "setCameraPosition"; x: number; y: number }
   | { type: "setScreenSize"; width: number; height: number }
   | { type: "setPaused"; isPaused: boolean }
-  | { type: "setSelectedThingId"; thingId: string | null };
+  | { type: "setSelectedThingId"; thingId: string | null }
+  | { type: "setSelectedThingIds"; thingIds: string[] };
 
 export type GameFile = {
   things: Thing[];
@@ -100,4 +102,5 @@ export type SubscriptionPath =
   | ["camera"]
   | ["screen"]
   | ["isPaused"]
-  | ["selectedThingId"];
+  | ["selectedThingId"]
+  | ["selectedThingIds"];

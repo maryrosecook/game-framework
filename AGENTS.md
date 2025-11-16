@@ -1,0 +1,2 @@
+- See `architecture.md` for the canonical project goals, tech stack, and structural expectations. Please adhere to those goals and that structure when proposing or making changes.
+- Ensure all changes have no lints or TypeScript errors.

@@ -16,13 +16,17 @@ export function reduceState(state: GameState, action: GameAction): GameState {
         things: [...state.things, structuredThingCopy(action.thing)],
       };
     case "removeThing":
+      const remainingSelectedIds = state.selectedThingIds.filter(
+        (id) => id !== action.thingId
+      );
       return {
         ...state,
         things: state.things.filter((thing) => thing.id !== action.thingId),
         selectedThingId:
           state.selectedThingId === action.thingId
-            ? null
+            ? remainingSelectedIds[remainingSelectedIds.length - 1] ?? null
             : state.selectedThingId,
+        selectedThingIds: remainingSelectedIds,
       };
     case "setBlueprintProperty":
       return updateBlueprint(state, action.blueprintName, (blueprint) => {
@@ -63,7 +67,16 @@ export function reduceState(state: GameState, action: GameAction): GameState {
       return {
         ...state,
         selectedThingId: action.thingId,
+        selectedThingIds: action.thingId ? [action.thingId] : [],
       };
+    case "setSelectedThingIds": {
+      const unique = Array.from(new Set(action.thingIds));
+      return {
+        ...state,
+        selectedThingIds: unique,
+        selectedThingId: unique.length > 0 ? unique[unique.length - 1] : null,
+      };
+    }
     default:
       return state;
   }

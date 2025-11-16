@@ -35,6 +35,7 @@ const DEFAULT_GAME_STATE: GameState = {
   screen: { width: 800, height: 600 },
   isPaused: true,
   selectedThingId: null,
+  selectedThingIds: [],
 };
 
 export class GameEngine {
@@ -141,6 +142,8 @@ export class GameEngine {
         return this.gameState.isPaused;
       case "selectedThingId":
         return this.gameState.selectedThingId;
+      case "selectedThingIds":
+        return this.gameState.selectedThingIds;
       default:
         return undefined;
     }
@@ -182,6 +185,7 @@ export class GameEngine {
       screen: payload.game.screen,
       isPaused: true,
       selectedThingId: null,
+      selectedThingIds: [],
     };
 
     this.rebuildBlueprintLookup();
