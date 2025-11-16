@@ -1,0 +1,64 @@
+{
+  "things": [
+    {
+      "id": "player-thing",
+      "x": 498.3750000000002,
+      "y": 464.92578125000136,
+      "angle": 0,
+      "velocity": {
+        "x": 0,
+        "y": 0
+      },
+      "physicsType": "dynamic",
+      "blueprintName": "Player"
+    },
+    {
+      "id": "mkcosj2c5zzv",
+      "x": 154.95312499999994,
+      "y": 352.7812500000006,
+      "angle": 0,
+      "velocity": {
+        "x": 0,
+        "y": 0
+      },
+      "physicsType": "dynamic",
+      "blueprintName": "Player"
+    },
+    {
+      "id": "zhbyn5swjmbe",
+      "x": 378.55859375,
+      "y": 261.7578125,
+      "angle": 0,
+      "velocity": {
+        "x": 0,
+        "y": 0
+      },
+      "physicsType": "dynamic",
+      "blueprintName": "Wall2"
+    }
+  ],
+  "blueprints": [
+    {
+      "name": "Player",
+      "width": 96,
+      "height": 60,
+      "z": 1,
+      "color": "#b399ff"
+    },
+    {
+      "name": "Wall2",
+      "width": 50,
+      "height": 64,
+      "z": 1,
+      "color": "#b3b3b3"
+    }
+  ],
+  "camera": {
+    "x": 0,
+    "y": 0
+  },
+  "screen": {
+    "width": 800,
+    "height": 600
+  }
+}

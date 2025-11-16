@@ -1,0 +1,74 @@
+"use client";
+
+import {
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+} from "react";
+import { GameEngine } from "./engine";
+import { GameAction, SubscriptionPath } from "./types";
+
+export type GameSubscribe = <T = unknown>(
+  path: SubscriptionPath
+) => readonly [T, (action: GameAction) => void];
+
+export function useGame(
+  canvasRef: RefObject<HTMLCanvasElement | null>
+): { isPaused: boolean; subscribe: GameSubscribe; engine: GameEngine } {
+  const engineRef = useRef<GameEngine | null>(null);
+  if (!engineRef.current) {
+    engineRef.current = new GameEngine();
+  }
+
+  const engine = engineRef.current!;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    engine.initialize(canvas);
+    return () => {
+      engine.destroy();
+    };
+  }, [canvasRef, engine]);
+
+  const dispatch = useCallback(
+    (action: GameAction) => {
+      engine.dispatch(action);
+    },
+    [engine]
+  );
+
+  const subscribe = useMemo(() => {
+    const handler = (<T,>(
+      path: SubscriptionPath
+    ): readonly [T, (action: GameAction) => void] => {
+      const getSnapshot = () => engine.getStateAtPath(path) as T;
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const state = useSyncExternalStore(
+        engine.subscribeStore,
+        getSnapshot,
+        getSnapshot
+      );
+      return [state, dispatch] as const;
+    }) as GameSubscribe;
+    return handler;
+  }, [dispatch, engine]);
+
+  const isPaused = useSyncExternalStore(
+    engine.subscribeStore,
+    () => engine.getStateAtPath(["isPaused"]) as boolean,
+    () => true
+  );
+
+  return useMemo(
+    () => ({
+      isPaused,
+      subscribe,
+      engine,
+    }),
+    [engine, isPaused, subscribe]
+  );
+}
