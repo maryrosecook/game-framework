@@ -18,38 +18,42 @@ export type BlueprintData = {
 };
 
 export type BlueprintModule = Partial<{
-  update: (thing: Thing, gameState: GameState) => void;
+  update: (thing: RuntimeThing, gameState: RuntimeGameState) => void;
   render: (
-    thing: Thing,
-    gameState: GameState,
+    thing: RuntimeThing,
+    gameState: RuntimeGameState,
     ctx: CanvasRenderingContext2D
   ) => void;
-  input: (thing: Thing, gameState: GameState, keyState: KeyState) => void;
-  collision: (thing: Thing, otherThing: Thing) => void;
+  input: (
+    thing: RuntimeThing,
+    gameState: RuntimeGameState,
+    keyState: KeyState
+  ) => void;
+  collision: (thing: RuntimeThing, otherThing: RuntimeThing) => void;
 }>;
 
 export type Blueprint = BlueprintData & BlueprintModule;
-
-export type InheritableThingKeys = "width" | "height" | "z" | "color";
 
 export type Thing = {
   id: string;
   x: number;
   y: number;
-  z: number;
-  width: number;
-  height: number;
+  z?: number;
+  width?: number;
+  height?: number;
   angle: number;
-  velocity: Vector;
+  velocityX: number;
+  velocityY: number;
   physicsType: "static" | "dynamic";
-  color: string;
+  color?: string;
   blueprintName: string;
-  proto?: Blueprint;
-  inherits?: Partial<Record<InheritableThingKeys, boolean>>;
 };
 
-export type GameState = {
-  things: Thing[];
+export type RuntimeThing = Thing &
+  Required<Pick<Thing, keyof Omit<BlueprintData, "name">>>;
+
+export type RuntimeGameState = {
+  things: RuntimeThing[];
   blueprints: Blueprint[];
   camera: Vector;
   screen: { width: number; height: number };
@@ -58,12 +62,21 @@ export type GameState = {
   selectedThingIds: string[];
 };
 
-export type PersistedGameState = Omit<GameState, "blueprints"> & {
+export type RawGameState = Omit<RuntimeGameState, "things"> & {
+  things: Thing[];
+};
+
+export type PersistedGameState = Omit<RawGameState, "blueprints"> & {
   blueprints: BlueprintData[];
 };
 
 export type GameAction =
-  | { type: "setThingProperty"; thingId: string; property: keyof Thing; value: any }
+  | {
+      type: "setThingProperty";
+      thingId: string;
+      property: keyof Thing;
+      value: any;
+    }
   | { type: "setThingProperties"; thingId: string; properties: Partial<Thing> }
   | { type: "addThing"; thing: Thing }
   | { type: "removeThing"; thingId: string }
@@ -95,7 +108,7 @@ export type GameFile = {
 
 export type SubscriptionPath =
   | ["things", string]
-  | ["things", string, keyof Thing]
+  | ["things", string, keyof RuntimeThing]
   | ["things"]
   | ["blueprints"]
   | ["blueprints", string]

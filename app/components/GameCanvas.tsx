@@ -2,7 +2,7 @@
 
 import { DragEvent, memo, PointerEvent, RefObject, useRef } from "react";
 import { GameEngine } from "@/engine/engine";
-import { Blueprint, GameState, Thing } from "@/engine/types";
+import { Blueprint, RuntimeGameState, RuntimeThing, Thing } from "@/engine/types";
 import { GameSubscribe } from "@/engine/useGame";
 import { createThingId } from "@/lib/id";
 
@@ -21,10 +21,10 @@ export const GameCanvas = memo(function GameCanvas({
   engine,
   onSelectBlueprint,
 }: GameCanvasProps) {
-  const [things] = subscribe<Thing[]>(["things"]);
+  const [things] = subscribe<RuntimeThing[]>(["things"]);
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
-  const [screen] = subscribe<GameState["screen"]>(["screen"]);
-  const [camera] = subscribe<GameState["camera"]>(["camera"]);
+  const [screen] = subscribe<RuntimeGameState["screen"]>(["screen"]);
+  const [camera] = subscribe<RuntimeGameState["camera"]>(["camera"]);
   const [selectedThingIds] = subscribe<string[]>(["selectedThingIds"]);
   const [selectedThingId] = subscribe<string | null>(["selectedThingId"]);
 
@@ -53,12 +53,11 @@ export const GameCanvas = memo(function GameCanvas({
 
     const hit = findTopThing(point, things ?? []);
     if (hit) {
-      const isSelected = selectedThingIds.includes(hit.id);
-      const nextSelected = event.shiftKey
-        ? toggleThingSelection(selectedThingIds, hit.id)
-        : isSelected
-          ? selectedThingIds
-          : [hit.id];
+      const nextSelected = nextSelectedIdsForClick(
+        selectedThingIds,
+        hit.id,
+        event.shiftKey
+      );
 
       engine.dispatch({
         type: "setSelectedThingIds",
@@ -119,11 +118,6 @@ export const GameCanvas = memo(function GameCanvas({
         properties: {
           width,
           height,
-          inherits: {
-            ...activeThing.inherits,
-            width: false,
-            height: false,
-          },
         },
       });
     }
@@ -194,7 +188,7 @@ function getWorldPoint(
   };
 }
 
-function findTopThing(point: { x: number; y: number }, things: Thing[]) {
+function findTopThing(point: { x: number; y: number }, things: RuntimeThing[]) {
   const sorted = [...things].sort((a, b) => b.z - a.z);
   return sorted.find(
     (thing) =>
@@ -205,7 +199,7 @@ function findTopThing(point: { x: number; y: number }, things: Thing[]) {
   );
 }
 
-function isOnResizeHandle(point: { x: number; y: number }, thing: Thing) {
+function isOnResizeHandle(point: { x: number; y: number }, thing: RuntimeThing) {
   const handleSize = 12;
   return (
     point.x >= thing.x + thing.width - handleSize &&
@@ -217,7 +211,7 @@ function isOnResizeHandle(point: { x: number; y: number }, thing: Thing) {
 
 function buildDragTargets(
   selectedIds: string[],
-  things: Thing[],
+  things: RuntimeThing[],
   point: { x: number; y: number }
 ) {
   const targets: { thingId: string; offsetX: number; offsetY: number }[] = [];
@@ -239,7 +233,21 @@ function toggleThingSelection(selectedIds: string[], id: string) {
     : [...selectedIds, id];
 }
 
-function isThing(candidate: unknown): candidate is Thing {
+function nextSelectedIdsForClick(
+  currentIds: string[],
+  hitId: string,
+  addToExisting: boolean
+) {
+  if (addToExisting) {
+    return toggleThingSelection(currentIds, hitId);
+  }
+  if (currentIds.includes(hitId)) {
+    return currentIds;
+  }
+  return [hitId];
+}
+
+function isThing(candidate: unknown): candidate is RuntimeThing {
   if (!candidate || typeof candidate !== "object") {
     return false;
   }
@@ -249,7 +257,9 @@ function isThing(candidate: unknown): candidate is Thing {
     typeof value.x === "number" &&
     typeof value.y === "number" &&
     typeof value.width === "number" &&
-    typeof value.height === "number"
+    typeof value.height === "number" &&
+    typeof value.velocityX === "number" &&
+    typeof value.velocityY === "number"
   );
 }
 
@@ -261,19 +271,11 @@ function createThingFromBlueprint(
     id: createThingId(),
     x: point.x - blueprint.width / 2,
     y: point.y - blueprint.height / 2,
-    z: blueprint.z,
-    width: blueprint.width,
-    height: blueprint.height,
     angle: 0,
-    velocity: { x: 0, y: 0 },
+    velocityX: 0,
+    velocityY: 0,
     physicsType: "dynamic",
     blueprintName: blueprint.name,
-    inherits: {
-      width: true,
-      height: true,
-      z: true,
-      color: true,
-    },
   };
 }
 

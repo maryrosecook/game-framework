@@ -1,6 +1,9 @@
-import { Blueprint, GameAction, GameState, Thing } from "./types";
+import { Blueprint, GameAction, Thing, RawGameState } from "./types";
 
-export function reduceState(state: GameState, action: GameAction): GameState {
+export function reduceState(
+  state: RawGameState,
+  action: GameAction
+): RawGameState {
   switch (action.type) {
     case "setThingProperty":
       return updateThing(state, action.thingId, (thing) => {
@@ -13,7 +16,7 @@ export function reduceState(state: GameState, action: GameAction): GameState {
     case "addThing":
       return {
         ...state,
-        things: [...state.things, structuredThingCopy(action.thing)],
+        things: [...state.things, { ...action.thing }],
       };
     case "removeThing":
       const remainingSelectedIds = state.selectedThingIds.filter(
@@ -83,26 +86,26 @@ export function reduceState(state: GameState, action: GameAction): GameState {
 }
 
 function updateThing(
-  state: GameState,
+  state: RawGameState,
   thingId: string,
   updater: (thing: Thing) => void
-): GameState {
+): RawGameState {
   const index = state.things.findIndex((thing) => thing.id === thingId);
   if (index < 0) {
     return state;
   }
   const things = [...state.things];
-  const nextThing = structuredThingCopy(things[index]);
+  const nextThing = { ...things[index] };
   updater(nextThing);
   things[index] = nextThing;
   return { ...state, things };
 }
 
 function updateBlueprint(
-  state: GameState,
+  state: RawGameState,
   blueprintName: string,
   updater: (blueprint: Blueprint) => void
-): GameState {
+): RawGameState {
   const index = state.blueprints.findIndex(
     (bp) => normalizeName(bp.name) === normalizeName(blueprintName)
   );
@@ -114,14 +117,6 @@ function updateBlueprint(
   updater(clone);
   blueprints[index] = clone;
   return { ...state, blueprints };
-}
-
-export function structuredThingCopy(thing: Thing): Thing {
-  return {
-    ...thing,
-    velocity: { ...thing.velocity },
-    inherits: thing.inherits ? { ...thing.inherits } : undefined,
-  };
 }
 
 export function normalizeName(name: string) {

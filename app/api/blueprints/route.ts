@@ -39,11 +39,12 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const { gameDirectory, previousName, blueprintName } = (await request.json()) as {
-    gameDirectory: string;
-    previousName: string;
-    blueprintName: string;
-  };
+  const { gameDirectory, previousName, blueprintName } =
+    (await request.json()) as {
+      gameDirectory: string;
+      previousName: string;
+      blueprintName: string;
+    };
 
   if (!gameDirectory || !previousName || !blueprintName) {
     return NextResponse.json(

@@ -5,7 +5,7 @@ import {
   KeyState,
 } from "@/engine/types";
 
-export default function createBlueprint2(data: BlueprintData) {
+export default function createBlueprint3(data: BlueprintData) {
   return {
     ...data,
     input: (thing: RuntimeThing, _state: RuntimeGameState, _keys: KeyState) => {

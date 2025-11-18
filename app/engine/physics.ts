@@ -1,15 +1,15 @@
 import { getBlueprintForThing } from "./blueprints";
-import { Blueprint, Thing } from "./types";
+import { Blueprint, RuntimeThing } from "./types";
 
 const EPSILON = 0.0001;
 
 export function physicsStep(
-  things: Thing[],
+  things: RuntimeThing[],
   blueprintLookup: Map<string, Blueprint>
 ) {
   for (const thing of things) {
-    thing.x += thing.velocity.x;
-    thing.y += thing.velocity.y;
+    thing.x += thing.velocityX;
+    thing.y += thing.velocityY;
   }
 
   for (let i = 0; i < things.length; i += 1) {
@@ -20,8 +20,8 @@ export function physicsStep(
 }
 
 function resolveCollision(
-  a: Thing,
-  b: Thing,
+  a: RuntimeThing,
+  b: RuntimeThing,
   blueprintLookup: Map<string, Blueprint>
 ) {
   if (!boxesOverlap(a, b)) {
@@ -59,10 +59,10 @@ function resolveCollision(
       b.x -= direction * separation;
     }
     if (canMoveA) {
-      a.velocity.x = 0;
+      a.velocityX = 0;
     }
     if (canMoveB) {
-      b.velocity.x = 0;
+      b.velocityX = 0;
     }
   } else {
     const aAboveB = a.y + a.height / 2 < b.y + b.height / 2;
@@ -77,17 +77,17 @@ function resolveCollision(
       b.y -= direction * separation;
     }
     if (canMoveA) {
-      a.velocity.y = 0;
+      a.velocityY = 0;
     }
     if (canMoveB) {
-      b.velocity.y = 0;
+      b.velocityY = 0;
     }
   }
 
   notifyCollision(a, b, blueprintLookup);
 }
 
-function boxesOverlap(a: Thing, b: Thing) {
+function boxesOverlap(a: RuntimeThing, b: RuntimeThing) {
   return !(
     a.x + a.width <= b.x ||
     a.x >= b.x + b.width ||
@@ -97,8 +97,8 @@ function boxesOverlap(a: Thing, b: Thing) {
 }
 
 function notifyCollision(
-  a: Thing,
-  b: Thing,
+  a: RuntimeThing,
+  b: RuntimeThing,
   blueprintLookup: Map<string, Blueprint>
 ) {
   const blueprintA = getBlueprintForThing(a, blueprintLookup);

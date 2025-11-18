@@ -6,14 +6,15 @@ import {
   BlueprintData,
   GameAction,
   GameFile,
-  GameState,
-  InheritableThingKeys,
+  RuntimeGameState,
   PersistedGameState,
+  RawGameState,
+  RuntimeThing,
   SubscriptionPath,
   Thing,
 } from "./types";
 import { blueprintSlug } from "@/lib/blueprints";
-import { normalizeName, reduceState, structuredThingCopy } from "./reducer";
+import { normalizeName, reduceState } from "./reducer";
 import { getBlueprintForThing } from "./blueprints";
 
 type LoadedGameResponse = {
@@ -21,22 +22,26 @@ type LoadedGameResponse = {
   gameDirectory: string;
 };
 
-const INHERITABLE_PROPERTIES: InheritableThingKeys[] = [
-  "width",
-  "height",
-  "z",
-  "color",
-];
+function cloneDefaultRawGameState(): RawGameState {
+  return {
+    things: [],
+    blueprints: [],
+    camera: { x: 0, y: 0 },
+    screen: { width: 800, height: 600 },
+    isPaused: true,
+    selectedThingId: null,
+    selectedThingIds: [],
+  };
+}
 
-const DEFAULT_GAME_STATE: GameState = {
-  things: [],
-  blueprints: [],
-  camera: { x: 0, y: 0 },
-  screen: { width: 800, height: 600 },
-  isPaused: true,
-  selectedThingId: null,
-  selectedThingIds: [],
-};
+function cloneDefaultPersistedState(): PersistedGameState {
+  const base = cloneDefaultRawGameState();
+  return {
+    ...base,
+    blueprints: [],
+    things: [],
+  };
+}
 
 export class GameEngine {
   private canvas: HTMLCanvasElement | null = null;
@@ -45,11 +50,12 @@ export class GameEngine {
   private resizeListener = () => this.resizeCanvas();
   private inputManager: InputManager | null = null;
   private listeners = new Set<() => void>();
-  private gameState: GameState = { ...DEFAULT_GAME_STATE };
-  private persistedGameState: PersistedGameState = {
-    ...DEFAULT_GAME_STATE,
-    blueprints: [],
+  private rawGameState: RawGameState = cloneDefaultRawGameState();
+  private gameState: RuntimeGameState = {
+    ...this.rawGameState,
+    things: [],
   };
+  private persistedGameState: PersistedGameState = cloneDefaultPersistedState();
   private gameDirectory = "";
   private viewportSize = { width: 0, height: 0 };
   private persistHandle: number | null = null;
@@ -99,12 +105,12 @@ export class GameEngine {
   }
 
   dispatch(action: GameAction) {
-    this.gameState = reduceState(this.gameState, action);
+    this.rawGameState = reduceState(this.rawGameState, action);
     this.rebuildBlueprintLookup();
-    this.applyBlueprintPropertiesToState();
+    this.updateRuntimeState();
     this.refreshThingHashes();
 
-    if (this.gameState.isPaused) {
+    if (this.rawGameState.isPaused) {
       this.persistedGameState = this.capturePersistedState();
       this.schedulePersist();
     }
@@ -171,14 +177,11 @@ export class GameEngine {
       payload.game.blueprints,
       this.gameDirectory
     );
-    const blueprintMap = new Map(
-      blueprints.map((bp) => [normalizeName(bp.name), bp])
-    );
     const things = payload.game.things.map((thing) =>
-      applyBlueprintProperties(structuredThingCopy(thing), blueprintMap)
+      normalizeThingFromFile(thing)
     );
 
-    this.gameState = {
+    this.rawGameState = {
       things,
       blueprints,
       camera: payload.game.camera,
@@ -189,6 +192,7 @@ export class GameEngine {
     };
 
     this.rebuildBlueprintLookup();
+    this.updateRuntimeState();
     this.refreshThingHashes();
     this.persistedGameState = this.capturePersistedState();
   }
@@ -288,15 +292,19 @@ export class GameEngine {
 
   private capturePersistedState(): PersistedGameState {
     return {
-      ...this.gameState,
-      things: this.gameState.things.map(sanitizeThingForPersistence),
-      blueprints: this.gameState.blueprints.map((bp) => ({
+      things: this.rawGameState.things.map((thing) => ({ ...thing })),
+      blueprints: this.rawGameState.blueprints.map((bp) => ({
         name: bp.name,
         width: bp.width,
         height: bp.height,
         z: bp.z,
         color: bp.color,
       })),
+      camera: { ...this.rawGameState.camera },
+      screen: { ...this.rawGameState.screen },
+      isPaused: this.rawGameState.isPaused,
+      selectedThingId: this.rawGameState.selectedThingId,
+      selectedThingIds: [...this.rawGameState.selectedThingIds],
     };
   }
 
@@ -321,15 +329,15 @@ export class GameEngine {
 
   private rebuildBlueprintLookup() {
     this.blueprintLookup = new Map(
-      this.gameState.blueprints.map((bp) => [normalizeName(bp.name), bp])
+      this.rawGameState.blueprints.map((bp) => [normalizeName(bp.name), bp])
     );
   }
 
-  private applyBlueprintPropertiesToState() {
+  private updateRuntimeState() {
     this.gameState = {
-      ...this.gameState,
-      things: this.gameState.things.map((thing) =>
-        applyBlueprintProperties(thing, this.blueprintLookup)
+      ...this.rawGameState,
+      things: this.rawGameState.things.map((thing) =>
+        this.createThingProxy(thing)
       ),
     };
   }
@@ -341,99 +349,58 @@ export class GameEngine {
     }
   }
 
-  private syncMutableThings() {
-    let nextThings: Thing[] | null = null;
-    for (let i = 0; i < this.gameState.things.length; i += 1) {
-      const thing = this.gameState.things[i];
-      const hash = hashThing(thing);
-      const previous = this.thingHashes.get(thing.id);
-      if (hash !== previous) {
-        if (!nextThings) {
-          nextThings = [...this.gameState.things];
+  private createThingProxy(thing: Thing): RuntimeThing {
+    const engine = this;
+    return new Proxy(thing, {
+      get(target, prop) {
+        const ownValue = (target as Record<PropertyKey, unknown>)[prop];
+        if (ownValue !== undefined) {
+          return ownValue;
         }
-        const copy = {
-          ...thing,
-          velocity: { ...thing.velocity },
-        };
-        nextThings[i] = copy;
-        this.thingHashes.set(thing.id, hash);
+        if (typeof prop === "string") {
+          const blueprint = getBlueprintForThing(target, engine.blueprintLookup);
+          const blueprintValue =
+            blueprint && (blueprint as Record<string, unknown>)[prop];
+          if (blueprintValue !== undefined) {
+            return blueprintValue;
+          }
+        }
+        return ownValue;
+      },
+      set(target, prop, value) {
+        (target as Record<string, unknown>)[prop as string] = value;
+        return true;
+      },
+    }) as RuntimeThing;
+  }
+
+  private syncMutableThings() {
+    let nextRawThings: Thing[] | null = null;
+    for (let i = 0; i < this.gameState.things.length; i += 1) {
+      const runtimeThing = this.gameState.things[i];
+      const hash = hashThing(runtimeThing);
+      const previous = this.thingHashes.get(runtimeThing.id);
+      if (hash !== previous) {
+        if (!nextRawThings) {
+          nextRawThings = [...this.rawGameState.things];
+        }
+        const rawThing = this.rawGameState.things[i] ?? runtimeThing;
+        nextRawThings[i] = { ...rawThing };
+        this.thingHashes.set(runtimeThing.id, hash);
       }
     }
 
-    if (nextThings) {
-      this.gameState = {
-        ...this.gameState,
-        things: nextThings.map((thing) =>
-          applyBlueprintProperties(thing, this.blueprintLookup)
-        ),
+    if (nextRawThings) {
+      this.rawGameState = {
+        ...this.rawGameState,
+        things: nextRawThings,
       };
+      this.updateRuntimeState();
     }
   }
 }
 
-function applyBlueprintProperties(
-  thing: Thing,
-  blueprintLookup: Map<string, Blueprint>
-): Thing {
-  const blueprint = getBlueprintForThing(thing, blueprintLookup);
-  const inherits: Record<InheritableThingKeys, boolean> = {
-    width: true,
-    height: true,
-    z: true,
-    color: true,
-    ...(thing.inherits ?? {}),
-  };
-  const next: Thing = {
-    ...thing,
-    inherits,
-  };
-
-  for (const key of INHERITABLE_PROPERTIES) {
-    const thingValue = (thing as Record<string, unknown>)[key];
-    const blueprintValue =
-      blueprint && (blueprint as Record<string, unknown>)[key];
-    if (inherits[key] !== false) {
-      inherits[key] = true;
-      if (blueprintValue !== undefined) {
-        (next as Record<string, unknown>)[key] = blueprintValue;
-      }
-    } else if (thingValue !== undefined) {
-      (next as Record<string, unknown>)[key] = thingValue;
-    }
-  }
-
-  if (typeof next.width !== "number") {
-    next.width = blueprint?.width ?? 0;
-  }
-  if (typeof next.height !== "number") {
-    next.height = blueprint?.height ?? 0;
-  }
-  if (typeof next.color !== "string") {
-    next.color = blueprint?.color ?? "#999";
-  }
-  if (typeof next.z !== "number") {
-    next.z = blueprint?.z ?? 0;
-  }
-
-  return next;
-}
-
-function sanitizeThingForPersistence(thing: Thing): Thing {
-  const persisted: Thing = {
-    ...thing,
-    inherits: undefined,
-    velocity: { ...thing.velocity },
-  };
-  const target = persisted as Record<string, unknown>;
-  for (const key of INHERITABLE_PROPERTIES) {
-    if (thing.inherits?.[key]) {
-      target[key] = undefined;
-    }
-  }
-  return persisted;
-}
-
-function hashThing(thing: Thing) {
+function hashThing(thing: RuntimeThing) {
   return [
     thing.x,
     thing.y,
@@ -441,12 +408,20 @@ function hashThing(thing: Thing) {
     thing.width,
     thing.height,
     thing.angle,
-    thing.velocity.x,
-    thing.velocity.y,
+    thing.velocityX,
+    thing.velocityY,
     thing.physicsType,
     thing.color,
     thing.blueprintName,
   ].join("|");
+}
+
+function normalizeThingFromFile(thing: Thing): Thing {
+  return {
+    ...thing,
+    velocityX: thing.velocityX ?? 0,
+    velocityY: thing.velocityY ?? 0,
+  };
 }
 
 function resolveBlueprintModule(
@@ -475,10 +450,7 @@ function resolveBlueprintModule(
 
 function serializeGame(state: PersistedGameState): GameFile {
   return {
-    things: state.things.map((thing) => ({
-      ...thing,
-      inherits: undefined,
-    })),
+    things: state.things.map((thing) => ({ ...thing })),
     blueprints: state.blueprints,
     camera: state.camera,
     screen: state.screen,

@@ -15,18 +15,18 @@ export function blueprintTemplate(blueprintName: string) {
     .trim()
     .replace(/\b\w/g, (char) => char.toUpperCase())
     .replace(/\s/g, "");
-  return `import { BlueprintData, GameState, Thing, KeyState } from "@/engine/types";
+  return `import { BlueprintData, RuntimeGameState, RuntimeThing, KeyState } from "@/engine/types";
 
 export default function create${safeName || "Blueprint"}(data: BlueprintData) {
   return {
     ...data,
-    input: (thing: Thing, _state: GameState, _keys: KeyState) => {
+    input: (thing: RuntimeThing, _state: RuntimeGameState, _keys: KeyState) => {
       return thing;
     },
-    update: (thing: Thing, _state: GameState) => {
+    update: (thing: RuntimeThing, _state: RuntimeGameState) => {
       return thing;
     },
-    render: (thing: Thing, _state: GameState, ctx: CanvasRenderingContext2D) => {
+    render: (thing: RuntimeThing, _state: RuntimeGameState, ctx: CanvasRenderingContext2D) => {
       ctx.fillStyle = thing.color;
       ctx.fillRect(0, 0, thing.width, thing.height);
     },

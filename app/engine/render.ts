@@ -1,5 +1,5 @@
 import { getBlueprintForThing } from "./blueprints";
-import { Blueprint, GameState, Thing } from "./types";
+import { Blueprint, RuntimeGameState, RuntimeThing } from "./types";
 
 type RenderConfig = {
   ctx: CanvasRenderingContext2D;
@@ -10,7 +10,7 @@ const RESIZE_HANDLE_SIZE = 12;
 
 export function renderGame(
   { ctx, viewport }: RenderConfig,
-  state: GameState,
+  state: RuntimeGameState,
   blueprintLookup: Map<string, Blueprint>
 ) {
   const { canvas } = ctx;
@@ -60,8 +60,8 @@ export function renderGame(
 
 function renderThing(
   ctx: CanvasRenderingContext2D,
-  thing: Thing,
-  state: GameState,
+  thing: RuntimeThing,
+  state: RuntimeGameState,
   blueprintLookup: Map<string, Blueprint>
 ) {
   ctx.save();

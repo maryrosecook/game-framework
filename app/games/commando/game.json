@@ -2,39 +2,45 @@
   "things": [
     {
       "id": "player-thing",
-      "x": 374.2382812500002,
-      "y": 375.08593750000136,
+      "x": 459.5921875000006,
+      "y": 418.93750000000136,
       "angle": 0,
-      "velocity": {
-        "x": 0,
-        "y": 0
-      },
       "physicsType": "dynamic",
-      "blueprintName": "Player"
+      "blueprintName": "Player",
+      "velocityX": 0,
+      "velocityY": 0
     },
     {
       "id": "mkcosj2c5zzv",
-      "x": 27.402343749999943,
-      "y": 242.73828125000063,
+      "x": 187.72109374999988,
+      "y": 407.6796875000006,
       "angle": 0,
-      "velocity": {
-        "x": 0,
-        "y": 0
-      },
       "physicsType": "dynamic",
-      "blueprintName": "Player"
+      "blueprintName": "Player",
+      "velocityX": 0,
+      "velocityY": 0
     },
     {
       "id": "zhbyn5swjmbe",
-      "x": 280.96484375,
-      "y": 137.57421875,
+      "x": 282.7440636211323,
+      "y": 128.24609375,
       "angle": 0,
-      "velocity": {
-        "x": 0,
-        "y": 0
-      },
       "physicsType": "dynamic",
-      "blueprintName": "Wall"
+      "blueprintName": "Wall",
+      "velocityX": 0,
+      "velocityY": 0,
+      "width": 320.2715613788677,
+      "height": 42.078125
+    },
+    {
+      "id": "xygu1mfhcid7",
+      "x": 455.6015625,
+      "y": 23.62109375,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "physicsType": "dynamic",
+      "blueprintName": "Enemy"
     }
   ],
   "blueprints": [
@@ -43,7 +49,7 @@
       "width": 96,
       "height": 60,
       "z": 1,
-      "color": "#b399ff"
+      "color": "#ff6699"
     },
     {
       "name": "Wall",
@@ -51,6 +57,20 @@
       "height": 64,
       "z": 1,
       "color": "#b3b3b3"
+    },
+    {
+      "name": "Bullet",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#99d6ff"
+    },
+    {
+      "name": "Enemy",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#ffcc99"
     }
   ],
   "camera": {
