@@ -45,6 +45,7 @@ export function Toolbar({
               normalizeBlueprint(selectedBlueprintName ?? "")
             }
             onSelect={() => onSelectBlueprint(blueprint.name)}
+            isPaused={isPaused}
           />
         ))}
       </div>
@@ -52,7 +53,8 @@ export function Toolbar({
         type="button"
         variant="outline"
         size="icon"
-        onClick={onAddBlueprint}
+        onClick={isPaused ? onAddBlueprint : undefined}
+        disabled={!isPaused}
         aria-label="Add blueprint"
         className="border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
       >
@@ -66,16 +68,19 @@ function BlueprintChip({
   blueprint,
   selected,
   onSelect,
+  isPaused,
 }: {
   blueprint: Blueprint;
   selected: boolean;
   onSelect: () => void;
+  isPaused: boolean;
 }) {
   return (
     <button
       type="button"
-      draggable
+      draggable={isPaused}
       onDragStart={(event) => {
+        if (!isPaused) return;
         event.dataTransfer.setData(BLUEPRINT_MIME, blueprint.name);
         event.dataTransfer.effectAllowed = "copy";
         event.dataTransfer.setData("text/plain", blueprint.name);

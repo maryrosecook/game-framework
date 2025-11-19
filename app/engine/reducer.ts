@@ -1,4 +1,4 @@
-import { Blueprint, GameAction, Thing, RawGameState } from "./types";
+import { Blueprint, GameAction, RawThing, RawGameState } from "./types";
 
 export function reduceState(
   state: RawGameState,
@@ -51,6 +51,8 @@ export function reduceState(
           (bp) => normalizeName(bp.name) !== normalizeName(action.blueprintName)
         ),
       };
+    case "renameBlueprint":
+      return renameBlueprint(state, action.previousName, action.nextName);
     case "setCameraPosition":
       return {
         ...state,
@@ -88,7 +90,7 @@ export function reduceState(
 function updateThing(
   state: RawGameState,
   thingId: string,
-  updater: (thing: Thing) => void
+  updater: (thing: RawThing) => void
 ): RawGameState {
   const index = state.things.findIndex((thing) => thing.id === thingId);
   if (index < 0) {
@@ -119,6 +121,30 @@ function updateBlueprint(
   return { ...state, blueprints };
 }
 
-export function normalizeName(name: string) {
-  return name.trim().toLowerCase();
+function renameBlueprint(state: RawGameState, previous: string, next: string) {
+  const normalizedPrev = normalizeName(previous);
+  const normalizedNext = normalizeName(next);
+  const blueprintIndex = state.blueprints.findIndex(
+    (bp) => normalizeName(bp.name) === normalizedPrev
+  );
+  if (blueprintIndex < 0) {
+    return state;
+  }
+  const blueprints = [...state.blueprints];
+  blueprints[blueprintIndex] = { ...blueprints[blueprintIndex], name: next };
+  const things = state.things.map((thing) =>
+    normalizeName(thing.blueprintName) === normalizedPrev
+      ? { ...thing, blueprintName: next }
+      : thing
+  );
+
+  return {
+    ...state,
+    blueprints,
+    things,
+  };
+}
+
+export function normalizeName(value: string) {
+  return value.trim().toLowerCase();
 }

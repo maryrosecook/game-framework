@@ -1,3 +1,5 @@
+import { Blueprint, PhysicsType, Shape } from "@/engine/types";
+
 const SLUG_PATTERN = /[^a-z0-9]+/g;
 
 export function blueprintSlug(name: string) {
@@ -23,7 +25,7 @@ export default function create${safeName || "Blueprint"}(data: BlueprintData) {
     input: (thing: RuntimeThing, _state: RuntimeGameState, _keys: KeyState) => {
       return thing;
     },
-    update: (thing: RuntimeThing, _state: RuntimeGameState) => {
+    update: (thing: RuntimeThing, _state: RuntimeGameState, _things: RuntimeThing[]) => {
       return thing;
     },
     render: (thing: RuntimeThing, _state: RuntimeGameState, ctx: CanvasRenderingContext2D) => {
@@ -33,4 +35,26 @@ export default function create${safeName || "Blueprint"}(data: BlueprintData) {
   };
 }
 `;
+}
+
+const DEFAULTS: Pick<Blueprint, "width" | "height" | "z" | "shape" | "physicsType"> = {
+  width: 50,
+  height: 50,
+  z: 1,
+  shape: "rectangle",
+  physicsType: "dynamic",
+};
+
+export function createBlueprint(
+  values: Partial<Blueprint> & Pick<Blueprint, "name"> & { color?: string }
+): Blueprint {
+  const shape: Shape = values.shape ?? DEFAULTS.shape;
+  const physicsType: PhysicsType = values.physicsType ?? DEFAULTS.physicsType;
+  return {
+    ...DEFAULTS,
+    color: values.color ?? "#888888",
+    ...values,
+    shape,
+    physicsType,
+  };
 }

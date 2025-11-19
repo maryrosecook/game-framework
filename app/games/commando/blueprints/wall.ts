@@ -8,19 +8,19 @@ import {
 export default function createBlueprint2(data: BlueprintData) {
   return {
     ...data,
-    input: (thing: RuntimeThing, _state: RuntimeGameState, _keys: KeyState) => {
-      return thing;
-    },
-    update: (thing: RuntimeThing, _state: RuntimeGameState) => {
-      return thing;
-    },
-    render: (
+    input: (
       thing: RuntimeThing,
       _state: RuntimeGameState,
-      ctx: CanvasRenderingContext2D
+      _keys: KeyState
     ) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
+      return thing;
+    },
+    update: (
+      thing: RuntimeThing,
+      _state: RuntimeGameState,
+      _things: RuntimeThing[]
+    ) => {
+      return thing;
     },
   };
 }

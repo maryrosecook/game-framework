@@ -9,16 +9,25 @@ export type KeyState = {
 
 export type Vector = { x: number; y: number };
 
+export type Shape = "rectangle" | "triangle";
+export type PhysicsType = "static" | "dynamic";
+
 export type BlueprintData = {
   name: string;
   width: number;
   height: number;
   z: number;
   color: string;
+  shape: Shape;
+  physicsType: PhysicsType;
 };
 
 export type BlueprintModule = Partial<{
-  update: (thing: RuntimeThing, gameState: RuntimeGameState) => void;
+  update: (
+    thing: RuntimeThing,
+    gameState: RuntimeGameState,
+    things: RuntimeThing[]
+  ) => void;
   render: (
     thing: RuntimeThing,
     gameState: RuntimeGameState,
@@ -29,12 +38,16 @@ export type BlueprintModule = Partial<{
     gameState: RuntimeGameState,
     keyState: KeyState
   ) => void;
-  collision: (thing: RuntimeThing, otherThing: RuntimeThing) => void;
+  collision: (
+    thing: RuntimeThing,
+    otherThing: RuntimeThing,
+    gameState: RuntimeGameState
+  ) => void;
 }>;
 
 export type Blueprint = BlueprintData & BlueprintModule;
 
-export type Thing = {
+export type RawThing = {
   id: string;
   x: number;
   y: number;
@@ -44,13 +57,14 @@ export type Thing = {
   angle: number;
   velocityX: number;
   velocityY: number;
-  physicsType: "static" | "dynamic";
+  physicsType: PhysicsType;
   color?: string;
+  shape?: Shape;
   blueprintName: string;
 };
 
-export type RuntimeThing = Thing &
-  Required<Pick<Thing, keyof Omit<BlueprintData, "name">>>;
+export type RuntimeThing = RawThing &
+  Required<Pick<RawThing, keyof Omit<BlueprintData, "name">>>;
 
 export type RuntimeGameState = {
   things: RuntimeThing[];
@@ -63,7 +77,7 @@ export type RuntimeGameState = {
 };
 
 export type RawGameState = Omit<RuntimeGameState, "things"> & {
-  things: Thing[];
+  things: RawThing[];
 };
 
 export type PersistedGameState = Omit<RawGameState, "blueprints"> & {
@@ -74,11 +88,15 @@ export type GameAction =
   | {
       type: "setThingProperty";
       thingId: string;
-      property: keyof Thing;
+      property: keyof RawThing;
       value: any;
     }
-  | { type: "setThingProperties"; thingId: string; properties: Partial<Thing> }
-  | { type: "addThing"; thing: Thing }
+  | {
+      type: "setThingProperties";
+      thingId: string;
+      properties: Partial<RawThing>;
+    }
+  | { type: "addThing"; thing: RawThing }
   | { type: "removeThing"; thingId: string }
   | {
       type: "setBlueprintProperty";
@@ -93,6 +111,7 @@ export type GameAction =
     }
   | { type: "addBlueprint"; blueprint: Blueprint }
   | { type: "removeBlueprint"; blueprintName: string }
+  | { type: "renameBlueprint"; previousName: string; nextName: string }
   | { type: "setCameraPosition"; x: number; y: number }
   | { type: "setScreenSize"; width: number; height: number }
   | { type: "setPaused"; isPaused: boolean }
@@ -100,7 +119,7 @@ export type GameAction =
   | { type: "setSelectedThingIds"; thingIds: string[] };
 
 export type GameFile = {
-  things: Thing[];
+  things: RawThing[];
   blueprints: BlueprintData[];
   camera: Vector;
   screen: { width: number; height: number };

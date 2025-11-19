@@ -71,11 +71,16 @@ function renderThing(
 
   const blueprint = getBlueprintForThing(thing, blueprintLookup);
   const renderer = blueprint?.render;
+  const shape = thing.shape ?? blueprint?.shape ?? "rectangle";
   if (renderer) {
     renderer(thing, state, ctx);
   } else {
     ctx.fillStyle = thing.color || blueprint?.color || "#888";
-    ctx.fillRect(0, 0, thing.width, thing.height);
+    if (shape === "triangle") {
+      drawTriangle(ctx, thing.width, thing.height);
+    } else {
+      ctx.fillRect(0, 0, thing.width, thing.height);
+    }
   }
 
   const isSelected =
@@ -114,4 +119,13 @@ function renderThing(
   }
 
   ctx.restore();
+}
+
+function drawTriangle(ctx: CanvasRenderingContext2D, width: number, height: number) {
+  ctx.beginPath();
+  ctx.moveTo(0, height);
+  ctx.lineTo(width / 2, 0);
+  ctx.lineTo(width, height);
+  ctx.closePath();
+  ctx.fill();
 }

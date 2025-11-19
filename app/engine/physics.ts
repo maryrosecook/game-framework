@@ -1,12 +1,20 @@
 import { getBlueprintForThing } from "./blueprints";
-import { Blueprint, RuntimeThing } from "./types";
+import {
+  Blueprint,
+  RuntimeGameState,
+  RuntimeThing,
+  Shape,
+  Vector,
+} from "./types";
 
 const EPSILON = 0.0001;
 
 export function physicsStep(
-  things: RuntimeThing[],
+  gameState: RuntimeGameState,
   blueprintLookup: Map<string, Blueprint>
 ) {
+  const things = [...gameState.things];
+
   for (const thing of things) {
     thing.x += thing.velocityX;
     thing.y += thing.velocityY;
@@ -14,7 +22,7 @@ export function physicsStep(
 
   for (let i = 0; i < things.length; i += 1) {
     for (let j = i + 1; j < things.length; j += 1) {
-      resolveCollision(things[i], things[j], blueprintLookup);
+      resolveCollision(things[i], things[j], blueprintLookup, gameState);
     }
   }
 }
@@ -22,87 +30,198 @@ export function physicsStep(
 function resolveCollision(
   a: RuntimeThing,
   b: RuntimeThing,
-  blueprintLookup: Map<string, Blueprint>
+  blueprintLookup: Map<string, Blueprint>,
+  gameState: RuntimeGameState
 ) {
-  if (!boxesOverlap(a, b)) {
+  const stillExistsA = gameState.things.includes(a);
+  const stillExistsB = gameState.things.includes(b);
+  if (!stillExistsA || !stillExistsB) {
     return;
   }
 
-  const overlapX = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
-  const overlapY =
-    Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
+  const polygonA = getPolygonForThing(a, blueprintLookup);
+  const polygonB = getPolygonForThing(b, blueprintLookup);
+  const mtv = getMinimumTranslationVector(polygonA, polygonB);
 
-  if (overlapX <= 0 || overlapY <= 0) {
+  if (!mtv) {
     return;
   }
 
-  const axis = overlapX < overlapY ? "x" : "y";
-  const displace = axis === "x" ? overlapX : overlapY;
   const canMoveA = a.physicsType === "dynamic";
   const canMoveB = b.physicsType === "dynamic";
 
+  const separationVector = computeSeparationVector(
+    polygonA,
+    polygonB,
+    mtv.axis,
+    mtv.overlap + EPSILON
+  );
+
   if (!canMoveA && !canMoveB) {
-    notifyCollision(a, b, blueprintLookup);
+    notifyCollision(a, b, blueprintLookup, gameState);
     return;
   }
 
-  if (axis === "x") {
-    const aLeftOfB = a.x + a.width / 2 < b.x + b.width / 2;
-    const direction = aLeftOfB ? -1 : 1;
-    const separation = displace + EPSILON;
-    if (canMoveA && canMoveB) {
-      a.x += (direction * separation) / 2;
-      b.x -= (direction * separation) / 2;
-    } else if (canMoveA) {
-      a.x += direction * separation;
-    } else if (canMoveB) {
-      b.x -= direction * separation;
-    }
-    if (canMoveA) {
-      a.velocityX = 0;
-    }
-    if (canMoveB) {
-      b.velocityX = 0;
-    }
-  } else {
-    const aAboveB = a.y + a.height / 2 < b.y + b.height / 2;
-    const direction = aAboveB ? -1 : 1;
-    const separation = displace + EPSILON;
-    if (canMoveA && canMoveB) {
-      a.y += (direction * separation) / 2;
-      b.y -= (direction * separation) / 2;
-    } else if (canMoveA) {
-      a.y += direction * separation;
-    } else if (canMoveB) {
-      b.y -= direction * separation;
-    }
-    if (canMoveA) {
-      a.velocityY = 0;
-    }
-    if (canMoveB) {
-      b.velocityY = 0;
-    }
+  if (canMoveA && canMoveB) {
+    a.x += separationVector.x / 2;
+    a.y += separationVector.y / 2;
+    b.x -= separationVector.x / 2;
+    b.y -= separationVector.y / 2;
+    dampenVelocity(a, mtv.axis);
+    dampenVelocity(b, mtv.axis);
+  } else if (canMoveA) {
+    a.x += separationVector.x;
+    a.y += separationVector.y;
+    dampenVelocity(a, mtv.axis);
+  } else if (canMoveB) {
+    b.x -= separationVector.x;
+    b.y -= separationVector.y;
+    dampenVelocity(b, mtv.axis);
   }
 
-  notifyCollision(a, b, blueprintLookup);
-}
-
-function boxesOverlap(a: RuntimeThing, b: RuntimeThing) {
-  return !(
-    a.x + a.width <= b.x ||
-    a.x >= b.x + b.width ||
-    a.y + a.height <= b.y ||
-    a.y >= b.y + b.height
-  );
+  notifyCollision(a, b, blueprintLookup, gameState);
 }
 
 function notifyCollision(
   a: RuntimeThing,
   b: RuntimeThing,
-  blueprintLookup: Map<string, Blueprint>
+  blueprintLookup: Map<string, Blueprint>,
+  gameState: RuntimeGameState
 ) {
   const blueprintA = getBlueprintForThing(a, blueprintLookup);
   const blueprintB = getBlueprintForThing(b, blueprintLookup);
-  blueprintA?.collision?.(a, b);
-  blueprintB?.collision?.(b, a);
+  blueprintA?.collision?.(a, b, gameState);
+  blueprintB?.collision?.(b, a, gameState);
+}
+
+function getPolygonForThing(
+  thing: RuntimeThing,
+  blueprintLookup: Map<string, Blueprint>
+) {
+  const shape = getShapeForThing(thing, blueprintLookup);
+  const halfWidth = thing.width / 2;
+  const halfHeight = thing.height / 2;
+
+  const localPoints: Vector[] =
+    shape === "triangle"
+      ? [
+          { x: -halfWidth, y: halfHeight },
+          { x: halfWidth, y: halfHeight },
+          { x: 0, y: -halfHeight },
+        ]
+      : [
+          { x: -halfWidth, y: -halfHeight },
+          { x: halfWidth, y: -halfHeight },
+          { x: halfWidth, y: halfHeight },
+          { x: -halfWidth, y: halfHeight },
+        ];
+
+  const angle = (thing.angle * Math.PI) / 180;
+  const sin = Math.sin(angle);
+  const cos = Math.cos(angle);
+  const centerX = thing.x + halfWidth;
+  const centerY = thing.y + halfHeight;
+
+  return localPoints.map((point) => ({
+    x: centerX + point.x * cos - point.y * sin,
+    y: centerY + point.x * sin + point.y * cos,
+  }));
+}
+
+function getShapeForThing(
+  thing: RuntimeThing,
+  blueprintLookup: Map<string, Blueprint>
+): Shape {
+  if (thing.shape) {
+    return thing.shape;
+  }
+  const blueprint = getBlueprintForThing(thing, blueprintLookup);
+  return blueprint?.shape ?? "rectangle";
+}
+
+function getAxes(points: Vector[]) {
+  const axes: Vector[] = [];
+  for (let i = 0; i < points.length; i += 1) {
+    const current = points[i];
+    const next = points[(i + 1) % points.length];
+    const edge = { x: next.x - current.x, y: next.y - current.y };
+    const normal = normalize({ x: -edge.y, y: edge.x });
+    axes.push(normal);
+  }
+  return axes;
+}
+
+function normalize(vector: Vector): Vector {
+  const length = Math.hypot(vector.x, vector.y) || 1;
+  return { x: vector.x / length, y: vector.y / length };
+}
+
+function project(points: Vector[], axis: Vector) {
+  let min = Infinity;
+  let max = -Infinity;
+  for (const point of points) {
+    const projected = point.x * axis.x + point.y * axis.y;
+    min = Math.min(min, projected);
+    max = Math.max(max, projected);
+  }
+  return { min, max };
+}
+
+function getMinimumTranslationVector(pointsA: Vector[], pointsB: Vector[]) {
+  const axes = [...getAxes(pointsA), ...getAxes(pointsB)];
+  let smallestAxis: Vector | null = null;
+  let smallestOverlap = Infinity;
+
+  for (const axis of axes) {
+    const projectionA = project(pointsA, axis);
+    const projectionB = project(pointsB, axis);
+    const overlap =
+      Math.min(projectionA.max, projectionB.max) -
+      Math.max(projectionA.min, projectionB.min);
+    if (overlap <= 0) {
+      return null;
+    }
+    if (overlap < smallestOverlap) {
+      smallestOverlap = overlap;
+      smallestAxis = axis;
+    }
+  }
+
+  if (!smallestAxis || !Number.isFinite(smallestOverlap)) {
+    return null;
+  }
+
+  return { axis: normalize(smallestAxis), overlap: smallestOverlap };
+}
+
+function computeCentroid(points: Vector[]) {
+  const sum = points.reduce(
+    (acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }),
+    { x: 0, y: 0 }
+  );
+  return { x: sum.x / points.length, y: sum.y / points.length };
+}
+
+function computeSeparationVector(
+  pointsA: Vector[],
+  pointsB: Vector[],
+  axis: Vector,
+  overlap: number
+): Vector {
+  const centroidA = computeCentroid(pointsA);
+  const centroidB = computeCentroid(pointsB);
+  const direction =
+    Math.sign((centroidB.x - centroidA.x) * axis.x + (centroidB.y - centroidA.y) * axis.y) ||
+    1;
+  const separationDirection = direction > 0 ? -1 : 1;
+  return {
+    x: axis.x * overlap * separationDirection,
+    y: axis.y * overlap * separationDirection,
+  };
+}
+
+function dampenVelocity(thing: RuntimeThing, axis: Vector) {
+  const projected = thing.velocityX * axis.x + thing.velocityY * axis.y;
+  thing.velocityX -= projected * axis.x;
+  thing.velocityY -= projected * axis.y;
 }

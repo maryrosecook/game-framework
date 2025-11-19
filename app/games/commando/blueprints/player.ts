@@ -4,44 +4,107 @@ import {
   KeyState,
   RuntimeThing,
 } from "@/engine/types";
+import { createThingFromBlueprint } from "@/engine/blueprints";
+import { normalizeName } from "@/engine/reducer";
 
 const MOVE_SPEED = 3;
+const TURN_SPEED = 2;
+const BULLET_SPEED = 10;
+const FIRE_COOLDOWN_MS = 200;
+
+const lastFireTimes = new Map<string, number>();
 
 export default function createPlayerBlueprint(data: BlueprintData) {
   return {
     ...data,
-    input: (thing: RuntimeThing, _gameState: RuntimeGameState, keys: KeyState) => {
+    input: (
+      thing: RuntimeThing,
+      gameState: RuntimeGameState,
+      keys: KeyState
+    ) => {
       thing.velocityX = 0;
       thing.velocityY = 0;
+
       if (keys.arrowLeft) {
-        thing.velocityX -= MOVE_SPEED;
+        thing.angle -= TURN_SPEED;
       }
       if (keys.arrowRight) {
-        thing.velocityX += MOVE_SPEED;
+        thing.angle += TURN_SPEED;
       }
+
+      const direction = angleToVector(thing.angle);
       if (keys.arrowUp) {
-        thing.velocityY -= MOVE_SPEED;
+        thing.velocityX += direction.x * MOVE_SPEED;
+        thing.velocityY += direction.y * MOVE_SPEED;
       }
       if (keys.arrowDown) {
-        thing.velocityY += MOVE_SPEED;
+        thing.velocityX -= direction.x * MOVE_SPEED;
+        thing.velocityY -= direction.y * MOVE_SPEED;
+      }
+
+      if (keys.space) {
+        spawnBullet(thing, gameState, direction);
       }
     },
-    update: (thing: RuntimeThing) => {
+    update: (
+      thing: RuntimeThing,
+      _state: RuntimeGameState,
+      _things: RuntimeThing[]
+    ) => {
       // Slight damping to make the player feel less slippery.
       thing.velocityX *= 0.95;
       thing.velocityY *= 0.95;
     },
-    render: (
+    collision: (
       thing: RuntimeThing,
-      _gameState: RuntimeGameState,
-      ctx: CanvasRenderingContext2D
+      _other: RuntimeThing,
+      _gameState: RuntimeGameState
     ) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
-    },
-    collision: (thing: RuntimeThing) => {
       thing.velocityX = 0;
       thing.velocityY = 0;
     },
   };
+}
+
+function angleToVector(angle: number) {
+  const radians = (angle * Math.PI) / 180;
+  return { x: Math.sin(radians), y: -Math.cos(radians) };
+}
+
+function spawnBullet(
+  thing: RuntimeThing,
+  gameState: RuntimeGameState,
+  direction: { x: number; y: number }
+) {
+  const now = Date.now();
+  const lastTime = lastFireTimes.get(thing.id) ?? 0;
+  if (now - lastTime < FIRE_COOLDOWN_MS) {
+    return;
+  }
+
+  const bulletBlueprint = gameState.blueprints.find(
+    (bp) => normalizeName(bp.name) === "bullet"
+  );
+  if (!bulletBlueprint) {
+    return;
+  }
+
+  const origin = {
+    x: thing.x + thing.width / 2,
+    y: thing.y + thing.height / 2,
+  };
+  const spawnOffset =
+    Math.max(thing.width, thing.height) / 2 + bulletBlueprint.height / 2;
+  const spawnPoint = {
+    x: origin.x + direction.x * spawnOffset,
+    y: origin.y + direction.y * spawnOffset,
+  };
+
+  const bullet = createThingFromBlueprint(bulletBlueprint, spawnPoint, {
+    velocityX: direction.x * BULLET_SPEED,
+    velocityY: direction.y * BULLET_SPEED,
+    angle: thing.angle,
+  });
+  gameState.things = [...gameState.things, bullet];
+  lastFireTimes.set(thing.id, now);
 }
