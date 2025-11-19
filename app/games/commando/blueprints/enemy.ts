@@ -6,6 +6,7 @@ import {
   UpdateContext,
 } from "@/engine/types";
 import { normalizeName } from "@/engine/reducer";
+import { canBulletPassWall } from "./bullet";
 
 export default function createBlueprint4(data: BlueprintData) {
   const lastFireTimes = new Map<string, number>();
@@ -35,7 +36,13 @@ export default function createBlueprint4(data: BlueprintData) {
       const isAimedAtPlayer =
         Math.abs(getAngleDelta(thing.angle, desiredAngle)) <=
         AIM_TOLERANCE_DEGREES;
-      const hasClearShot = hasLineOfSight(thing, player, things);
+      const firingDirection = angleToVector(thing.angle);
+      const hasClearShot = hasLineOfSight({
+        source: thing,
+        target: player,
+        allThings: things,
+        firingDirection,
+      });
       if (!isAimedAtPlayer || !hasClearShot || now - lastFired < FIRE_INTERVAL_MS) {
         return;
       }
@@ -49,7 +56,6 @@ export default function createBlueprint4(data: BlueprintData) {
       const origin = getThingCenter(thing);
       const spawnOffset =
         Math.max(thing.width, thing.height) / 2 + bulletBlueprint.height / 2;
-      const firingDirection = angleToVector(thing.angle);
       const spawnPoint = {
         x: origin.x + firingDirection.x * spawnOffset,
         y: origin.y + firingDirection.y * spawnOffset,
@@ -120,11 +126,17 @@ function normalizeAngle(angle: number) {
   return wrapped < 0 ? wrapped + 360 : wrapped;
 }
 
-function hasLineOfSight(
-  source: RuntimeThing,
-  target: RuntimeThing,
-  allThings: ReadonlyArray<RuntimeThing>
-) {
+function hasLineOfSight({
+  source,
+  target,
+  allThings,
+  firingDirection,
+}: {
+  source: RuntimeThing;
+  target: RuntimeThing;
+  allThings: ReadonlyArray<RuntimeThing>;
+  firingDirection: { x: number; y: number };
+}) {
   const start = getThingCenter(source);
   const end = getThingCenter(target);
   return !allThings.some((candidate) => {
@@ -132,7 +144,17 @@ function hasLineOfSight(
       return false;
     }
     const name = normalizeName(candidate.blueprintName);
-    if (name !== "wall" && name !== "enemy") {
+    if (name === "wall") {
+      return (
+        !canBulletPassWall({
+          things: allThings,
+          wall: candidate,
+          bulletDirection: firingDirection,
+          player: target,
+        }) && lineIntersectsRect(start, end, getBounds(candidate))
+      );
+    }
+    if (name !== "enemy") {
       return false;
     }
     const bounds = getBounds(candidate);

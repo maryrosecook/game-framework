@@ -4,6 +4,7 @@ import { renderGame } from "./render";
 import {
   Blueprint,
   BlueprintData,
+  CameraController,
   GameAction,
   GameFile,
   RuntimeGameState,
@@ -46,6 +47,16 @@ function cloneDefaultPersistedState(): PersistedGameState {
   };
 }
 
+const BLUEPRINT_DATA_KEYS: readonly (keyof BlueprintData)[] = [
+  "name",
+  "width",
+  "height",
+  "z",
+  "color",
+  "shape",
+  "physicsType",
+];
+
 export class GameEngine {
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
@@ -59,6 +70,8 @@ export class GameEngine {
     things: [],
   };
   private persistedGameState: PersistedGameState = cloneDefaultPersistedState();
+  private isPersistedDirty = false;
+  private cameraModule: CameraController | null = null;
   private gameDirectory = "";
   private viewportSize = { width: 0, height: 0 };
   private persistHandle: number | null = null;
@@ -101,6 +114,7 @@ export class GameEngine {
     this.ctx = null;
     this.canvas = null;
     this.listeners.clear();
+    this.cameraModule = null;
     if (this.persistHandle) {
       clearTimeout(this.persistHandle);
       this.persistHandle = null;
@@ -113,8 +127,11 @@ export class GameEngine {
     this.updateRuntimeState();
     this.refreshThingHashes();
 
-    if (this.rawGameState.isPaused) {
-      this.persistedGameState = this.rawGameStateToPersistedGameState();
+    const persistedChanged = this.applyActionToPersistedState(action);
+    if (persistedChanged) {
+      this.isPersistedDirty = true;
+    }
+    if (this.rawGameState.isPaused && this.isPersistedDirty) {
       this.schedulePersist();
     }
 
@@ -177,6 +194,9 @@ export class GameEngine {
     }
     const payload = (await response.json()) as LoadedGameResponse;
     this.gameDirectory = payload.gameDirectory;
+    this.persistedGameState = persistedStateFromGameFile(payload.game);
+    this.isPersistedDirty = false;
+    this.cameraModule = await this.loadCamera(this.gameDirectory);
     const blueprints = await this.loadBlueprints(
       payload.game.blueprints,
       this.gameDirectory
@@ -198,7 +218,6 @@ export class GameEngine {
     this.rebuildBlueprintLookup();
     this.updateRuntimeState();
     this.refreshThingHashes();
-    this.persistedGameState = this.rawGameStateToPersistedGameState();
   }
 
   private async loadBlueprints(
@@ -215,6 +234,18 @@ export class GameEngine {
       resolved.push(blueprint);
     }
     return resolved;
+  }
+
+  private async loadCamera(directory: string) {
+    try {
+      const module = await import(
+        /* webpackMode: "lazy" */ `@/games/${directory}/camera.ts`
+      );
+      return resolveCameraModule(module);
+    } catch (error) {
+      console.warn("Failed to load camera module", error);
+      return null;
+    }
   }
 
   private startLoop() {
@@ -239,6 +270,7 @@ export class GameEngine {
       physicsStep(this.gameState, this.blueprintLookup);
       this.handleInput();
       this.handleUpdates();
+      this.updateCameraPosition();
     }
     this.syncMutableThings();
 
@@ -294,6 +326,20 @@ export class GameEngine {
     }
   }
 
+  private updateCameraPosition() {
+    if (!this.cameraModule) {
+      return;
+    }
+    const nextCamera = this.cameraModule.update(this.gameState);
+    const current = this.gameState.camera;
+    if (nextCamera.x === current.x && nextCamera.y === current.y) {
+      return;
+    }
+    const camera = { x: nextCamera.x, y: nextCamera.y };
+    this.gameState = { ...this.gameState, camera };
+    this.rawGameState = { ...this.rawGameState, camera };
+  }
+
   private collectUpdateCommands(
     result: UpdateResult | undefined,
     pendingSpawns: RuntimeThing[],
@@ -347,6 +393,7 @@ export class GameEngine {
 
   private schedulePersist() {
     if (typeof window === "undefined") return;
+
     if (this.persistHandle) {
       clearTimeout(this.persistHandle);
     }
@@ -357,11 +404,11 @@ export class GameEngine {
   }
 
   private async persistGame() {
-    if (!this.persistedGameState) {
+    if (!this.persistedGameState || !this.isPersistedDirty) {
       return;
     }
     try {
-      await fetch("/api/game", {
+      const response = await fetch("/api/game", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -369,29 +416,12 @@ export class GameEngine {
           game: serializeGame(this.persistedGameState),
         }),
       });
+      if (response.ok) {
+        this.isPersistedDirty = false;
+      }
     } catch (error) {
       console.warn("Failed to persist game", error);
     }
-  }
-
-  private rawGameStateToPersistedGameState(): PersistedGameState {
-    return {
-      things: this.rawGameState.things.map((thing) => ({ ...thing })),
-      blueprints: this.rawGameState.blueprints.map((bp) => ({
-        name: bp.name,
-        width: bp.width,
-        height: bp.height,
-        z: bp.z,
-        color: bp.color,
-        shape: bp.shape,
-        physicsType: bp.physicsType,
-      })),
-      camera: { ...this.rawGameState.camera },
-      screen: { ...this.rawGameState.screen },
-      isPaused: this.rawGameState.isPaused,
-      selectedThingId: this.rawGameState.selectedThingId,
-      selectedThingIds: [...this.rawGameState.selectedThingIds],
-    };
   }
 
   private notify() {
@@ -488,11 +518,184 @@ export class GameEngine {
       };
       this.updateRuntimeState();
       this.refreshThingHashes();
-      if (this.rawGameState.isPaused) {
-        this.persistedGameState = this.rawGameStateToPersistedGameState();
-        this.schedulePersist();
-      }
     }
+  }
+
+  private applyActionToPersistedState(action: GameAction): boolean {
+    switch (action.type) {
+      case "setThingProperty":
+        return this.updatePersistedThing(action.thingId, (thing) => ({
+          ...thing,
+          [action.property]: action.value,
+        }));
+      case "setThingProperties":
+        return this.updatePersistedThing(action.thingId, (thing) => ({
+          ...thing,
+          ...action.properties,
+        }));
+      case "addThing": {
+        this.persistedGameState = {
+          ...this.persistedGameState,
+          things: [...this.persistedGameState.things, { ...action.thing }],
+        };
+        return true;
+      }
+      case "removeThing": {
+        const nextThings = this.persistedGameState.things.filter(
+          (thing) => thing.id !== action.thingId
+        );
+        if (nextThings.length === this.persistedGameState.things.length) {
+          return false;
+        }
+        this.persistedGameState = {
+          ...this.persistedGameState,
+          things: nextThings,
+        };
+        return true;
+      }
+      case "setBlueprintProperty":
+        if (!isBlueprintDataKey(action.property)) {
+          return false;
+        }
+        return this.updatePersistedBlueprint(
+          action.blueprintName,
+          (blueprint) => ({
+            ...blueprint,
+            [action.property]: action.value,
+          })
+        );
+      case "setBlueprintProperties": {
+        const allowedEntries = Object.entries(action.properties).filter(
+          ([key]) => isBlueprintDataKey(key as keyof Blueprint)
+        ) as [keyof BlueprintData, unknown][];
+        if (allowedEntries.length === 0) {
+          return false;
+        }
+        const properties = Object.fromEntries(
+          allowedEntries
+        ) as Partial<BlueprintData>;
+        return this.updatePersistedBlueprint(
+          action.blueprintName,
+          (blueprint) => ({
+            ...blueprint,
+            ...properties,
+          })
+        );
+      }
+      case "addBlueprint": {
+        this.persistedGameState = {
+          ...this.persistedGameState,
+          blueprints: [
+            ...this.persistedGameState.blueprints,
+            blueprintToBlueprintData(action.blueprint),
+          ],
+        };
+        return true;
+      }
+      case "removeBlueprint": {
+        const target = normalizeName(action.blueprintName);
+        const nextBlueprints = this.persistedGameState.blueprints.filter(
+          (bp) => normalizeName(bp.name) !== target
+        );
+        if (
+          nextBlueprints.length === this.persistedGameState.blueprints.length
+        ) {
+          return false;
+        }
+        this.persistedGameState = {
+          ...this.persistedGameState,
+          blueprints: nextBlueprints,
+        };
+        return true;
+      }
+      case "renameBlueprint":
+        return this.renamePersistedBlueprint(
+          action.previousName,
+          action.nextName
+        );
+      case "setCameraPosition": {
+        this.persistedGameState = {
+          ...this.persistedGameState,
+          camera: { x: action.x, y: action.y },
+        };
+        return true;
+      }
+      case "setScreenSize": {
+        this.persistedGameState = {
+          ...this.persistedGameState,
+          screen: { width: action.width, height: action.height },
+        };
+        return true;
+      }
+      default:
+        return false;
+    }
+  }
+
+  private updatePersistedThing(
+    thingId: string,
+    updater: (thing: RawThing) => RawThing
+  ): boolean {
+    const index = this.persistedGameState.things.findIndex(
+      (candidate) => candidate.id === thingId
+    );
+    if (index < 0) {
+      return false;
+    }
+    const nextThings = [...this.persistedGameState.things];
+    const updated = updater({ ...nextThings[index] });
+    nextThings[index] = updated;
+    this.persistedGameState = {
+      ...this.persistedGameState,
+      things: nextThings,
+    };
+    return true;
+  }
+
+  private updatePersistedBlueprint(
+    blueprintName: string,
+    updater: (blueprint: BlueprintData) => BlueprintData
+  ): boolean {
+    const index = this.persistedGameState.blueprints.findIndex(
+      (bp) => normalizeName(bp.name) === normalizeName(blueprintName)
+    );
+    if (index < 0) {
+      return false;
+    }
+    const nextBlueprints = [...this.persistedGameState.blueprints];
+    const updated = updater({ ...nextBlueprints[index] });
+    nextBlueprints[index] = updated;
+    this.persistedGameState = {
+      ...this.persistedGameState,
+      blueprints: nextBlueprints,
+    };
+    return true;
+  }
+
+  private renamePersistedBlueprint(
+    previousName: string,
+    nextName: string
+  ): boolean {
+    const normalizedPrev = normalizeName(previousName);
+    const index = this.persistedGameState.blueprints.findIndex(
+      (bp) => normalizeName(bp.name) === normalizedPrev
+    );
+    if (index < 0) {
+      return false;
+    }
+    const nextBlueprints = [...this.persistedGameState.blueprints];
+    nextBlueprints[index] = { ...nextBlueprints[index], name: nextName };
+    const nextThings = this.persistedGameState.things.map((thing) =>
+      normalizeName(thing.blueprintName) === normalizedPrev
+        ? { ...thing, blueprintName: nextName }
+        : thing
+    );
+    this.persistedGameState = {
+      ...this.persistedGameState,
+      blueprints: nextBlueprints,
+      things: nextThings,
+    };
+    return true;
   }
 
   private handleSideEffects(action: GameAction) {
@@ -537,6 +740,38 @@ export class GameEngine {
     }
     return this.gameDirectory;
   }
+}
+
+function persistedStateFromGameFile(game: GameFile): PersistedGameState {
+  return {
+    things: game.things.map((thing) => normalizeThingFromFile({ ...thing })),
+    blueprints: game.blueprints.map((blueprint) => ({ ...blueprint })),
+    camera: { ...game.camera },
+    screen: { ...game.screen },
+    isPaused: false,
+    selectedThingId: null,
+    selectedThingIds: [],
+  };
+}
+
+function blueprintToBlueprintData(
+  entry: Blueprint | BlueprintData
+): BlueprintData {
+  return {
+    name: entry.name,
+    width: entry.width,
+    height: entry.height,
+    z: entry.z,
+    color: entry.color,
+    shape: entry.shape,
+    physicsType: entry.physicsType,
+  };
+}
+
+function isBlueprintDataKey(
+  key: keyof Blueprint | string
+): key is keyof BlueprintData {
+  return (BLUEPRINT_DATA_KEYS as readonly string[]).includes(key as string);
 }
 
 function hashThing(thing: RuntimeThing) {
@@ -605,6 +840,25 @@ function resolveBlueprintModule(
     return { ...data, ...(exported as Partial<Blueprint>) };
   }
   return { ...data };
+}
+
+function resolveCameraModule(
+  module: Record<string, unknown>
+): CameraController | null {
+  const exported = (module as { default?: unknown }).default ?? module;
+  if (typeof exported === "function") {
+    return { update: exported as CameraController["update"] };
+  }
+  if (
+    exported &&
+    typeof exported === "object" &&
+    "update" in exported &&
+    typeof (exported as Record<string, unknown>).update === "function"
+  ) {
+    const { update } = exported as { update: CameraController["update"] };
+    return { update };
+  }
+  return null;
 }
 
 function serializeGame(state: PersistedGameState): GameFile {

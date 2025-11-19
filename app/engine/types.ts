@@ -100,6 +100,10 @@ export type PersistedGameState = Omit<RawGameState, "blueprints"> & {
   blueprints: BlueprintData[];
 };
 
+export type CameraController = {
+  update: (game: RuntimeGameState) => Vector;
+};
+
 export type GameAction =
   | {
       type: "setThingProperty";
