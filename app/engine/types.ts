@@ -10,7 +10,27 @@ export type KeyState = {
 export type Vector = { x: number; y: number };
 
 export type Shape = "rectangle" | "triangle";
-export type PhysicsType = "static" | "dynamic";
+export type PhysicsType = "static" | "dynamic" | "ambient";
+
+export type SpawnRequest = {
+  blueprint: string | Blueprint;
+  position: Vector;
+  overrides?: Partial<RawThing>;
+};
+
+export type UpdateCommand =
+  | { type: "spawn"; request: SpawnRequest }
+  | { type: "destroy"; id: string };
+
+export type UpdateResult = void | UpdateCommand | UpdateCommand[];
+
+export type UpdateContext = {
+  thing: RuntimeThing;
+  things: ReadonlyArray<RuntimeThing>;
+  game: Readonly<Omit<RuntimeGameState, "things">>;
+  spawn: (request: SpawnRequest) => RuntimeThing | null;
+  destroy: (target: RuntimeThing | string) => void;
+};
 
 export type BlueprintData = {
   name: string;
@@ -23,11 +43,7 @@ export type BlueprintData = {
 };
 
 export type BlueprintModule = Partial<{
-  update: (
-    thing: RuntimeThing,
-    gameState: RuntimeGameState,
-    things: RuntimeThing[]
-  ) => void;
+  update: (context: UpdateContext) => UpdateResult;
   render: (
     thing: RuntimeThing,
     gameState: RuntimeGameState,

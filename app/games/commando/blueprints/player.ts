@@ -3,13 +3,14 @@ import {
   RuntimeGameState,
   KeyState,
   RuntimeThing,
+  UpdateContext,
 } from "@/engine/types";
 import { createThingFromBlueprint } from "@/engine/blueprints";
 import { normalizeName } from "@/engine/reducer";
 
-const MOVE_SPEED = 3;
+const MOVE_SPEED = 1.5;
 const TURN_SPEED = 2;
-const BULLET_SPEED = 10;
+const BULLET_SPEED = 5;
 const FIRE_COOLDOWN_MS = 200;
 
 const lastFireTimes = new Map<string, number>();
@@ -46,11 +47,7 @@ export default function createPlayerBlueprint(data: BlueprintData) {
         spawnBullet(thing, gameState, direction);
       }
     },
-    update: (
-      thing: RuntimeThing,
-      _state: RuntimeGameState,
-      _things: RuntimeThing[]
-    ) => {
+    update: ({ thing }: UpdateContext) => {
       // Slight damping to make the player feel less slippery.
       thing.velocityX *= 0.95;
       thing.velocityY *= 0.95;

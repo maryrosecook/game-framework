@@ -12,10 +12,12 @@ import {
   RuntimeThing,
   SubscriptionPath,
   RawThing,
+  SpawnRequest,
+  UpdateResult,
 } from "./types";
 import { blueprintSlug } from "@/lib/blueprints";
 import { normalizeName, reduceState } from "./reducer";
-import { getBlueprintForThing } from "./blueprints";
+import { createThingFromBlueprint, getBlueprintForThing } from "./blueprints";
 import { createThingProxy } from "./proxy";
 
 type LoadedGameResponse = {
@@ -257,10 +259,90 @@ export class GameEngine {
   }
 
   private handleUpdates() {
-    for (const thing of this.gameState.things) {
+    const thingsView = Object.freeze([...this.gameState.things]);
+    const { things: _omit, ...rest } = this.gameState;
+    const gameView = Object.freeze(rest);
+    const pendingSpawns: RuntimeThing[] = [];
+    const pendingRemovals = new Set<string>();
+
+    const spawn = (request: SpawnRequest) =>
+      this.spawnFromRequest(request, pendingSpawns);
+    const destroy = (target: RuntimeThing | string) => {
+      const id = typeof target === "string" ? target : target.id;
+      pendingRemovals.add(id);
+    };
+
+    for (const thing of thingsView) {
+      if (pendingRemovals.has(thing.id)) continue;
       const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
-      blueprint?.update?.(thing, this.gameState, this.gameState.things);
+      const updateResult = blueprint?.update?.({
+        thing,
+        things: thingsView,
+        game: gameView,
+        spawn,
+        destroy,
+      });
+      this.collectUpdateCommands(updateResult, pendingSpawns, pendingRemovals);
     }
+
+    if (pendingRemovals.size > 0 || pendingSpawns.length > 0) {
+      const survivors = this.gameState.things.filter(
+        (candidate) => !pendingRemovals.has(candidate.id)
+      );
+      const nextRuntimeThings = [...survivors, ...pendingSpawns];
+      this.gameState = { ...this.gameState, things: nextRuntimeThings };
+    }
+  }
+
+  private collectUpdateCommands(
+    result: UpdateResult | undefined,
+    pendingSpawns: RuntimeThing[],
+    pendingRemovals: Set<string>
+  ) {
+    if (!result) {
+      return;
+    }
+    const commands = Array.isArray(result) ? result : [result];
+    for (const command of commands) {
+      switch (command.type) {
+        case "spawn": {
+          this.spawnFromRequest(command.request, pendingSpawns);
+          break;
+        }
+        case "destroy": {
+          pendingRemovals.add(command.id);
+          break;
+        }
+        default:
+          break;
+      }
+    }
+  }
+
+  private spawnFromRequest(
+    request: SpawnRequest,
+    pendingSpawns: RuntimeThing[]
+  ): RuntimeThing | null {
+    const blueprint = this.resolveBlueprintForSpawn(request);
+    if (!blueprint) {
+      return null;
+    }
+    const rawThing = createThingFromBlueprint(
+      blueprint,
+      request.position,
+      request.overrides ?? {}
+    );
+    const proxy = createThingProxy(rawThing, this.blueprintLookup);
+    pendingSpawns.push(proxy);
+    return proxy;
+  }
+
+  private resolveBlueprintForSpawn(request: SpawnRequest): Blueprint | null {
+    if (typeof request.blueprint !== "string") {
+      return request.blueprint;
+    }
+    const normalized = normalizeName(request.blueprint);
+    return this.blueprintLookup.get(normalized) ?? null;
   }
 
   private schedulePersist() {
@@ -388,8 +470,8 @@ export class GameEngine {
 
     if (nextRawThings) {
       const validIds = new Set(nextRawThings.map((thing) => thing.id));
-      const nextSelectedThingIds = this.rawGameState.selectedThingIds.filter((id) =>
-        validIds.has(id)
+      const nextSelectedThingIds = this.rawGameState.selectedThingIds.filter(
+        (id) => validIds.has(id)
       );
       const hasPrimarySelection =
         this.rawGameState.selectedThingId &&
@@ -418,30 +500,30 @@ export class GameEngine {
       case "addBlueprint": {
         const gameDirectory = this.requireGameDirectory();
         void fetch("/api/blueprints", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              gameDirectory,
-              blueprintName: action.blueprint.name,
-            }),
-          }).catch((error) => {
-            console.warn("Failed to scaffold blueprint file", error);
-          });
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameDirectory,
+            blueprintName: action.blueprint.name,
+          }),
+        }).catch((error) => {
+          console.warn("Failed to scaffold blueprint file", error);
+        });
         break;
       }
       case "renameBlueprint": {
         const gameDirectory = this.requireGameDirectory();
         void fetch("/api/blueprints", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              gameDirectory,
-              previousName: action.previousName,
-              blueprintName: action.nextName,
-            }),
-          }).catch((error) => {
-            console.warn("Failed to rename blueprint file", error);
-          });
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameDirectory,
+            previousName: action.previousName,
+            blueprintName: action.nextName,
+          }),
+        }).catch((error) => {
+          console.warn("Failed to rename blueprint file", error);
+        });
         break;
       }
       default:

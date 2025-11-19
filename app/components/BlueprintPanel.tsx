@@ -98,6 +98,7 @@ export function BlueprintPanel({
           options={[
             { label: "Dynamic", value: "dynamic" },
             { label: "Static", value: "static" },
+            { label: "Ambient (no pushback)", value: "ambient" },
           ]}
           onChange={(value) => updateField("physicsType", value)}
           disabled={!isPaused}

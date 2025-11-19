@@ -15,12 +15,6 @@ export default function createBlueprint2(data: BlueprintData) {
     ) => {
       return thing;
     },
-    update: (
-      thing: RuntimeThing,
-      _state: RuntimeGameState,
-      _things: RuntimeThing[]
-    ) => {
-      return thing;
-    },
+    update: () => {},
   };
 }

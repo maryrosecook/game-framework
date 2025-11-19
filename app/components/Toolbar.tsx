@@ -24,7 +24,7 @@ export function Toolbar({
   isPaused,
 }: ToolbarProps) {
   return (
-    <div className="inline-flex max-w-[800px] min-w-fit items-center gap-3 rounded-t-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-lg">
+    <div className="inline-flex max-w-[800px] min-w-fit items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-lg">
       <Button
         type="button"
         size="icon"

@@ -47,6 +47,11 @@ function resolveCollision(
     return;
   }
 
+  if (a.physicsType === "ambient" || b.physicsType === "ambient") {
+    notifyCollision(a, b, blueprintLookup, gameState);
+    return;
+  }
+
   const canMoveA = a.physicsType === "dynamic";
   const canMoveB = b.physicsType === "dynamic";
 
