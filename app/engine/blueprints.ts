@@ -26,7 +26,6 @@ export function createThingFromBlueprint(
     angle: thing.angle ?? 0,
     velocityX: thing.velocityX ?? 0,
     velocityY: thing.velocityY ?? 0,
-    physicsType: thing.physicsType ?? blueprint.physicsType,
     blueprintName: thing.blueprintName ?? blueprint.name,
     width,
     height,

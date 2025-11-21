@@ -332,8 +332,8 @@
     },
     {
       "id": "2n4x6v5p5w4k",
-      "x": 370,
-      "y": -188,
+      "x": 410.65045594874715,
+      "y": -179.14805831531288,
       "z": 1,
       "width": 50,
       "height": 50,
@@ -359,6 +359,20 @@
       "z": 1,
       "color": "#99d6ff",
       "shape": "triangle"
+    },
+    {
+      "id": "hte8qzm9yrk6",
+      "x": 77.9453125,
+      "y": 716.3203125,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "Exit",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#99b3ff",
+      "shape": "rectangle"
     }
   ],
   "blueprints": [
@@ -403,9 +417,9 @@
       "width": 50,
       "height": 50,
       "z": 1,
-      "color": "#ffcc99",
+      "color": "#99b3ff",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     }
   ],
   "camera": {

@@ -73,14 +73,14 @@ export type RawThing = {
   angle: number;
   velocityX: number;
   velocityY: number;
-  physicsType: PhysicsType;
+  physicsType?: PhysicsType;
   color?: string;
   shape?: Shape;
   blueprintName: string;
 };
 
 export type RuntimeThing = RawThing &
-  Required<Pick<RawThing, keyof Omit<BlueprintData, "name">>>;
+  Required<Pick<RawThing, keyof Omit<BlueprintData, "name" | "physicsType">>>;
 
 export type RuntimeGameState = {
   things: RuntimeThing[];
