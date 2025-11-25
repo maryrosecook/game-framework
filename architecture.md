@@ -49,9 +49,10 @@ Game Engine and Runtime Flow
 
 Game State and Persistence
 
-- Two state copies: `gameState` (live for rendering/logic, always updated) and
-  `persistedGameState` (updated only while paused). When paused, changes
-  debounce-save to `app/games/[game-name]/game.json` (~100ms cadence).
+- Two state copies: `gameState` (live for rendering/logic, updated by game logic
+  AND game editor edits) and `persistedGameState` (updated only by game editor
+  edits). When paused, changes debounce-save to
+  `app/games/[game-name]/game.json` (~100ms cadence).
 - Core shape: `{ things: Thing[]; blueprints: Blueprint[]; camera: {x,y};
 screen: {width,height}; isPaused: boolean; selectedThingId: string | null }`.
 
