@@ -1,12 +1,14 @@
 Architecture Overview
 
-- Build a desktop-first 2D game editor and runner where games are created,
+- A desktop-first 2D game editor and runner where games are created,
   edited, and played in-browser with a full-screen Canvas. Editing uses React;
   the game engine stays pure TypeScript outside React except for a succinct hook
   to start it.
 - Goals: keep the engine independent of the UI, support live play/pause control
   from the editor, and persist edited game data back to disk in a predictable
   format.
+- When you are asked to edit a game (e.g. adding game behavior), look in
+  editorSettings.json to infer which game you should edit
 
 Technology Stack
 
@@ -23,6 +25,7 @@ Directory Layout (high level)
 - `app/games/[game-name]/` holds each game:
   - `game.json` initial state persisted from the editor when paused.
   - `blueprints/` TypeScript blueprint modules (e.g., `player.ts`, `wall.ts`).
+  - `images/` PNG images for blueprints.
 - `app/engine/` pure TS game engine (loop, reducer, physics, render, input,
   blueprint glue).
 - `app/components/` React UI (shell, game view, canvas, toolbar) plus
