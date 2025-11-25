@@ -5,8 +5,14 @@ const DEFAULT_STATE: KeyState = {
   arrowRight: false,
   arrowUp: false,
   arrowDown: false,
+  digit0: false,
   space: false,
   shift: false,
+  keyW: false,
+  keyA: false,
+  keyS: false,
+  keyD: false,
+  keyE: false,
 };
 
 const CODE_TO_KEY: Partial<Record<KeyboardEvent["code"], keyof KeyState>> = {
@@ -14,9 +20,15 @@ const CODE_TO_KEY: Partial<Record<KeyboardEvent["code"], keyof KeyState>> = {
   ArrowRight: "arrowRight",
   ArrowUp: "arrowUp",
   ArrowDown: "arrowDown",
+  Digit0: "digit0",
   Space: "space",
   ShiftLeft: "shift",
   ShiftRight: "shift",
+  KeyW: "keyW",
+  KeyA: "keyA",
+  KeyS: "keyS",
+  KeyD: "keyD",
+  KeyE: "keyE",
 };
 
 export class InputManager {

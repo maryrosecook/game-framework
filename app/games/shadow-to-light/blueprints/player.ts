@@ -50,7 +50,7 @@ export default function createBlueprint3(data: BlueprintData) {
         thing.velocityY = normalized.y * PLAYER_SPEED;
       }
 
-      if (keys.space) {
+      if (keys.digit0) {
         spawnBullet(thing, state, movementDirection);
       }
     },
@@ -106,7 +106,7 @@ function spawnBullet(
   const lastTime = lastFireTimes.get(thing.id) ?? 0;
   if (now - lastTime < FIRE_COOLDOWN_MS) return;
 
-  const bulletBlueprint = state.blueprints.find((bp) => bp.name === "bullet");
+  const bulletBlueprint = state.blueprints.find((bp) => bp.name === "bullet-1");
   if (!bulletBlueprint) return;
 
   const direction =

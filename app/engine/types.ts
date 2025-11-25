@@ -3,8 +3,14 @@ export type KeyState = {
   arrowRight: boolean;
   arrowUp: boolean;
   arrowDown: boolean;
+  digit0: boolean;
   space: boolean;
   shift: boolean;
+  keyW: boolean;
+  keyA: boolean;
+  keyS: boolean;
+  keyD: boolean;
+  keyE: boolean;
 };
 
 export type Vector = { x: number; y: number };
