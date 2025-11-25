@@ -7,6 +7,7 @@ import {
   writeEditorSettings,
   writeGameFile,
 } from "@/lib/games";
+import { getErrorMessage } from "@/lib/errors";
 
 type HandlerOptions = {
   updateEditorSettings?: boolean;
@@ -32,7 +33,10 @@ export async function loadGameResponse(
     if (isNotFoundError(error)) {
       return NextResponse.json({ error: "Game not found" }, { status: 404 });
     }
-    return NextResponse.json({ error: "Failed to load game" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to load game", details: getErrorMessage(error) },
+      { status: 500 }
+    );
   }
 }
 
@@ -63,6 +67,9 @@ export async function saveGameResponse(
     if (isNotFoundError(error)) {
       return NextResponse.json({ error: "Game not found" }, { status: 404 });
     }
-    return NextResponse.json({ error: "Failed to save game" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to save game", details: getErrorMessage(error) },
+      { status: 500 }
+    );
   }
 }

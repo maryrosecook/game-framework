@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { gameSlug, isNotFoundError } from "@/lib/games";
+import { getErrorMessage } from "@/lib/errors";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -52,7 +53,7 @@ export async function GET(_request: Request, context: RouteContext) {
     }
     console.warn("Failed to load blueprint image", error);
     return NextResponse.json(
-      { error: "Failed to load image" },
+      { error: "Failed to load image", details: getErrorMessage(error) },
       { status: 500 }
     );
   }

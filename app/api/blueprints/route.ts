@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { blueprintSlug, blueprintTemplate } from "@/lib/blueprints";
+import { getErrorMessage } from "@/lib/errors";
 
 const ROOT = process.cwd();
 
@@ -32,9 +33,20 @@ export async function POST(request: Request) {
     await fs.access(filePath);
     return NextResponse.json({ ok: true, existed: true });
   } catch {
-    await fs.mkdir(blueprintDir, { recursive: true });
-    await fs.writeFile(filePath, blueprintTemplate(blueprintName));
-    return NextResponse.json({ ok: true, existed: false });
+    try {
+      await fs.mkdir(blueprintDir, { recursive: true });
+      await fs.writeFile(filePath, blueprintTemplate(blueprintName));
+      return NextResponse.json({ ok: true, existed: false });
+    } catch (error) {
+      console.warn("Blueprint create failed", error);
+      return NextResponse.json(
+        {
+          error: "Failed to create blueprint file",
+          details: getErrorMessage(error),
+        },
+        { status: 500 }
+      );
+    }
   }
 }
 
@@ -75,7 +87,10 @@ export async function PUT(request: Request) {
   } catch (error) {
     console.warn("Blueprint rename failed", error);
     return NextResponse.json(
-      { error: "Failed to rename blueprint file" },
+      {
+        error: "Failed to rename blueprint file",
+        details: getErrorMessage(error),
+      },
       { status: 500 }
     );
   }

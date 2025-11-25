@@ -5,10 +5,19 @@ import {
   createGameDirectory,
   listGames,
 } from "@/lib/games";
+import { getErrorMessage } from "@/lib/errors";
 
 export async function GET() {
-  const games = await listGames();
-  return NextResponse.json({ games });
+  try {
+    const games = await listGames();
+    return NextResponse.json({ games });
+  } catch (error) {
+    console.warn("Failed to list games", error);
+    return NextResponse.json(
+      { error: "Failed to list games", details: getErrorMessage(error) },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
@@ -41,7 +50,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 409 });
     }
     return NextResponse.json(
-      { error: "Failed to create game" },
+      { error: "Failed to create game", details: getErrorMessage(error) },
       { status: 500 }
     );
   }

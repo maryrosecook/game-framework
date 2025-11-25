@@ -3,6 +3,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { blueprintSlug } from "@/lib/blueprints";
 import { gameSlug } from "@/lib/games";
+import { getErrorMessage } from "@/lib/errors";
 
 const ROOT = process.cwd();
 
@@ -70,7 +71,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.warn("Failed to save blueprint image", error);
     return NextResponse.json(
-      { error: "Failed to save image" },
+      { error: "Failed to save image", details: getErrorMessage(error) },
       { status: 500 }
     );
   }
