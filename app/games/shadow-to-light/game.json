@@ -120,7 +120,7 @@
     {
       "id": "5y57nkz3dfxi",
       "x": 102.953125,
-      "y": 466.734375,
+      "y": 466.3125,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -223,8 +223,8 @@
     },
     {
       "id": "aqo9to53ekqw",
-      "x": 442.75,
-      "y": 12.3125,
+      "x": 492.6369044270221,
+      "y": 11.446484804449554,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -241,7 +241,7 @@
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
-      "blueprintName": "red",
+      "blueprintName": "heart-stand",
       "width": 514.5625,
       "height": 241.38671875,
       "color": "#99b3ff",
@@ -254,7 +254,7 @@
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
-      "blueprintName": "red-green",
+      "blueprintName": "food-stand",
       "width": 561.38671875,
       "height": 293.19921875,
       "color": "#99d6ff",
@@ -288,7 +288,7 @@
     },
     {
       "id": "ahivz8nfd18y",
-      "x": -1267.91796875,
+      "x": -1268.087890625,
       "y": 595.0234375,
       "angle": 0,
       "velocityX": 0,
@@ -3538,7 +3538,7 @@
       "color": "#ffb3cc",
       "image": "blueprint-8-1764032541998.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "mushroom",
@@ -3548,7 +3548,7 @@
       "color": "#ff6699",
       "image": "blueprint-9-1764032575904.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "house",
@@ -3558,7 +3558,7 @@
       "color": "#f5f5f5",
       "image": "blueprint-10-1764032589778.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "ambient"
     },
     {
       "name": "crafting-table",
@@ -3578,7 +3578,7 @@
       "color": "#b3b3b3",
       "image": "blueprint-12-1764033090774.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "rock",
@@ -3588,7 +3588,7 @@
       "color": "#4d4d4d",
       "image": "blueprint-13-1764033137887.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "grass",
@@ -3601,7 +3601,7 @@
       "physicsType": "ambient"
     },
     {
-      "name": "red",
+      "name": "heart-stand",
       "width": 50,
       "height": 50,
       "z": 1,
@@ -3611,7 +3611,7 @@
       "physicsType": "dynamic"
     },
     {
-      "name": "red-green",
+      "name": "food-stand",
       "width": 50,
       "height": 50,
       "z": 1,
@@ -3638,7 +3638,7 @@
       "color": "#ff9966",
       "image": "blueprint-18-1764033308890.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "boat",
@@ -3648,7 +3648,7 @@
       "color": "#99e6cc",
       "image": "blueprint-19-1764033338437.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "castle",
@@ -3658,7 +3658,7 @@
       "color": "#66cc99",
       "image": "blueprint-20-1764033368660.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "villager",
