@@ -93,8 +93,8 @@
     },
     {
       "id": "5j7xnluwpug2",
-      "x": 366.0626123717793,
-      "y": 166.08984375,
+      "x": 395.7324280608897,
+      "y": 127.70703125,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -2914,8 +2914,8 @@
     },
     {
       "id": "dcg3ou0zqla9",
-      "x": 406.75,
-      "y": 133.125,
+      "x": 484.88487181088965,
+      "y": 212.546875,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -3456,6 +3456,32 @@
       "width": 214.4765625,
       "height": 232.9375,
       "color": "#f5f5f5",
+      "shape": "rectangle"
+    },
+    {
+      "id": "rm5yt20chbs7",
+      "x": 413.821006063642,
+      "y": 569.4953780844227,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "shadow-minion",
+      "width": 50,
+      "height": 50,
+      "color": "#99b3ff",
+      "shape": "rectangle"
+    },
+    {
+      "id": "89e70nfjedzf",
+      "x": 401.9101624358897,
+      "y": -108.18359375,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "shadow-minion",
+      "width": 50,
+      "height": 50,
+      "color": "#99b3ff",
       "shape": "rectangle"
     }
   ],
