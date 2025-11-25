@@ -1,4 +1,4 @@
-export function SelectField({
+export function SelectField<TValue extends string>({
   label,
   value,
   options,
@@ -6,9 +6,9 @@ export function SelectField({
   disabled = false,
 }: {
   label: string;
-  value: string;
-  options: { label: string; value: string }[];
-  onChange: (value: string) => void;
+  value: TValue;
+  options: { label: string; value: TValue }[];
+  onChange: (value: TValue) => void;
   disabled?: boolean;
 }) {
   return (
@@ -18,7 +18,13 @@ export function SelectField({
         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
         disabled={disabled}
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) => {
+          const selected = options.find(
+            (option) => option.value === event.target.value
+          );
+          if (!selected) return;
+          onChange(selected.value);
+        }}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

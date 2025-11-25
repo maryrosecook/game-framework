@@ -70,17 +70,6 @@ function cloneDefaultPersistedState(): PersistedGameState {
   };
 }
 
-const BLUEPRINT_DATA_KEYS: readonly (keyof BlueprintData)[] = [
-  "name",
-  "width",
-  "height",
-  "z",
-  "color",
-  "image",
-  "shape",
-  "physicsType",
-];
-
 export class GameEngine {
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
@@ -638,9 +627,6 @@ export class GameEngine {
         return true;
       }
       case "setBlueprintProperty":
-        if (!isBlueprintDataKey(action.property)) {
-          return false;
-        }
         return this.updatePersistedBlueprint(
           action.blueprintName,
           (blueprint) => ({
@@ -649,20 +635,14 @@ export class GameEngine {
           })
         );
       case "setBlueprintProperties": {
-        const allowedEntries = Object.entries(action.properties).filter(
-          ([key]) => isBlueprintDataKey(key as keyof Blueprint)
-        ) as [keyof BlueprintData, unknown][];
-        if (allowedEntries.length === 0) {
+        if (Object.keys(action.properties).length === 0) {
           return false;
         }
-        const properties = Object.fromEntries(
-          allowedEntries
-        ) as Partial<BlueprintData>;
         return this.updatePersistedBlueprint(
           action.blueprintName,
           (blueprint) => ({
             ...blueprint,
-            ...properties,
+            ...action.properties,
           })
         );
       }
@@ -851,12 +831,6 @@ function blueprintToBlueprintData(
     shape: entry.shape,
     physicsType: entry.physicsType,
   };
-}
-
-function isBlueprintDataKey(
-  key: keyof Blueprint | string
-): key is keyof BlueprintData {
-  return (BLUEPRINT_DATA_KEYS as readonly string[]).includes(key as string);
 }
 
 function hashThing(thing: RuntimeThing) {

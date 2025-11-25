@@ -1,5 +1,9 @@
 import { DragEvent, useState } from "react";
-import { Blueprint } from "@/engine/types";
+import {
+  Blueprint,
+  BlueprintData,
+  SetBlueprintPropertyAction,
+} from "@/engine/types";
 import { GameSubscribe } from "@/engine/useGame";
 import { GameEngine } from "@/engine/engine";
 import { ColorGrid } from "@/components/ColorGrid";
@@ -31,14 +35,78 @@ export function BlueprintPanel({
     return null;
   }
 
-  const updateField = (property: keyof Blueprint, value: string | number) => {
+  const buildBlueprintPropertyAction = (
+    name: string,
+    property: keyof BlueprintData,
+    value: BlueprintData[keyof BlueprintData]
+  ): SetBlueprintPropertyAction => {
+    switch (property) {
+      case "width":
+      case "height":
+      case "z":
+        if (typeof value !== "number") {
+          throw new Error("Blueprint dimension must be a number.");
+        }
+        return {
+          type: "setBlueprintProperty",
+          blueprintName: name,
+          property,
+          value,
+        };
+      case "shape":
+        if (value !== "rectangle" && value !== "triangle") {
+          throw new Error("Shape must be a valid option.");
+        }
+        return {
+          type: "setBlueprintProperty",
+          blueprintName: name,
+          property,
+          value,
+        };
+      case "physicsType":
+        if (value !== "dynamic" && value !== "static" && value !== "ambient") {
+          throw new Error("Physics type must be a valid option.");
+        }
+        return {
+          type: "setBlueprintProperty",
+          blueprintName: name,
+          property,
+          value,
+        };
+      case "color":
+      case "name":
+        if (typeof value !== "string") {
+          throw new Error("Blueprint field must be a string.");
+        }
+        return {
+          type: "setBlueprintProperty",
+          blueprintName: name,
+          property,
+          value,
+        };
+      case "image":
+        if (value !== undefined && typeof value !== "string") {
+          throw new Error("Blueprint image must be a string filename.");
+        }
+        return {
+          type: "setBlueprintProperty",
+          blueprintName: name,
+          property,
+          value,
+        };
+      default:
+        throw new Error("Unknown blueprint property.");
+    }
+  };
+
+  const updateField = <K extends keyof BlueprintData>(
+    property: K,
+    value: BlueprintData[K]
+  ) => {
     if (!isPaused) return;
-    dispatchBlueprint({
-      type: "setBlueprintProperty",
-      blueprintName: blueprint.name,
-      property,
-      value,
-    });
+    dispatchBlueprint(
+      buildBlueprintPropertyAction(blueprint.name, property, value)
+    );
   };
 
   const handleRename = (value: string) => {
@@ -92,12 +160,7 @@ export function BlueprintPanel({
           ? payload.fileName
           : file.name;
       setUploadError(null);
-      dispatchBlueprint({
-        type: "setBlueprintProperty",
-        blueprintName: blueprint.name,
-        property: "image",
-        value: fileName,
-      });
+      updateField("image", fileName);
     } catch (error) {
       console.warn("Image upload failed", error);
       setUploadError("Failed to save image.");
@@ -108,12 +171,7 @@ export function BlueprintPanel({
 
   const handleClearImage = () => {
     if (!isPaused) return;
-    dispatchBlueprint({
-      type: "setBlueprintProperty",
-      blueprintName: blueprint.name,
-      property: "image",
-      value: undefined,
-    });
+    updateField("image", undefined);
   };
 
   const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);

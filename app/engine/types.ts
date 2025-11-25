@@ -107,13 +107,37 @@ export type CameraController = {
   update: (game: RuntimeGameState) => Vector;
 };
 
+type ThingPropertyUpdate = {
+  [K in keyof RawThing]: { property: K; value: RawThing[K] };
+}[keyof RawThing];
+
+type BlueprintPropertyUpdate = {
+  [K in keyof BlueprintData]: { property: K; value: BlueprintData[K] };
+}[keyof BlueprintData];
+
+type ThingPropertyAction = {
+  type: "setThingProperty";
+  thingId: string;
+} & ThingPropertyUpdate;
+
+type BlueprintPropertyAction = {
+  type: "setBlueprintProperty";
+  blueprintName: string;
+} & BlueprintPropertyUpdate;
+
+export type SetThingPropertyAction = ThingPropertyAction;
+export type SetBlueprintPropertyAction = BlueprintPropertyAction;
+export type SpecificBlueprintPropertyAction<
+  K extends keyof BlueprintData
+> = {
+  type: "setBlueprintProperty";
+  blueprintName: string;
+  property: K;
+  value: BlueprintData[K];
+};
+
 export type GameAction =
-  | {
-      type: "setThingProperty";
-      thingId: string;
-      property: keyof RawThing;
-      value: any;
-    }
+  | ThingPropertyAction
   | {
       type: "setThingProperties";
       thingId: string;
@@ -121,16 +145,11 @@ export type GameAction =
     }
   | { type: "addThing"; thing: RawThing }
   | { type: "removeThing"; thingId: string }
-  | {
-      type: "setBlueprintProperty";
-      blueprintName: string;
-      property: keyof Blueprint;
-      value: any;
-    }
+  | BlueprintPropertyAction
   | {
       type: "setBlueprintProperties";
       blueprintName: string;
-      properties: Partial<Blueprint>;
+      properties: Partial<BlueprintData>;
     }
   | { type: "addBlueprint"; blueprint: Blueprint }
   | { type: "removeBlueprint"; blueprintName: string }

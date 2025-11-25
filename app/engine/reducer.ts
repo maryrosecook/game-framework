@@ -6,13 +6,15 @@ export function reduceState(
 ): RawGameState {
   switch (action.type) {
     case "setThingProperty":
-      return updateThing(state, action.thingId, (thing) => {
-        (thing as Record<string, unknown>)[action.property] = action.value;
-      });
+      return updateThing(state, action.thingId, (thing) => ({
+        ...thing,
+        [action.property]: action.value,
+      }));
     case "setThingProperties":
-      return updateThing(state, action.thingId, (thing) => {
-        Object.assign(thing, action.properties);
-      });
+      return updateThing(state, action.thingId, (thing) => ({
+        ...thing,
+        ...action.properties,
+      }));
     case "addThing":
       return {
         ...state,
@@ -32,13 +34,15 @@ export function reduceState(
         selectedThingIds: remainingSelectedIds,
       };
     case "setBlueprintProperty":
-      return updateBlueprint(state, action.blueprintName, (blueprint) => {
-        (blueprint as Record<string, unknown>)[action.property] = action.value;
-      });
+      return updateBlueprint(state, action.blueprintName, (blueprint) => ({
+        ...blueprint,
+        [action.property]: action.value,
+      }));
     case "setBlueprintProperties":
-      return updateBlueprint(state, action.blueprintName, (blueprint) => {
-        Object.assign(blueprint, action.properties);
-      });
+      return updateBlueprint(state, action.blueprintName, (blueprint) => ({
+        ...blueprint,
+        ...action.properties,
+      }));
     case "addBlueprint":
       return {
         ...state,
@@ -90,15 +94,14 @@ export function reduceState(
 function updateThing(
   state: RawGameState,
   thingId: string,
-  updater: (thing: RawThing) => void
+  updater: (thing: RawThing) => RawThing
 ): RawGameState {
   const index = state.things.findIndex((thing) => thing.id === thingId);
   if (index < 0) {
     return state;
   }
   const things = [...state.things];
-  const nextThing = { ...things[index] };
-  updater(nextThing);
+  const nextThing = updater({ ...things[index] });
   things[index] = nextThing;
   return { ...state, things };
 }
@@ -106,7 +109,7 @@ function updateThing(
 function updateBlueprint(
   state: RawGameState,
   blueprintName: string,
-  updater: (blueprint: Blueprint) => void
+  updater: (blueprint: Blueprint) => Blueprint
 ): RawGameState {
   const index = state.blueprints.findIndex(
     (bp) => normalizeName(bp.name) === normalizeName(blueprintName)
@@ -115,9 +118,7 @@ function updateBlueprint(
     return state;
   }
   const blueprints = [...state.blueprints];
-  const clone = { ...blueprints[index] };
-  updater(clone);
-  blueprints[index] = clone;
+  blueprints[index] = updater({ ...blueprints[index] });
   return { ...state, blueprints };
 }
 
