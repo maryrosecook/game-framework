@@ -1,14 +1,9 @@
 import { RuntimeGameState, Vector } from "@/engine/types";
-import { normalizeName } from "@/engine/reducer";
-
-function getPlayer(game: RuntimeGameState) {
-  return game.things.find(
-    (thing) => normalizeName(thing.blueprintName) === "player"
-  );
-}
 
 export function update(game: RuntimeGameState): Vector {
-  const player = getPlayer(game);
+  const player = game.things.find(
+    (thing) => thing.blueprintName === "player"
+  );
   if (!player) {
     return game.camera;
   }

@@ -6,7 +6,6 @@ import {
   UpdateContext,
 } from "@/engine/types";
 import { createThingFromBlueprint } from "@/engine/blueprints";
-import { normalizeName } from "@/engine/reducer";
 
 const MOVE_SPEED = 1.5;
 const TURN_SPEED = 2;
@@ -80,7 +79,7 @@ function spawnBullet(
   }
 
   const bulletBlueprint = gameState.blueprints.find(
-    (bp) => normalizeName(bp.name) === "bullet"
+    (bp) => bp.name === "bullet"
   );
   if (!bulletBlueprint) {
     return;

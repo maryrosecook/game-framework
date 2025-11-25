@@ -5,7 +5,6 @@ import { GameEngine } from "@/engine/engine";
 import { Blueprint, RuntimeGameState, RuntimeThing } from "@/engine/types";
 import { GameSubscribe } from "@/engine/useGame";
 import { createThingFromBlueprint } from "@/engine/blueprints";
-import { normalizeName } from "@/engine/reducer";
 
 const BLUEPRINT_MIME = "application/x-blueprint";
 
@@ -61,7 +60,7 @@ export const GameCanvas = memo(function GameCanvas({
 
     const getBlueprintZ = (blueprintName: string) => {
       const blueprint = (blueprints ?? []).find(
-        (bp) => normalizeName(bp.name) === normalizeName(blueprintName)
+        (bp) => bp.name === blueprintName
       );
       return blueprint?.z ?? 1;
     };
@@ -187,7 +186,7 @@ export const GameCanvas = memo(function GameCanvas({
       event.dataTransfer.getData("text/plain");
     if (!blueprintName) return;
     const blueprint = (blueprints ?? []).find(
-      (bp) => normalizeName(bp.name) === normalizeName(blueprintName)
+      (bp) => bp.name === blueprintName
     );
     if (!blueprint) return;
     const point = getWorldPoint(event, screen, camera, canvasRef);

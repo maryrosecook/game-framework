@@ -5,9 +5,12 @@ import {
   KeyState,
   Vector,
 } from "@/engine/types";
-import { normalizeName } from "@/engine/reducer";
 
 const WALL_PROXIMITY_THRESHOLD = 5;
+const PLAYER_BLUEPRINT = "player";
+const ENEMY_BLUEPRINT = "enemy";
+const BULLET_BLUEPRINT = "bullet";
+const WALL_BLUEPRINT = "wall";
 
 export default function createBlueprint3(data: BlueprintData) {
   return {
@@ -53,16 +56,18 @@ export default function createBlueprint3(data: BlueprintData) {
 }
 
 function isCharacter(thing: RuntimeThing) {
-  const name = normalizeName(thing.blueprintName);
-  return name === "player" || name === "enemy";
+  return (
+    thing.blueprintName === PLAYER_BLUEPRINT ||
+    thing.blueprintName === ENEMY_BLUEPRINT
+  );
 }
 
 function isBullet(thing: RuntimeThing) {
-  return normalizeName(thing.blueprintName) === "bullet";
+  return thing.blueprintName === BULLET_BLUEPRINT;
 }
 
 function isWall(thing: RuntimeThing) {
-  return normalizeName(thing.blueprintName) === "wall";
+  return thing.blueprintName === WALL_BLUEPRINT;
 }
 
 export function canBulletPassWall({
@@ -78,9 +83,7 @@ export function canBulletPassWall({
 }) {
   const playerThing =
     player ??
-    things.find(
-      (candidate) => normalizeName(candidate.blueprintName) === "player"
-    );
+    things.find((candidate) => candidate.blueprintName === PLAYER_BLUEPRINT);
 
   if (!playerThing) {
     return false;

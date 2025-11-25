@@ -11,7 +11,7 @@
       "velocityY": 0,
       "physicsType": "static",
       "color": "#b3b3b3",
-      "blueprintName": "Wall",
+      "blueprintName": "wall",
       "shape": "rectangle"
     },
     {
@@ -25,7 +25,7 @@
       "velocityY": 7.66044443118978,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -39,7 +39,7 @@
       "velocityY": 7.66044443118978,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -53,7 +53,7 @@
       "velocityY": 7.66044443118978,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -67,7 +67,7 @@
       "velocityY": -3.746065934159124,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -81,7 +81,7 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -95,7 +95,7 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -109,7 +109,7 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -123,7 +123,7 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -137,7 +137,7 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -151,7 +151,7 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -165,7 +165,7 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -179,7 +179,7 @@
       "velocityY": 0,
       "physicsType": "dynamic",
       "color": "#ff6699",
-      "blueprintName": "Enemy",
+      "blueprintName": "enemy",
       "shape": "triangle"
     },
     {
@@ -193,7 +193,7 @@
       "velocityY": -9.612616959383189,
       "physicsType": "ambient",
       "color": "#ff6699",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -207,7 +207,7 @@
       "velocityY": -7.431448254773942,
       "physicsType": "ambient",
       "color": "#ff6699",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -221,7 +221,7 @@
       "velocityY": -4.067366430758002,
       "physicsType": "ambient",
       "color": "#ff6699",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -235,7 +235,7 @@
       "velocityY": -4.067366430758002,
       "physicsType": "ambient",
       "color": "#ff6699",
-      "blueprintName": "Bullet",
+      "blueprintName": "bullet",
       "shape": "rectangle"
     },
     {
@@ -249,7 +249,7 @@
       "velocityY": 0,
       "physicsType": "static",
       "color": "#b3b3b3",
-      "blueprintName": "Wall",
+      "blueprintName": "wall",
       "shape": "rectangle"
     },
     {
@@ -263,7 +263,7 @@
       "velocityY": 0,
       "physicsType": "static",
       "color": "#b3b3b3",
-      "blueprintName": "Wall",
+      "blueprintName": "wall",
       "shape": "rectangle"
     },
     {
@@ -277,7 +277,7 @@
       "velocityY": 0,
       "physicsType": "dynamic",
       "color": "#ff6699",
-      "blueprintName": "Enemy",
+      "blueprintName": "enemy",
       "shape": "triangle"
     },
     {
@@ -291,7 +291,7 @@
       "velocityY": 0,
       "physicsType": "dynamic",
       "color": "#ff6699",
-      "blueprintName": "Enemy",
+      "blueprintName": "enemy",
       "shape": "triangle"
     },
     {
@@ -305,7 +305,7 @@
       "velocityY": 0,
       "physicsType": "static",
       "color": "#b3b3b3",
-      "blueprintName": "Wall",
+      "blueprintName": "wall",
       "shape": "rectangle"
     },
     {
@@ -319,7 +319,7 @@
       "velocityY": 0,
       "physicsType": "dynamic",
       "color": "#ffcc99",
-      "blueprintName": "Exit",
+      "blueprintName": "exit",
       "shape": "rectangle"
     },
     {
@@ -330,7 +330,7 @@
       "velocityX": 0,
       "velocityY": 0,
       "physicsType": "dynamic",
-      "blueprintName": "Player",
+      "blueprintName": "player",
       "width": 96,
       "height": 60,
       "color": "#99d6ff",
@@ -343,7 +343,7 @@
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
-      "blueprintName": "Exit",
+      "blueprintName": "exit",
       "width": 50,
       "height": 50,
       "color": "#99b3ff",
@@ -352,7 +352,7 @@
   ],
   "blueprints": [
     {
-      "name": "Player",
+      "name": "player",
       "width": 96,
       "height": 60,
       "z": 1,
@@ -361,7 +361,7 @@
       "physicsType": "dynamic"
     },
     {
-      "name": "Wall",
+      "name": "wall",
       "width": 50,
       "height": 64,
       "z": 1,
@@ -370,7 +370,7 @@
       "physicsType": "static"
     },
     {
-      "name": "Bullet",
+      "name": "bullet",
       "width": 8,
       "height": 8,
       "z": 1,
@@ -379,7 +379,7 @@
       "physicsType": "ambient"
     },
     {
-      "name": "Enemy",
+      "name": "enemy",
       "width": 50,
       "height": 50,
       "z": 1,
@@ -388,12 +388,13 @@
       "physicsType": "dynamic"
     },
     {
-      "name": "Exit",
+      "name": "exit",
       "width": 50,
       "height": 50,
       "z": 1,
       "color": "#99b3ff",
-      "shape": "rectangle"
+      "shape": "rectangle",
+      "physicsType": "static"
     }
   ],
   "camera": {

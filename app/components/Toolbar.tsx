@@ -44,8 +44,7 @@ export function Toolbar({
             key={blueprint.name}
             blueprint={blueprint}
             selected={
-              normalizeBlueprint(blueprint.name) ===
-              normalizeBlueprint(selectedBlueprintName ?? "")
+              selectedBlueprintName === blueprint.name
             }
             onSelect={() => onSelectBlueprint(blueprint.name)}
             isPaused={isPaused}
@@ -117,8 +116,4 @@ function BlueprintChip({
       {blueprint.name}
     </button>
   );
-}
-
-function normalizeBlueprint(value: string) {
-  return value.trim().toLowerCase();
 }

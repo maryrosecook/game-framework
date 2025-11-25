@@ -1,7 +1,4 @@
-import {
-  GameEngineDependencies,
-  LoadedGame,
-} from "@/engine/engine";
+import { GameEngineDependencies, LoadedGame } from "@/engine/engine";
 import { GameFile } from "@/engine/types";
 
 type GameApiPayload = {
@@ -24,10 +21,13 @@ export function createGameEngineDependencies(): GameEngineDependencies {
 }
 
 async function loadGame(gameDirectory: string): Promise<LoadedGame> {
+  console.log(gameDirectory);
   const response = await fetch(
     `/api/games/${encodeURIComponent(gameDirectory)}`
   );
-  const payload = (await response.json().catch(() => null)) as GameApiPayload | null;
+  const payload = (await response
+    .json()
+    .catch(() => null)) as GameApiPayload | null;
   if (!response.ok) {
     const message =
       payload && typeof payload.error === "string"
@@ -48,9 +48,9 @@ async function persistGame(gameDirectory: string, game: GameFile) {
     }
   );
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as
-      | { error?: string }
-      | null;
+    const payload = (await response.json().catch(() => null)) as {
+      error?: string;
+    } | null;
     const message =
       payload && typeof payload.error === "string"
         ? payload.error
@@ -89,11 +89,7 @@ async function renameBlueprintFile(input: {
 }
 
 function parseLoadedGame(payload: GameApiPayload | null): LoadedGame {
-  if (
-    !payload ||
-    !payload.game ||
-    typeof payload.gameDirectory !== "string"
-  ) {
+  if (!payload || !payload.game || typeof payload.gameDirectory !== "string") {
     throw new Error("Invalid game response");
   }
   return {

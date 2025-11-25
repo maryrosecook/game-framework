@@ -6,6 +6,7 @@ type RouteContext = {
 
 export async function GET(_request: Request, context: RouteContext) {
   const params = await context.params;
+  console.log(params);
   return loadGameResponse(params.game);
 }
 

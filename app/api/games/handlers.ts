@@ -13,16 +13,13 @@ type HandlerOptions = {
 };
 
 export async function loadGameResponse(
-  rawGameDirectory: string | null | undefined,
+  gameDirectory: string,
   options: HandlerOptions = {}
 ) {
   const { updateEditorSettings = true } = options;
-  const gameDirectory = normalizeGameDirectory(rawGameDirectory);
+
   if (!gameDirectory) {
-    return NextResponse.json(
-      { error: "Invalid game name" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid game name" }, { status: 400 });
   }
 
   try {
@@ -35,25 +32,18 @@ export async function loadGameResponse(
     if (isNotFoundError(error)) {
       return NextResponse.json({ error: "Game not found" }, { status: 404 });
     }
-    return NextResponse.json(
-      { error: "Failed to load game" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to load game" }, { status: 500 });
   }
 }
 
 export async function saveGameResponse(
-  rawGameDirectory: string | null | undefined,
+  gameDirectory: string,
   rawGame: unknown,
   options: HandlerOptions = {}
 ) {
   const { updateEditorSettings = true } = options;
-  const gameDirectory = normalizeGameDirectory(rawGameDirectory);
   if (!gameDirectory) {
-    return NextResponse.json(
-      { error: "Invalid game name" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid game name" }, { status: 400 });
   }
 
   if (!isGameFile(rawGame)) {
@@ -73,17 +63,6 @@ export async function saveGameResponse(
     if (isNotFoundError(error)) {
       return NextResponse.json({ error: "Game not found" }, { status: 404 });
     }
-    return NextResponse.json(
-      { error: "Failed to save game" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to save game" }, { status: 500 });
   }
-}
-
-function normalizeGameDirectory(raw: string | null | undefined) {
-  if (typeof raw !== "string") {
-    return null;
-  }
-  const slug = gameSlug(raw);
-  return slug || null;
 }

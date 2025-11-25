@@ -268,5 +268,6 @@ export function isGameFile(value: unknown): value is GameFile {
   const hasBlueprints =
     Array.isArray(record.blueprints) &&
     record.blueprints.every((bp) => isBlueprintData(bp));
+  console.log(hasCamera, hasScreen, hasThings, hasBlueprints);
   return hasCamera && hasScreen && hasThings && hasBlueprints;
 }

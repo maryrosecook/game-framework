@@ -5,8 +5,12 @@ import {
   KeyState,
   UpdateContext,
 } from "@/engine/types";
-import { normalizeName } from "@/engine/reducer";
 import { canBulletPassWall } from "./bullet";
+
+const PLAYER_BLUEPRINT = "player";
+const ENEMY_BLUEPRINT = "enemy";
+const BULLET_BLUEPRINT = "bullet";
+const WALL_BLUEPRINT = "wall";
 
 export default function createBlueprint4(data: BlueprintData) {
   const lastFireTimes = new Map<string, number>();
@@ -48,7 +52,7 @@ export default function createBlueprint4(data: BlueprintData) {
       }
 
       const bulletBlueprint = game.blueprints.find(
-        (bp) => normalizeName(bp.name) === "bullet"
+        (bp) => bp.name === BULLET_BLUEPRINT
       );
       if (!bulletBlueprint) {
         return;
@@ -61,7 +65,7 @@ export default function createBlueprint4(data: BlueprintData) {
         y: origin.y + firingDirection.y * spawnOffset,
       };
       const spawned = spawn({
-        blueprint: "bullet",
+        blueprint: BULLET_BLUEPRINT,
         position: spawnPoint,
         overrides: {
           velocityX: firingDirection.x * BULLET_SPEED,
@@ -77,9 +81,7 @@ export default function createBlueprint4(data: BlueprintData) {
 }
 
 function findPlayer(things: ReadonlyArray<RuntimeThing>) {
-  return things.find(
-    (candidate) => normalizeName(candidate.blueprintName) === "player"
-  );
+  return things.find((candidate) => candidate.blueprintName === PLAYER_BLUEPRINT);
 }
 
 function getThingCenter(thing: RuntimeThing) {
@@ -143,8 +145,7 @@ function hasLineOfSight({
     if (candidate.id === source.id || candidate.id === target.id) {
       return false;
     }
-    const name = normalizeName(candidate.blueprintName);
-    if (name === "wall") {
+    if (candidate.blueprintName === WALL_BLUEPRINT) {
       return (
         !canBulletPassWall({
           things: allThings,
@@ -154,7 +155,7 @@ function hasLineOfSight({
         }) && lineIntersectsRect(start, end, getBounds(candidate))
       );
     }
-    if (name !== "enemy") {
+    if (candidate.blueprintName !== ENEMY_BLUEPRINT) {
       return false;
     }
     const bounds = getBounds(candidate);

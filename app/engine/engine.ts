@@ -17,7 +17,7 @@ import {
   UpdateResult,
 } from "./types";
 import { blueprintSlug } from "@/lib/blueprints";
-import { normalizeName, reduceState } from "./reducer";
+import { reduceState } from "./reducer";
 import { createThingFromBlueprint, getBlueprintForThing } from "./blueprints";
 import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
@@ -214,7 +214,7 @@ export class GameEngine {
           return this.gameState.blueprints;
         }
         const blueprint = this.gameState.blueprints.find(
-          (entry) => normalizeName(entry.name) === normalizeName(path[1])
+          (entry) => entry.name === path[1]
         );
         return blueprint;
       }
@@ -441,8 +441,7 @@ export class GameEngine {
     if (typeof request.blueprint !== "string") {
       return request.blueprint;
     }
-    const normalized = normalizeName(request.blueprint);
-    return this.blueprintLookup.get(normalized) ?? null;
+    return this.blueprintLookup.get(request.blueprint) ?? null;
   }
 
   private schedulePersist() {
@@ -494,7 +493,7 @@ export class GameEngine {
 
   private rebuildBlueprintLookup() {
     this.blueprintLookup = new Map(
-      this.rawGameState.blueprints.map((bp) => [normalizeName(bp.name), bp])
+      this.rawGameState.blueprints.map((bp) => [bp.name, bp])
     );
   }
 
@@ -664,9 +663,8 @@ export class GameEngine {
         return true;
       }
       case "removeBlueprint": {
-        const target = normalizeName(action.blueprintName);
         const nextBlueprints = this.persistedGameState.blueprints.filter(
-          (bp) => normalizeName(bp.name) !== target
+          (bp) => bp.name !== action.blueprintName
         );
         if (
           nextBlueprints.length === this.persistedGameState.blueprints.length
@@ -728,7 +726,7 @@ export class GameEngine {
     updater: (blueprint: BlueprintData) => BlueprintData
   ): boolean {
     const index = this.persistedGameState.blueprints.findIndex(
-      (bp) => normalizeName(bp.name) === normalizeName(blueprintName)
+      (bp) => bp.name === blueprintName
     );
     if (index < 0) {
       return false;
@@ -747,9 +745,8 @@ export class GameEngine {
     previousName: string,
     nextName: string
   ): boolean {
-    const normalizedPrev = normalizeName(previousName);
     const index = this.persistedGameState.blueprints.findIndex(
-      (bp) => normalizeName(bp.name) === normalizedPrev
+      (bp) => bp.name === previousName
     );
     if (index < 0) {
       return false;
@@ -757,7 +754,7 @@ export class GameEngine {
     const nextBlueprints = [...this.persistedGameState.blueprints];
     nextBlueprints[index] = { ...nextBlueprints[index], name: nextName };
     const nextThings = this.persistedGameState.things.map((thing) =>
-      normalizeName(thing.blueprintName) === normalizedPrev
+      thing.blueprintName === previousName
         ? { ...thing, blueprintName: nextName }
         : thing
     );

@@ -1,12 +1,11 @@
 import { createThingId } from "@/lib/id";
-import { normalizeName } from "./reducer";
 import { Blueprint, RuntimeThing, RawThing } from "./types";
 
 export function getBlueprintForThing(
   thing: RawThing,
   blueprintLookup: Map<string, Blueprint>
 ): Blueprint | undefined {
-  return blueprintLookup.get(normalizeName(thing.blueprintName));
+  return blueprintLookup.get(thing.blueprintName);
 }
 
 export function createThingFromBlueprint(

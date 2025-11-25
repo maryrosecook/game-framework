@@ -9,7 +9,6 @@ import { Blueprint, RawThing } from "@/engine/types";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { createBlueprint } from "@/lib/blueprints";
 import { getColorOptions } from "@/components/ColorGrid";
-import { normalizeName } from "@/engine/reducer";
 
 type GameProps = {
   gameDirectory: string;
@@ -33,11 +32,7 @@ export function Game({ gameDirectory }: GameProps) {
     }
     if (
       !activeBlueprintName ||
-      !blueprints.find(
-        (bp) =>
-          normalizeName(bp.name) ===
-          normalizeName(activeBlueprintName ?? blueprints[0].name)
-      )
+      !blueprints.find((bp) => bp.name === activeBlueprintName)
     ) {
       setActiveBlueprintName(blueprints[0].name);
     }
@@ -109,12 +104,12 @@ export function Game({ gameDirectory }: GameProps) {
 
 
 function getNextBlueprintName(blueprints: Blueprint[]) {
-  const existing = new Set(blueprints.map((bp) => normalizeName(bp.name)));
+  const existing = new Set(blueprints.map((bp) => bp.name));
   let counter = blueprints.length + 1;
-  let candidate = `Blueprint ${counter}`;
-  while (existing.has(normalizeName(candidate))) {
+  let candidate = `blueprint-${counter}`;
+  while (existing.has(candidate)) {
     counter += 1;
-    candidate = `Blueprint ${counter}`;
+    candidate = `blueprint-${counter}`;
   }
   return candidate;
 }

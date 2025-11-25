@@ -52,7 +52,7 @@ export function reduceState(
       return {
         ...state,
         blueprints: state.blueprints.filter(
-          (bp) => normalizeName(bp.name) !== normalizeName(action.blueprintName)
+          (bp) => bp.name !== action.blueprintName
         ),
       };
     case "renameBlueprint":
@@ -111,9 +111,7 @@ function updateBlueprint(
   blueprintName: string,
   updater: (blueprint: Blueprint) => Blueprint
 ): RawGameState {
-  const index = state.blueprints.findIndex(
-    (bp) => normalizeName(bp.name) === normalizeName(blueprintName)
-  );
+  const index = state.blueprints.findIndex((bp) => bp.name === blueprintName);
   if (index < 0) {
     return state;
   }
@@ -123,10 +121,8 @@ function updateBlueprint(
 }
 
 function renameBlueprint(state: RawGameState, previous: string, next: string) {
-  const normalizedPrev = normalizeName(previous);
-  const normalizedNext = normalizeName(next);
   const blueprintIndex = state.blueprints.findIndex(
-    (bp) => normalizeName(bp.name) === normalizedPrev
+    (bp) => bp.name === previous
   );
   if (blueprintIndex < 0) {
     return state;
@@ -134,9 +130,7 @@ function renameBlueprint(state: RawGameState, previous: string, next: string) {
   const blueprints = [...state.blueprints];
   blueprints[blueprintIndex] = { ...blueprints[blueprintIndex], name: next };
   const things = state.things.map((thing) =>
-    normalizeName(thing.blueprintName) === normalizedPrev
-      ? { ...thing, blueprintName: next }
-      : thing
+    thing.blueprintName === previous ? { ...thing, blueprintName: next } : thing
   );
 
   return {
@@ -144,8 +138,4 @@ function renameBlueprint(state: RawGameState, previous: string, next: string) {
     blueprints,
     things,
   };
-}
-
-export function normalizeName(value: string) {
-  return value.trim().toLowerCase();
 }
