@@ -93,8 +93,8 @@
     },
     {
       "id": "5j7xnluwpug2",
-      "x": 395.7324280608897,
-      "y": 127.70703125,
+      "x": 326.0839905608897,
+      "y": 430.91015625,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -288,8 +288,8 @@
     },
     {
       "id": "ahivz8nfd18y",
-      "x": -1268.087890625,
-      "y": 595.0234375,
+      "x": -1218.822265625,
+      "y": 349.5390625,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -301,8 +301,8 @@
     },
     {
       "id": "kdcwc45d6v7m",
-      "x": 385.171875,
-      "y": 266.1328125,
+      "x": 543.234475,
+      "y": 291.47265625,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -366,8 +366,8 @@
     },
     {
       "id": "t82r2bz8n8m7",
-      "x": -1051,
-      "y": 452.5,
+      "x": -1150.0703125,
+      "y": 468.28515625,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -379,8 +379,8 @@
     },
     {
       "id": "dwr12w6cctbx",
-      "x": -992.80859375,
-      "y": 492.51953125,
+      "x": -886.875,
+      "y": 652.61323125,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -392,8 +392,8 @@
     },
     {
       "id": "v322m2m8n9cg",
-      "x": -991.0078125,
-      "y": 539.57421875,
+      "x": -1175.47265625,
+      "y": 673.98051875,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -561,8 +561,8 @@
     },
     {
       "id": "htnh63wwzwdu",
-      "x": 376.3359375,
-      "y": 257.33203125,
+      "x": 383.54296875,
+      "y": 250.77734375,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -2914,8 +2914,8 @@
     },
     {
       "id": "dcg3ou0zqla9",
-      "x": 484.88487181088965,
-      "y": 212.546875,
+      "x": 478.92393431088965,
+      "y": 209.15625,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -3070,8 +3070,8 @@
     },
     {
       "id": "b88yxhukxuje",
-      "x": 340,
-      "y": 329.5,
+      "x": 335.71484375,
+      "y": 331.2109375,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -3483,6 +3483,45 @@
       "height": 50,
       "color": "#99b3ff",
       "shape": "rectangle"
+    },
+    {
+      "id": "qbrfeo1fbpiz",
+      "x": -179.69716562500003,
+      "y": -36.90224375,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "shadow-minion",
+      "width": 139,
+      "height": 146.390625,
+      "color": "#99b3ff",
+      "shape": "rectangle"
+    },
+    {
+      "id": "0oc2ixbqkumt",
+      "x": 392.728615625,
+      "y": 184.63291249999997,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "shadow-minion",
+      "width": 81.1328125,
+      "height": 75.66015624999997,
+      "color": "#99b3ff",
+      "shape": "rectangle"
+    },
+    {
+      "id": "ndaq1gmv3kco",
+      "x": -296.392478125,
+      "y": -277.453025,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "shadow-minion",
+      "width": 50,
+      "height": 50,
+      "color": "#99b3ff",
+      "shape": "rectangle"
     }
   ],
   "blueprints": [
@@ -3654,7 +3693,7 @@
       "color": "#ffcc99",
       "image": "blueprint-17-1764033298621.png",
       "shape": "rectangle",
-      "physicsType": "static"
+      "physicsType": "ambient"
     },
     {
       "name": "lighthouse",
@@ -3694,7 +3733,7 @@
       "color": "#ffb3cc",
       "image": "blueprint-21-1764033407996.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "wolf",
