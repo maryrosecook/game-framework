@@ -277,10 +277,10 @@ export class GameEngine {
 
   private async loadCamera(directory: string) {
     try {
-      const module = await import(
+      const cameraModule = await import(
         /* webpackMode: "lazy" */ `@/games/${directory}/camera.ts`
       );
-      return resolveCameraModule(module);
+      return resolveCameraModule(cameraModule);
     } catch (error) {
       console.warn("Failed to load camera module", error);
       return null;
@@ -896,10 +896,10 @@ function normalizeThingFromFile(thing: RawThing & { image?: unknown }): RawThing
 }
 
 function resolveBlueprintModule(
-  module: Record<string, unknown>,
+  moduleExports: Record<string, unknown>,
   data: BlueprintData
 ): Blueprint {
-  const exported = module.default ?? module.blueprint ?? module;
+  const exported = moduleExports.default ?? moduleExports.blueprint ?? moduleExports;
   if (typeof exported === "function") {
     const functions = (exported as (bp: BlueprintData) => Partial<Blueprint>)(
       data
@@ -920,9 +920,10 @@ function resolveBlueprintModule(
 }
 
 function resolveCameraModule(
-  module: Record<string, unknown>
+  moduleExports: Record<string, unknown>
 ): CameraController | null {
-  const exported = (module as { default?: unknown }).default ?? module;
+  const exported =
+    (moduleExports as { default?: unknown }).default ?? moduleExports;
   if (typeof exported === "function") {
     return { update: exported as CameraController["update"] };
   }

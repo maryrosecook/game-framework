@@ -1,6 +1,11 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { GameFile } from "@/engine/types";
+import {
+  BlueprintData,
+  GameFile,
+  PhysicsType,
+  Shape,
+} from "@/engine/types";
 
 const ROOT = process.cwd();
 const GAMES_ROOT = path.join(ROOT, "app", "games");
@@ -126,40 +131,6 @@ function getGameFilePath(name: string) {
   return path.join(getGameDirectoryPath(name), "game.json");
 }
 
-function isEditorSettings(value: unknown): value is EditorSettings {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "currentGameDirectory" in value &&
-    typeof (value as { currentGameDirectory: unknown }).currentGameDirectory ===
-      "string"
-  );
-}
-
-export function isGameFile(value: unknown): value is GameFile {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-  const record = value as Record<string, unknown>;
-  const hasCamera =
-    typeof record.camera === "object" &&
-    record.camera !== null &&
-    typeof (record.camera as { x?: unknown }).x === "number" &&
-    typeof (record.camera as { y?: unknown }).y === "number";
-  const hasScreen =
-    typeof record.screen === "object" &&
-    record.screen !== null &&
-    typeof (record.screen as { width?: unknown }).width === "number" &&
-    typeof (record.screen as { height?: unknown }).height === "number";
-  const hasThings =
-    Array.isArray(record.things) &&
-    record.things.every((thing) => typeof thing === "object");
-  const hasBlueprints =
-    Array.isArray(record.blueprints) &&
-    record.blueprints.every((bp) => typeof bp === "object");
-  return hasCamera && hasScreen && hasThings && hasBlueprints;
-}
-
 async function fileExists(filePath: string) {
   try {
     await fs.access(filePath);
@@ -188,4 +159,73 @@ function isExistingFileError(error: unknown): error is NodeJS.ErrnoException {
     "code" in error &&
     (error as { code?: unknown }).code === "EEXIST"
   );
+}
+
+function isEditorSettings(value: unknown): value is EditorSettings {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "currentGameDirectory" in value &&
+    typeof (value as { currentGameDirectory: unknown }).currentGameDirectory ===
+      "string"
+  );
+}
+
+function isVector(value: unknown): value is { x: number; y: number } {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const record = value as { x?: unknown; y?: unknown };
+  return typeof record.x === "number" && typeof record.y === "number";
+}
+
+function isScreen(value: unknown): value is { width: number; height: number } {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const record = value as { width?: unknown; height?: unknown };
+  return typeof record.width === "number" && typeof record.height === "number";
+}
+
+function isShape(value: unknown): value is Shape {
+  return value === "rectangle" || value === "triangle";
+}
+
+function isPhysicsType(value: unknown): value is PhysicsType {
+  return value === "dynamic" || value === "static" || value === "ambient";
+}
+
+function isBlueprintData(value: unknown): value is BlueprintData {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const record = value as Record<string, unknown>;
+  return (
+    typeof record.name === "string" &&
+    typeof record.width === "number" &&
+    typeof record.height === "number" &&
+    typeof record.z === "number" &&
+    typeof record.color === "string" &&
+    isShape(record.shape) &&
+    isPhysicsType(record.physicsType) &&
+    (record.image === undefined || typeof record.image === "string")
+  );
+}
+
+export function isGameFile(value: unknown): value is GameFile {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const record = value as Record<string, unknown>;
+  const hasCamera = isVector(record.camera);
+  const hasScreen = isScreen(record.screen);
+  const hasThings =
+    Array.isArray(record.things) &&
+    record.things.every(
+      (thing) => typeof thing === "object" && thing !== null
+    );
+  const hasBlueprints =
+    Array.isArray(record.blueprints) &&
+    record.blueprints.every((bp) => isBlueprintData(bp));
+  return hasCamera && hasScreen && hasThings && hasBlueprints;
 }

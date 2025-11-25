@@ -50,8 +50,7 @@ const DEFAULTS: Pick<
 };
 
 export function createBlueprint(
-  values: Partial<Blueprint> &
-    Pick<Blueprint, "name"> & { color?: string; image?: string }
+  values: Partial<Blueprint> & Pick<Blueprint, "name">
 ): Blueprint {
   const shape: Shape = values.shape ?? DEFAULTS.shape;
   const physicsType: PhysicsType = values.physicsType ?? DEFAULTS.physicsType;
