@@ -29,7 +29,6 @@ export function createThingFromBlueprint(
     blueprintName: thing.blueprintName ?? blueprint.name,
     width,
     height,
-    z: thing.z ?? blueprint.z,
     color: thing.color ?? blueprint.color,
     shape: thing.shape ?? blueprint.shape,
   };

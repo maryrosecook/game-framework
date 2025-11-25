@@ -46,10 +46,7 @@ export const GameCanvas = memo(function GameCanvas({
     const primarySelectedThing = (things ?? []).find(
       (thing) => thing.id === selectedThingId
     );
-    if (
-      primarySelectedThing &&
-      isOnResizeHandle(point, primarySelectedThing)
-    ) {
+    if (primarySelectedThing && isOnResizeHandle(point, primarySelectedThing)) {
       const anchor = getResizeAnchor(primarySelectedThing);
       dragRef.current = {
         mode: "resize",
@@ -62,7 +59,14 @@ export const GameCanvas = memo(function GameCanvas({
       return;
     }
 
-    const hit = findTopThing(point, things ?? []);
+    const getBlueprintZ = (blueprintName: string) => {
+      const blueprint = (blueprints ?? []).find(
+        (bp) => normalizeName(bp.name) === normalizeName(blueprintName)
+      );
+      return blueprint?.z ?? 1;
+    };
+
+    const hit = findTopThing(point, things ?? [], getBlueprintZ);
     if (hit) {
       const nextSelected = nextSelectedIdsForClick(
         selectedThingIds,
@@ -226,8 +230,14 @@ function getWorldPoint(
   };
 }
 
-function findTopThing(point: { x: number; y: number }, things: RuntimeThing[]) {
-  const sorted = [...things].sort((a, b) => b.z - a.z);
+function findTopThing(
+  point: { x: number; y: number },
+  things: RuntimeThing[],
+  getBlueprintZ: (blueprintName: string) => number
+) {
+  const sorted = [...things].sort(
+    (a, b) => getBlueprintZ(b.blueprintName) - getBlueprintZ(a.blueprintName)
+  );
   return sorted.find(
     (thing) =>
       point.x >= thing.x &&
@@ -237,7 +247,10 @@ function findTopThing(point: { x: number; y: number }, things: RuntimeThing[]) {
   );
 }
 
-function isOnResizeHandle(point: { x: number; y: number }, thing: RuntimeThing) {
+function isOnResizeHandle(
+  point: { x: number; y: number },
+  thing: RuntimeThing
+) {
   const handleSize = 12;
   const local = worldToLocal(point, thing);
   return (

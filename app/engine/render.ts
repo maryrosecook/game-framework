@@ -54,7 +54,11 @@ export function renderGame(
   ctx.save();
   ctx.translate(screenOffsetX - state.camera.x, screenOffsetY - state.camera.y);
 
-  const sorted = [...state.things].sort((a, b) => a.z - b.z);
+  const sorted = [...state.things].sort(
+    (a, b) =>
+      (blueprintLookup.get(a.blueprintName)?.z ?? 1) -
+      (blueprintLookup.get(b.blueprintName)?.z ?? 1)
+  );
   for (const thing of sorted) {
     renderThing(ctx, thing, state, blueprintLookup, getImageForThing);
   }

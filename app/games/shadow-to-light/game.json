@@ -10,10 +10,8 @@
       "blueprintName": "arctic",
       "width": 277.13671875,
       "height": 273.5703125,
-      "z": 1,
       "color": "#b399ff",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "9ujwa7tavvf7",
@@ -25,10 +23,8 @@
       "blueprintName": "arctic",
       "width": 274.28125,
       "height": 271.67578125,
-      "z": 1,
       "color": "#b399ff",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "0789gogdo1xi",
@@ -40,10 +36,8 @@
       "blueprintName": "arctic",
       "width": 292.62109375,
       "height": 270.3203125,
-      "z": 1,
       "color": "#b399ff",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "zaaw1xius841",
@@ -55,10 +49,8 @@
       "blueprintName": "arctic",
       "width": 266.30078125,
       "height": 258.96484375,
-      "z": 1,
       "color": "#b399ff",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "jgt0v33lf5cu",
@@ -70,10 +62,8 @@
       "blueprintName": "shadow-minion",
       "width": 89.66796875,
       "height": 89.19921875,
-      "z": 1,
       "color": "#99b3ff",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "ad3z9axr6owc",
@@ -85,10 +75,8 @@
       "blueprintName": "shadow-minion",
       "width": 93.640625,
       "height": 95.32421875,
-      "z": 1,
       "color": "#99b3ff",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "t86nv38y43r7",
@@ -100,25 +88,21 @@
       "blueprintName": "shadow-minion",
       "width": 116.54296875,
       "height": 119.2265625,
-      "z": 1,
       "color": "#99b3ff",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "5j7xnluwpug2",
-      "x": 359.31640625,
-      "y": 129.52734375,
+      "x": 366.0626123717793,
+      "y": 166.08984375,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
       "blueprintName": "player",
       "width": 52.44921875,
       "height": 52.5625,
-      "z": 1,
       "color": "#99d6ff",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "8cq33max06d8",
@@ -130,10 +114,8 @@
       "blueprintName": "fireman",
       "width": 69.91796875,
       "height": 61.75390625,
-      "z": 1,
       "color": "#ffcc99",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "5y57nkz3dfxi",
@@ -145,10 +127,8 @@
       "blueprintName": "get-pac",
       "width": 56.39453125,
       "height": 52.5546875,
-      "z": 1,
       "color": "#ff9966",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "vspiyy7w6zla",
@@ -160,10 +140,8 @@
       "blueprintName": "trick-to-death",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99e6cc",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "0nwyphrqma6q",
@@ -175,10 +153,8 @@
       "blueprintName": "boss-shadow-minion",
       "width": 187.14453125,
       "height": 572.73828125,
-      "z": 1,
       "color": "#66cc99",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "fx7j61w72f89",
@@ -190,10 +166,8 @@
       "blueprintName": "treasure-chest",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ffb3cc",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "ihhkgjtzqw3w",
@@ -205,10 +179,8 @@
       "blueprintName": "treasure-chest",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ffb3cc",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "1tg0utf768tw",
@@ -220,10 +192,8 @@
       "blueprintName": "treasure-chest",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ffb3cc",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "eo6z9v751q82",
@@ -235,10 +205,8 @@
       "blueprintName": "house",
       "width": 102.6640625,
       "height": 96.0625,
-      "z": 1,
       "color": "#f5f5f5",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
+      "shape": "rectangle"
     },
     {
       "id": "why7v6bpr59g",
@@ -250,7 +218,6 @@
       "blueprintName": "crafting-table",
       "width": 60.50390625,
       "height": 60.078125,
-      "z": 1,
       "color": "#d9d9d9",
       "shape": "rectangle"
     },
@@ -264,7 +231,6 @@
       "blueprintName": "tree",
       "width": 89.87890625,
       "height": 178.0625,
-      "z": 1,
       "color": "#b3b3b3",
       "shape": "rectangle"
     },
@@ -278,7 +244,6 @@
       "blueprintName": "red",
       "width": 514.5625,
       "height": 241.38671875,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -292,7 +257,6 @@
       "blueprintName": "red-green",
       "width": 561.38671875,
       "height": 293.19921875,
-      "z": 1,
       "color": "#99d6ff",
       "shape": "rectangle"
     },
@@ -306,7 +270,6 @@
       "blueprintName": "lighthouse",
       "width": 160.6953125,
       "height": 226.02734375,
-      "z": 1,
       "color": "#ff9966",
       "shape": "rectangle"
     },
@@ -320,7 +283,6 @@
       "blueprintName": "boat",
       "width": 413.6796875,
       "height": 157.01953125,
-      "z": 1,
       "color": "#99e6cc",
       "shape": "rectangle"
     },
@@ -334,7 +296,6 @@
       "blueprintName": "castle",
       "width": 449.80859375,
       "height": 381.44140625,
-      "z": 1,
       "color": "#66cc99",
       "shape": "rectangle"
     },
@@ -348,7 +309,6 @@
       "blueprintName": "villager",
       "width": 54.57421875,
       "height": 71.80078125,
-      "z": 1,
       "color": "#ffb3cc",
       "shape": "rectangle"
     },
@@ -362,7 +322,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -376,7 +335,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -390,7 +348,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -404,7 +361,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -418,7 +374,6 @@
       "blueprintName": "shadow-minion",
       "width": 56.109375,
       "height": 110.5234375,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -432,7 +387,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -446,7 +400,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -460,7 +413,6 @@
       "blueprintName": "mushroom",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff6699",
       "shape": "rectangle"
     },
@@ -474,7 +426,6 @@
       "blueprintName": "mushroom",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff6699",
       "shape": "rectangle"
     },
@@ -488,7 +439,6 @@
       "blueprintName": "mushroom",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff6699",
       "shape": "rectangle"
     },
@@ -502,7 +452,6 @@
       "blueprintName": "mushroom",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff6699",
       "shape": "rectangle"
     },
@@ -516,7 +465,6 @@
       "blueprintName": "crafting-table",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#d9d9d9",
       "shape": "rectangle"
     },
@@ -530,7 +478,6 @@
       "blueprintName": "rock",
       "width": 84.3046875,
       "height": 90.07421875,
-      "z": 1,
       "color": "#4d4d4d",
       "shape": "rectangle"
     },
@@ -544,7 +491,6 @@
       "blueprintName": "rock",
       "width": 99.32421875,
       "height": 79.3046875,
-      "z": 1,
       "color": "#4d4d4d",
       "shape": "rectangle"
     },
@@ -558,7 +504,6 @@
       "blueprintName": "rock",
       "width": 122.21484375,
       "height": 121.87890625,
-      "z": 1,
       "color": "#4d4d4d",
       "shape": "rectangle"
     },
@@ -572,7 +517,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -586,7 +530,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -600,7 +543,6 @@
       "blueprintName": "house2",
       "width": 71.91015625,
       "height": 74.01171875,
-      "z": 1,
       "color": "#ffcc99",
       "shape": "rectangle"
     },
@@ -614,7 +556,6 @@
       "blueprintName": "house2",
       "width": 85.2109375,
       "height": 91.4765625,
-      "z": 1,
       "color": "#ffcc99",
       "shape": "rectangle"
     },
@@ -628,7 +569,6 @@
       "blueprintName": "house2",
       "width": 76.98828125,
       "height": 74.078125,
-      "z": 1,
       "color": "#ffcc99",
       "shape": "rectangle"
     },
@@ -642,7 +582,6 @@
       "blueprintName": "house2",
       "width": 56.66796875,
       "height": 64.38671875,
-      "z": 1,
       "color": "#ffcc99",
       "shape": "rectangle"
     },
@@ -656,7 +595,6 @@
       "blueprintName": "lighthouse",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff9966",
       "shape": "rectangle"
     },
@@ -670,7 +608,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -684,7 +621,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -698,7 +634,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -712,7 +647,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -726,7 +660,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -740,7 +673,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -754,7 +686,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -768,7 +699,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -782,7 +712,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -796,7 +725,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -810,7 +738,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -824,7 +751,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -838,7 +764,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -852,7 +777,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -866,7 +790,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -880,7 +803,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -894,7 +816,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -908,7 +829,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -922,7 +842,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -936,7 +855,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -950,7 +868,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -964,7 +881,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -978,7 +894,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -992,7 +907,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1006,7 +920,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1020,7 +933,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1034,7 +946,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1048,7 +959,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1062,7 +972,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1076,7 +985,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1090,7 +998,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1104,7 +1011,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1118,7 +1024,6 @@
       "blueprintName": "grass",
       "width": 50.0078125,
       "height": 63.59765625,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1132,7 +1037,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1146,7 +1050,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1160,7 +1063,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1174,7 +1076,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1188,7 +1089,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1202,7 +1102,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1216,7 +1115,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1230,7 +1128,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1244,7 +1141,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1258,7 +1154,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1272,7 +1167,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1286,7 +1180,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1300,7 +1193,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1314,7 +1206,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1328,7 +1219,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1342,7 +1232,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1356,7 +1245,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1370,7 +1258,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1384,7 +1271,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1398,7 +1284,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1412,7 +1297,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1426,7 +1310,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1440,7 +1323,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1454,7 +1336,6 @@
       "blueprintName": "lighthouse",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff9966",
       "shape": "rectangle"
     },
@@ -1468,7 +1349,6 @@
       "blueprintName": "house2",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ffcc99",
       "shape": "rectangle"
     },
@@ -1482,7 +1362,6 @@
       "blueprintName": "castle",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#66cc99",
       "shape": "rectangle"
     },
@@ -1496,7 +1375,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1510,7 +1388,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1524,7 +1401,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1538,7 +1414,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1552,7 +1427,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1566,7 +1440,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1580,7 +1453,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1594,7 +1466,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1608,7 +1479,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1622,7 +1492,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1636,7 +1505,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1650,7 +1518,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1664,7 +1531,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1678,7 +1544,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1692,7 +1557,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1706,7 +1570,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1720,7 +1583,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1734,7 +1596,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1748,7 +1609,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1762,7 +1622,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1776,7 +1635,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1790,7 +1648,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1804,7 +1661,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1818,7 +1674,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1832,7 +1687,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1846,7 +1700,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1860,7 +1713,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1874,7 +1726,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1888,7 +1739,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1902,7 +1752,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1916,7 +1765,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1930,7 +1778,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1944,7 +1791,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1958,7 +1804,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1972,7 +1817,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -1986,7 +1830,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2000,7 +1843,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2014,7 +1856,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2028,7 +1869,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2042,7 +1882,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2056,7 +1895,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2070,7 +1908,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2084,7 +1921,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2098,7 +1934,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2112,7 +1947,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2126,7 +1960,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2140,7 +1973,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2154,7 +1986,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2168,7 +1999,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2182,7 +2012,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2196,7 +2025,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2210,7 +2038,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2224,7 +2051,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2238,7 +2064,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2252,7 +2077,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2266,7 +2090,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2280,7 +2103,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2294,7 +2116,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2308,7 +2129,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2322,7 +2142,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2336,7 +2155,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2350,7 +2168,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2364,7 +2181,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2378,7 +2194,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2392,7 +2207,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2406,7 +2220,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2420,7 +2233,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2434,7 +2246,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2448,7 +2259,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2462,7 +2272,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2476,7 +2285,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2490,7 +2298,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2504,7 +2311,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2518,7 +2324,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2532,7 +2337,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2546,7 +2350,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2560,7 +2363,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2574,7 +2376,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2588,7 +2389,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2602,7 +2402,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2616,7 +2415,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2630,7 +2428,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2644,7 +2441,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2658,7 +2454,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2672,7 +2467,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2686,7 +2480,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2700,7 +2493,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2714,7 +2506,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2728,7 +2519,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2742,7 +2532,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2756,7 +2545,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2770,7 +2558,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2784,7 +2571,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2798,7 +2584,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2812,7 +2597,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2826,7 +2610,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2840,7 +2623,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2854,7 +2636,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2868,7 +2649,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2882,7 +2662,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2896,7 +2675,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2910,7 +2688,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2924,7 +2701,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2938,7 +2714,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2952,7 +2727,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2966,7 +2740,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2980,7 +2753,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -2994,7 +2766,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3008,7 +2779,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3022,7 +2792,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3036,7 +2805,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3050,7 +2818,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3064,7 +2831,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3078,7 +2844,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3092,7 +2857,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3106,7 +2870,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3120,7 +2883,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3134,7 +2896,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3148,7 +2909,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3162,7 +2922,6 @@
       "blueprintName": "wolf",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff6699",
       "shape": "rectangle"
     },
@@ -3176,7 +2935,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3190,7 +2948,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3204,7 +2961,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3218,7 +2974,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3232,7 +2987,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3246,7 +3000,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3260,7 +3013,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3274,7 +3026,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3288,7 +3039,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3302,7 +3052,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3316,7 +3065,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3330,7 +3078,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3344,7 +3091,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3358,7 +3104,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3372,7 +3117,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3386,7 +3130,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3400,7 +3143,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3414,7 +3156,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3428,7 +3169,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3442,7 +3182,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3456,7 +3195,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3470,7 +3208,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3484,7 +3221,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3498,7 +3234,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3512,7 +3247,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3526,7 +3260,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3540,7 +3273,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3554,7 +3286,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3568,7 +3299,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3582,7 +3312,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3596,7 +3325,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3610,7 +3338,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3624,7 +3351,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3638,7 +3364,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3652,7 +3377,6 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle"
     },
@@ -3666,7 +3390,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -3680,7 +3403,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -3694,7 +3416,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -3708,7 +3429,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -3722,7 +3442,6 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle"
     },
@@ -3736,7 +3455,6 @@
       "blueprintName": "sea-monster",
       "width": 214.4765625,
       "height": 232.9375,
-      "z": 1,
       "color": "#f5f5f5",
       "shape": "rectangle"
     }
@@ -3850,7 +3568,7 @@
       "color": "#d9d9d9",
       "image": "blueprint-11-1764033053756.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "tree",
@@ -3876,11 +3594,11 @@
       "name": "grass",
       "width": 50,
       "height": 50,
-      "z": 1,
+      "z": -100,
       "color": "#b399ff",
       "image": "blueprint-14-1764033196093.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "ambient"
     },
     {
       "name": "red",

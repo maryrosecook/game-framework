@@ -112,7 +112,10 @@ export class GameEngine {
 
     this.canvas = canvas;
     if (!this.ctx || isNewCanvas) {
-      this.ctx = canvas.getContext("2d", { desynchronized: true, alpha: false });
+      this.ctx = canvas.getContext("2d", {
+        desynchronized: true,
+        alpha: false,
+      });
     }
 
     if (typeof window !== "undefined") {
@@ -137,6 +140,10 @@ export class GameEngine {
     this.ready = true;
     this.startLoop();
     this.notify();
+  }
+
+  getBlueprint(name: string) {
+    return this.blueprintLookup.get(name);
   }
 
   destroy() {
@@ -837,7 +844,6 @@ function hashThing(thing: RuntimeThing) {
   return [
     thing.x,
     thing.y,
-    thing.z,
     thing.width,
     thing.height,
     thing.angle,
@@ -855,27 +861,26 @@ function runtimeThingToThing(thing: RuntimeThing): RawThing {
     id: thing.id,
     x: thing.x,
     y: thing.y,
-    z: thing.z,
     width: thing.width,
     height: thing.height,
     angle: thing.angle,
     velocityX: thing.velocityX,
     velocityY: thing.velocityY,
-    physicsType: thing.physicsType,
     color: thing.color,
     blueprintName: thing.blueprintName,
     shape: thing.shape,
   };
 }
 
-function normalizeThingFromFile(thing: RawThing & { image?: unknown }): RawThing {
+function normalizeThingFromFile(
+  thing: RawThing & { image?: unknown }
+): RawThing {
   // Drop any per-thing image overrides; images belong to blueprints.
   const { image: _ignored, ...rest } = thing;
   return {
     ...rest,
     velocityX: rest.velocityX ?? 0,
     velocityY: rest.velocityY ?? 0,
-    physicsType: rest.physicsType ?? "dynamic",
   };
 }
 
@@ -883,7 +888,8 @@ function resolveBlueprintModule(
   moduleExports: Record<string, unknown>,
   data: BlueprintData
 ): Blueprint {
-  const exported = moduleExports.default ?? moduleExports.blueprint ?? moduleExports;
+  const exported =
+    moduleExports.default ?? moduleExports.blueprint ?? moduleExports;
   if (typeof exported === "function") {
     const functions = (exported as (bp: BlueprintData) => Partial<Blueprint>)(
       data

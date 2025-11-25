@@ -68,7 +68,6 @@ export type RawThing = {
   id: string;
   x: number;
   y: number;
-  z?: number;
   width?: number;
   height?: number;
   angle: number;
@@ -82,7 +81,10 @@ export type RawThing = {
 
 export type RuntimeThing = RawThing &
   Required<
-    Pick<RawThing, keyof Omit<BlueprintData, "name" | "physicsType" | "image">>
+    Pick<
+      RawThing,
+      keyof Omit<BlueprintData, "name" | "physicsType" | "image" | "z">
+    >
   >;
 
 export type RuntimeGameState = {
@@ -127,9 +129,7 @@ type BlueprintPropertyAction = {
 
 export type SetThingPropertyAction = ThingPropertyAction;
 export type SetBlueprintPropertyAction = BlueprintPropertyAction;
-export type SpecificBlueprintPropertyAction<
-  K extends keyof BlueprintData
-> = {
+export type SpecificBlueprintPropertyAction<K extends keyof BlueprintData> = {
   type: "setBlueprintProperty";
   blueprintName: string;
   property: K;

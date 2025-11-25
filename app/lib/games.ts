@@ -112,13 +112,13 @@ export async function createGameDirectory(name: string) {
   await writeGameFile(slug, DEFAULT_GAME_FILE);
 
   const cameraPath = path.join(directoryPath, "camera.ts");
-  await fs.writeFile(cameraPath, DEFAULT_CAMERA_TEMPLATE, { flag: "wx" }).catch(
-    (error: unknown) => {
+  await fs
+    .writeFile(cameraPath, DEFAULT_CAMERA_TEMPLATE, { flag: "wx" })
+    .catch((error: unknown) => {
       if (!isExistingFileError(error)) {
         throw error;
       }
-    }
-  );
+    });
 
   await writeEditorSettings({ currentGameDirectory: slug });
   return { gameDirectory: slug };
@@ -144,7 +144,9 @@ async function fileExists(filePath: string) {
   }
 }
 
-export function isNotFoundError(error: unknown): error is NodeJS.ErrnoException {
+export function isNotFoundError(
+  error: unknown
+): error is NodeJS.ErrnoException {
   return (
     typeof error === "object" &&
     error !== null &&
@@ -213,22 +215,18 @@ function isThing(value: unknown): value is RawThing {
     return false;
   }
 
-  const numericOptionalKeys: (keyof Pick<
-    RawThing,
-    "z" | "width" | "height"
-  >)[] = ["z", "width", "height"];
+  const numericOptionalKeys: (keyof Pick<RawThing, "width" | "height">)[] = [
+    "width",
+    "height",
+  ];
   const hasValidOptionalNumbers = numericOptionalKeys.every(
-    (key) =>
-      record[key] === undefined || typeof record[key] === "number"
+    (key) => record[key] === undefined || typeof record[key] === "number"
   );
   if (!hasValidOptionalNumbers) {
     return false;
   }
 
-  if (
-    record.physicsType !== undefined &&
-    !isPhysicsType(record.physicsType)
-  ) {
+  if (record.physicsType !== undefined && !isPhysicsType(record.physicsType)) {
     return false;
   }
   if (record.color !== undefined && typeof record.color !== "string") {
