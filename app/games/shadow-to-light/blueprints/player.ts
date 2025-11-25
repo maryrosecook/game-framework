@@ -1,4 +1,9 @@
-import { BlueprintData, RuntimeGameState, RuntimeThing, KeyState } from "@/engine/types";
+import {
+  BlueprintData,
+  RuntimeGameState,
+  RuntimeThing,
+  KeyState,
+} from "@/engine/types";
 import { createThingFromBlueprint } from "@/engine/blueprints";
 
 const PLAYER_SPEED = 3;
@@ -32,7 +37,10 @@ export default function createBlueprint3(data: BlueprintData) {
         thing.velocityX = 0;
         thing.velocityY = 0;
       } else {
-        const normalized = { x: horizontal / magnitude, y: vertical / magnitude };
+        const normalized = {
+          x: horizontal / magnitude,
+          y: vertical / magnitude,
+        };
         const cardinal = quantizeToCardinal(normalized);
         if (cardinal) {
           lastMoveDirections.set(thing.id, cardinal);
@@ -46,10 +54,18 @@ export default function createBlueprint3(data: BlueprintData) {
         spawnBullet(thing, state, movementDirection);
       }
     },
-    update: (thing: RuntimeThing, _state: RuntimeGameState, _things: RuntimeThing[]) => {
+    update: (
+      thing: RuntimeThing,
+      _state: RuntimeGameState,
+      _things: RuntimeThing[]
+    ) => {
       return thing;
     },
-    render: (thing: RuntimeThing, _state: RuntimeGameState, ctx: CanvasRenderingContext2D) => {
+    render: (
+      thing: RuntimeThing,
+      _state: RuntimeGameState,
+      ctx: CanvasRenderingContext2D
+    ) => {
       ctx.fillStyle = thing.color;
       ctx.fillRect(0, 0, thing.width, thing.height);
     },
@@ -103,7 +119,12 @@ function spawnBullet(
     x: thing.x + thing.width / 2,
     y: thing.y + thing.height / 2,
   };
-  const spawnOffset = Math.max(thing.width, thing.height) / 2 + bulletBlueprint.height / 2;
+
+  const spawnOffset = Math.sqrt(
+    Math.pow((thing.width + bulletBlueprint.width) / 2, 2) +
+      Math.pow((thing.height + bulletBlueprint.height) / 2, 2)
+  );
+
   const spawnPoint = {
     x: origin.x + direction.x * spawnOffset,
     y: origin.y + direction.y * spawnOffset,
