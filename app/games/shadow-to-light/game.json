@@ -3628,7 +3628,7 @@
       "color": "#ffcc99",
       "image": "blueprint-17-1764033298621.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "static"
     },
     {
       "name": "lighthouse",
