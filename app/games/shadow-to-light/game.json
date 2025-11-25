@@ -1,0 +1,37 @@
+{
+  "things": [
+    {
+      "id": "x0q9ooapxhd2",
+      "x": 555,
+      "y": 474,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "Blueprint 1",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#b399ff",
+      "shape": "rectangle"
+    }
+  ],
+  "blueprints": [
+    {
+      "name": "Blueprint 1",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#b399ff",
+      "shape": "rectangle",
+      "physicsType": "dynamic"
+    }
+  ],
+  "camera": {
+    "x": 0,
+    "y": 0
+  },
+  "screen": {
+    "width": 800,
+    "height": 600
+  }
+}

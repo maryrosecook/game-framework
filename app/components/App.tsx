@@ -1,9 +1,13 @@
 import { Game } from "@/components/Game";
 
-export function App() {
+type AppProps = {
+  gameDirectory: string;
+};
+
+export function App({ gameDirectory }: AppProps) {
   return (
     <main className="h-screen w-screen overflow-hidden bg-white">
-      <Game />
+      <Game gameDirectory={gameDirectory} />
     </main>
   );
 }

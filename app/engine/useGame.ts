@@ -16,7 +16,8 @@ export type GameSubscribe = <T = unknown>(
 ) => readonly [T, (action: GameAction) => void];
 
 export function useGame(
-  canvasRef: RefObject<HTMLCanvasElement | null>
+  canvasRef: RefObject<HTMLCanvasElement | null>,
+  gameDirectory: string
 ): { isPaused: boolean; subscribe: GameSubscribe; engine: GameEngine } {
   const engineRef = useRef<GameEngine | null>(null);
   if (!engineRef.current) {
@@ -28,11 +29,11 @@ export function useGame(
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    engine.initialize(canvas);
+    engine.initialize(canvas, gameDirectory);
     return () => {
       engine.destroy();
     };
-  }, [canvasRef, engine]);
+  }, [canvasRef, engine, gameDirectory]);
 
   const dispatch = useCallback(
     (action: GameAction) => {

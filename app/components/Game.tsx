@@ -11,9 +11,13 @@ import { createBlueprint } from "@/lib/blueprints";
 import { getColorOptions } from "@/components/ColorGrid";
 import { normalizeName } from "@/engine/reducer";
 
-export function Game() {
+type GameProps = {
+  gameDirectory: string;
+};
+
+export function Game({ gameDirectory }: GameProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const { isPaused, subscribe, engine } = useGame(canvasRef);
+  const { isPaused, subscribe, engine } = useGame(canvasRef, gameDirectory);
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
   const [things] = subscribe<RawThing[]>(["things"]);
   const [selectedThingId] = subscribe<string | null>(["selectedThingId"]);

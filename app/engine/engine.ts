@@ -63,6 +63,8 @@ export class GameEngine {
   private frameHandle: number | null = null;
   private resizeListener = () => this.resizeCanvas();
   private inputManager: InputManager | null = null;
+  private inputAttached = false;
+  private resizeAttached = false;
   private listeners = new Set<() => void>();
   private rawGameState: RawGameState = cloneDefaultRawGameState();
   private gameState: RuntimeGameState = {
@@ -79,24 +81,42 @@ export class GameEngine {
   private blueprintLookup = new Map<string, Blueprint>();
   private thingHashes = new Map<string, string>();
 
-  async initialize(canvas: HTMLCanvasElement) {
-    if (this.canvas === canvas && this.ready) {
-      return;
+  async initialize(canvas: HTMLCanvasElement, gameDirectory: string) {
+    const isNewGame = this.gameDirectory !== gameDirectory;
+    const isNewCanvas = this.canvas !== canvas;
+
+    if (isNewGame) {
+      this.ready = false;
+      if (this.persistHandle) {
+        clearTimeout(this.persistHandle);
+        this.persistHandle = null;
+      }
     }
 
     this.canvas = canvas;
-    this.ctx = canvas.getContext("2d", { desynchronized: true, alpha: false });
+    if (!this.ctx || isNewCanvas) {
+      this.ctx = canvas.getContext("2d", { desynchronized: true, alpha: false });
+    }
 
     if (typeof window !== "undefined") {
       this.resizeCanvas();
-      window.addEventListener("resize", this.resizeListener);
+      if (!this.resizeAttached) {
+        window.addEventListener("resize", this.resizeListener);
+        this.resizeAttached = true;
+      }
       if (!this.inputManager) {
         this.inputManager = new InputManager();
       }
-      this.inputManager.attach();
+      if (!this.inputAttached) {
+        this.inputManager.attach();
+        this.inputAttached = true;
+      }
     }
 
-    await this.loadGame();
+    if (isNewGame || !this.ready) {
+      await this.loadGame(gameDirectory);
+    }
+
     this.ready = true;
     this.startLoop();
     this.notify();
@@ -107,18 +127,30 @@ export class GameEngine {
       cancelAnimationFrame(this.frameHandle);
       this.frameHandle = null;
     }
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && this.resizeAttached) {
       window.removeEventListener("resize", this.resizeListener);
+      this.resizeAttached = false;
     }
-    this.inputManager?.detach();
+    if (this.inputManager && this.inputAttached) {
+      this.inputManager.detach();
+      this.inputAttached = false;
+    }
     this.ctx = null;
     this.canvas = null;
+    this.rawGameState = cloneDefaultRawGameState();
+    this.gameState = { ...this.rawGameState, things: [] };
+    this.persistedGameState = cloneDefaultPersistedState();
+    this.blueprintLookup.clear();
+    this.thingHashes.clear();
+    this.isPersistedDirty = false;
+    this.gameDirectory = "";
     this.listeners.clear();
     this.cameraModule = null;
     if (this.persistHandle) {
       clearTimeout(this.persistHandle);
       this.persistHandle = null;
     }
+    this.ready = false;
   }
 
   dispatch(action: GameAction) {
@@ -187,8 +219,10 @@ export class GameEngine {
     return this.gameDirectory;
   }
 
-  private async loadGame() {
-    const response = await fetch("/api/game");
+  private async loadGame(gameDirectory: string) {
+    const response = await fetch(
+      `/api/games/${encodeURIComponent(gameDirectory)}`
+    );
     if (!response.ok) {
       throw new Error("Failed to load game");
     }
@@ -408,14 +442,17 @@ export class GameEngine {
       return;
     }
     try {
-      const response = await fetch("/api/game", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          gameDirectory: this.gameDirectory,
-          game: serializeGame(this.persistedGameState),
-        }),
-      });
+      const gameDirectory = this.requireGameDirectory();
+      const response = await fetch(
+        `/api/games/${encodeURIComponent(gameDirectory)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            game: serializeGame(this.persistedGameState),
+          }),
+        }
+      );
       if (response.ok) {
         this.isPersistedDirty = false;
       }

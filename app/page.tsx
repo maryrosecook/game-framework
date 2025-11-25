@@ -1,12 +1,9 @@
-"use client";
+import { Home } from "@/components/Home";
+import { listGames } from "@/lib/games";
 
-import "../styles/globals.css";
-import { App } from "./components/App";
+export const dynamic = "force-dynamic";
 
-export default function Page() {
-  return (
-    <div className="min-h-screen">
-      <App />
-    </div>
-  );
+export default async function Page() {
+  const games = await listGames();
+  return <Home games={games} />;
 }
