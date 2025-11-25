@@ -3689,6 +3689,15 @@
       "image": "blueprint-23-1764035278865.png",
       "shape": "rectangle",
       "physicsType": "dynamic"
+    },
+    {
+      "name": "bullet",
+      "width": 10,
+      "height": 10,
+      "z": 1,
+      "color": "#ff6699",
+      "shape": "rectangle",
+      "physicsType": "ambient"
     }
   ],
   "camera": {
