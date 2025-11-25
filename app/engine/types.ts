@@ -38,6 +38,7 @@ export type BlueprintData = {
   height: number;
   z: number;
   color: string;
+  image?: string;
   shape: Shape;
   physicsType: PhysicsType;
 };
@@ -80,7 +81,9 @@ export type RawThing = {
 };
 
 export type RuntimeThing = RawThing &
-  Required<Pick<RawThing, keyof Omit<BlueprintData, "name" | "physicsType">>>;
+  Required<
+    Pick<RawThing, keyof Omit<BlueprintData, "name" | "physicsType" | "image">>
+  >;
 
 export type RuntimeGameState = {
   things: RuntimeThing[];

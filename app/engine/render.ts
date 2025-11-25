@@ -11,7 +11,11 @@ const RESIZE_HANDLE_SIZE = 12;
 export function renderGame(
   { ctx, viewport }: RenderConfig,
   state: RuntimeGameState,
-  blueprintLookup: Map<string, Blueprint>
+  blueprintLookup: Map<string, Blueprint>,
+  getImageForThing?: (
+    thing: RuntimeThing,
+    blueprint?: Blueprint
+  ) => HTMLImageElement | null
 ) {
   const { canvas } = ctx;
   ctx.save();
@@ -52,7 +56,7 @@ export function renderGame(
 
   const sorted = [...state.things].sort((a, b) => a.z - b.z);
   for (const thing of sorted) {
-    renderThing(ctx, thing, state, blueprintLookup);
+    renderThing(ctx, thing, state, blueprintLookup, getImageForThing);
   }
 
   ctx.restore();
@@ -62,7 +66,11 @@ function renderThing(
   ctx: CanvasRenderingContext2D,
   thing: RuntimeThing,
   state: RuntimeGameState,
-  blueprintLookup: Map<string, Blueprint>
+  blueprintLookup: Map<string, Blueprint>,
+  getImageForThing?: (
+    thing: RuntimeThing,
+    blueprint?: Blueprint
+  ) => HTMLImageElement | null
 ) {
   ctx.save();
   ctx.translate(thing.x + thing.width / 2, thing.y + thing.height / 2);
@@ -72,7 +80,18 @@ function renderThing(
   const blueprint = getBlueprintForThing(thing, blueprintLookup);
   const renderer = blueprint?.render;
   const shape = thing.shape ?? blueprint?.shape ?? "rectangle";
-  if (renderer) {
+  const image = getImageForThing?.(thing, blueprint);
+  const imageReady =
+    !!image &&
+    image.complete &&
+    image.naturalWidth > 0 &&
+    image.naturalHeight > 0;
+
+  ctx.imageSmoothingEnabled = false;
+
+  if (imageReady && image) {
+    ctx.drawImage(image, 0, 0, thing.width, thing.height);
+  } else if (renderer) {
     renderer(thing, state, ctx);
   } else {
     ctx.fillStyle = thing.color || blueprint?.color || "#888";
@@ -121,7 +140,11 @@ function renderThing(
   ctx.restore();
 }
 
-function drawTriangle(ctx: CanvasRenderingContext2D, width: number, height: number) {
+function drawTriangle(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number
+) {
   ctx.beginPath();
   ctx.moveTo(0, height);
   ctx.lineTo(width / 2, 0);

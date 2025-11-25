@@ -3,13 +3,14 @@ import { App } from "@/components/App";
 import { gameSlug, listGames } from "@/lib/games";
 
 type PageProps = {
-  params: { game: string };
+  params: Promise<{ game: string }>;
 };
 
 export const dynamic = "force-dynamic";
 
 export default async function GamePage({ params }: PageProps) {
-  const slug = gameSlug(params.game);
+  const resolvedParams = await params;
+  const slug = gameSlug(resolvedParams.game);
   if (!slug) {
     notFound();
   }

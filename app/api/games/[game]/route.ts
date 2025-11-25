@@ -9,11 +9,12 @@ import {
 } from "@/lib/games";
 
 type RouteContext = {
-  params: { game: string };
+  params: Promise<{ game: string }>;
 };
 
 export async function GET(_request: Request, context: RouteContext) {
-  const gameDirectory = normalizeGameParam(context.params.game);
+  const params = await context.params;
+  const gameDirectory = normalizeGameParam(params.game);
   if (!gameDirectory) {
     return NextResponse.json(
       { error: "Invalid game name" },
@@ -37,7 +38,8 @@ export async function GET(_request: Request, context: RouteContext) {
 }
 
 export async function POST(request: Request, context: RouteContext) {
-  const gameDirectory = normalizeGameParam(context.params.game);
+  const params = await context.params;
+  const gameDirectory = normalizeGameParam(params.game);
   if (!gameDirectory) {
     return NextResponse.json(
       { error: "Invalid game name" },

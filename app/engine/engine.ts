@@ -20,6 +20,7 @@ import { blueprintSlug } from "@/lib/blueprints";
 import { normalizeName, reduceState } from "./reducer";
 import { createThingFromBlueprint, getBlueprintForThing } from "./blueprints";
 import { createThingProxy } from "./proxy";
+import { getBlueprintImageUrl } from "@/lib/images";
 
 type LoadedGameResponse = {
   game: GameFile;
@@ -53,6 +54,7 @@ const BLUEPRINT_DATA_KEYS: readonly (keyof BlueprintData)[] = [
   "height",
   "z",
   "color",
+  "image",
   "shape",
   "physicsType",
 ];
@@ -80,6 +82,7 @@ export class GameEngine {
   private ready = false;
   private blueprintLookup = new Map<string, Blueprint>();
   private thingHashes = new Map<string, string>();
+  private blueprintImages = new Map<string, HTMLImageElement>();
 
   async initialize(canvas: HTMLCanvasElement, gameDirectory: string) {
     const isNewGame = this.gameDirectory !== gameDirectory;
@@ -87,6 +90,7 @@ export class GameEngine {
 
     if (isNewGame) {
       this.ready = false;
+      this.blueprintImages.clear();
       if (this.persistHandle) {
         clearTimeout(this.persistHandle);
         this.persistHandle = null;
@@ -142,6 +146,7 @@ export class GameEngine {
     this.persistedGameState = cloneDefaultPersistedState();
     this.blueprintLookup.clear();
     this.thingHashes.clear();
+    this.blueprintImages.clear();
     this.isPersistedDirty = false;
     this.gameDirectory = "";
     this.listeners.clear();
@@ -311,7 +316,8 @@ export class GameEngine {
     renderGame(
       { ctx: this.ctx, viewport: this.viewportSize },
       this.gameState,
-      this.blueprintLookup
+      this.blueprintLookup,
+      (thing, blueprint) => this.getImageForThing(thing, blueprint)
     );
     this.notify();
   }
@@ -484,6 +490,37 @@ export class GameEngine {
     this.blueprintLookup = new Map(
       this.rawGameState.blueprints.map((bp) => [normalizeName(bp.name), bp])
     );
+  }
+
+  private getImageForThing(
+    thing: RuntimeThing,
+    blueprint?: Blueprint
+  ): HTMLImageElement | null {
+    const imageName = blueprint?.image;
+    const src = getBlueprintImageUrl(this.gameDirectory, imageName);
+    if (!src) {
+      return null;
+    }
+    const cached = this.blueprintImages.get(src);
+    if (cached) {
+      if (cached.complete && cached.naturalWidth > 0) {
+        return cached;
+      }
+      return null;
+    }
+    if (typeof Image === "undefined") {
+      return null;
+    }
+    const image = new Image();
+    image.src = src;
+    image.onload = () => {
+      this.notify();
+    };
+    image.onerror = () => {
+      this.blueprintImages.delete(src);
+    };
+    this.blueprintImages.set(src, image);
+    return null;
   }
 
   private updateRuntimeState() {
@@ -800,6 +837,7 @@ function blueprintToBlueprintData(
     height: entry.height,
     z: entry.z,
     color: entry.color,
+    image: entry.image,
     shape: entry.shape,
     physicsType: entry.physicsType,
   };
@@ -846,12 +884,14 @@ function runtimeThingToThing(thing: RuntimeThing): RawThing {
   };
 }
 
-function normalizeThingFromFile(thing: RawThing): RawThing {
+function normalizeThingFromFile(thing: RawThing & { image?: unknown }): RawThing {
+  // Drop any per-thing image overrides; images belong to blueprints.
+  const { image: _ignored, ...rest } = thing;
   return {
-    ...thing,
-    velocityX: thing.velocityX ?? 0,
-    velocityY: thing.velocityY ?? 0,
-    physicsType: thing.physicsType ?? "dynamic",
+    ...rest,
+    velocityX: rest.velocityX ?? 0,
+    velocityY: rest.velocityY ?? 0,
+    physicsType: rest.physicsType ?? "dynamic",
   };
 }
 

@@ -1,26 +1,31 @@
+import { DragEvent, useState } from "react";
 import { Blueprint } from "@/engine/types";
 import { GameSubscribe } from "@/engine/useGame";
 import { GameEngine } from "@/engine/engine";
 import { ColorGrid } from "@/components/ColorGrid";
 import { SelectField } from "@/components/SelectField";
-import { normalizeName } from "@/engine/reducer";
+import { getBlueprintImageUrl } from "@/lib/images";
 
 export function BlueprintPanel({
   blueprintName,
   subscribe,
   engine,
   onRename,
+  gameDirectory,
 }: {
   blueprintName: string;
   subscribe: GameSubscribe;
   engine: GameEngine;
   onRename: (next: string) => void;
+  gameDirectory: string;
 }) {
   const [blueprint, dispatchBlueprint] = subscribe<Blueprint | undefined>([
     "blueprints",
     blueprintName,
   ]);
   const [isPaused] = subscribe<boolean>(["isPaused"]);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   if (!blueprint) {
     return null;
@@ -51,6 +56,68 @@ export function BlueprintPanel({
     onRename(trimmed);
   };
 
+  const handleImageDrop = async (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (!isPaused) return;
+    const [file] = Array.from(event.dataTransfer.files ?? []);
+    if (!file) return;
+    if (
+      file.type !== "image/png" &&
+      !file.name.toLowerCase().endsWith(".png")
+    ) {
+      setUploadError("Only PNG files are supported.");
+      return;
+    }
+    setUploadError(null);
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("gameDirectory", gameDirectory);
+      formData.append("blueprintName", blueprint.name);
+      formData.append("file", file);
+      const response = await fetch("/api/images", {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        setUploadError(payload?.error ?? "Failed to save image.");
+        return;
+      }
+      const payload = (await response.json()) as { fileName?: string };
+      const fileName =
+        payload && typeof payload.fileName === "string"
+          ? payload.fileName
+          : file.name;
+      setUploadError(null);
+      dispatchBlueprint({
+        type: "setBlueprintProperty",
+        blueprintName: blueprint.name,
+        property: "image",
+        value: fileName,
+      });
+    } catch (error) {
+      console.warn("Image upload failed", error);
+      setUploadError("Failed to save image.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleClearImage = () => {
+    if (!isPaused) return;
+    dispatchBlueprint({
+      type: "setBlueprintProperty",
+      blueprintName: blueprint.name,
+      property: "image",
+      value: undefined,
+    });
+  };
+
+  const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);
+
   return (
     <div className="pointer-events-auto absolute right-4 top-4 z-10 w-64 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-900 shadow-xl">
       <header className="mb-4">
@@ -68,6 +135,50 @@ export function BlueprintPanel({
         />
       </header>
       <div className="space-y-3">
+        <div>
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            Image
+          </p>
+          <div
+            className={`mt-1 flex h-28 items-center justify-center overflow-hidden rounded-lg border border-dashed ${
+              isPaused
+                ? "border-slate-300 bg-slate-50"
+                : "border-slate-200 bg-slate-100"
+            } ${isUploading ? "opacity-70" : ""}`}
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={handleImageDrop}
+          >
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={`${blueprint.name} image`}
+                className="h-full w-full object-contain"
+                style={{ imageRendering: "pixelated" }}
+              />
+            ) : (
+              <p className="px-3 text-center text-xs text-slate-500">
+                {isPaused
+                  ? "Drop a PNG here to use it for this blueprint"
+                  : "Pause to set an image"}
+              </p>
+            )}
+          </div>
+          <div className="mt-2 flex items-center justify-between">
+            <p className="text-xs text-slate-500">
+              {isUploading ? "Uploading…" : uploadError ?? "\u00A0"}
+            </p>
+            {blueprint.image ? (
+              <button
+                type="button"
+                className="text-xs text-slate-600 underline decoration-slate-400 decoration-2 underline-offset-2 disabled:cursor-not-allowed disabled:text-slate-300"
+                onClick={handleClearImage}
+                disabled={!isPaused || isUploading}
+              >
+                Remove
+              </button>
+            ) : null}
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <Field
             label="W"

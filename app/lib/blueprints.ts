@@ -37,22 +37,28 @@ export default function create${safeName || "Blueprint"}(data: BlueprintData) {
 `;
 }
 
-const DEFAULTS: Pick<Blueprint, "width" | "height" | "z" | "shape" | "physicsType"> = {
+const DEFAULTS: Pick<
+  Blueprint,
+  "width" | "height" | "z" | "shape" | "physicsType" | "image"
+> = {
   width: 50,
   height: 50,
   z: 1,
   shape: "rectangle",
   physicsType: "dynamic",
+  image: undefined,
 };
 
 export function createBlueprint(
-  values: Partial<Blueprint> & Pick<Blueprint, "name"> & { color?: string }
+  values: Partial<Blueprint> &
+    Pick<Blueprint, "name"> & { color?: string; image?: string }
 ): Blueprint {
   const shape: Shape = values.shape ?? DEFAULTS.shape;
   const physicsType: PhysicsType = values.physicsType ?? DEFAULTS.physicsType;
   return {
     ...DEFAULTS,
     color: values.color ?? "#888888",
+    image: values.image ?? DEFAULTS.image,
     ...values,
     shape,
     physicsType,

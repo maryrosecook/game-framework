@@ -3,6 +3,7 @@
 import { Blueprint } from "@/engine/types";
 import { Button } from "@/components/ui/button";
 import { Pause, Play, Plus } from "lucide-react";
+import { getBlueprintImageUrl } from "@/lib/images";
 
 const BLUEPRINT_MIME = "application/x-blueprint";
 
@@ -13,6 +14,7 @@ type ToolbarProps = {
   onAddBlueprint: () => void;
   onTogglePause: () => void;
   isPaused: boolean;
+  gameDirectory: string;
 };
 
 export function Toolbar({
@@ -22,6 +24,7 @@ export function Toolbar({
   onAddBlueprint,
   onTogglePause,
   isPaused,
+  gameDirectory,
 }: ToolbarProps) {
   return (
     <div className="inline-flex max-w-[800px] min-w-fit items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-lg">
@@ -46,6 +49,7 @@ export function Toolbar({
             }
             onSelect={() => onSelectBlueprint(blueprint.name)}
             isPaused={isPaused}
+            gameDirectory={gameDirectory}
           />
         ))}
       </div>
@@ -69,12 +73,15 @@ function BlueprintChip({
   selected,
   onSelect,
   isPaused,
+  gameDirectory,
 }: {
   blueprint: Blueprint;
   selected: boolean;
   onSelect: () => void;
   isPaused: boolean;
+  gameDirectory: string;
 }) {
+  const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);
   return (
     <button
       type="button"
@@ -92,10 +99,21 @@ function BlueprintChip({
           : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200"
       }`}
     >
-      <span
-        className="size-3 rounded-full shadow-inner"
-        style={{ backgroundColor: blueprint.color }}
-      />
+      {imageUrl ? (
+        <span className="flex size-3 items-center justify-center overflow-hidden rounded-sm shadow-inner">
+          <img
+            src={imageUrl}
+            alt={`${blueprint.name} image`}
+            className="h-full w-full object-cover"
+            style={{ imageRendering: "pixelated" }}
+          />
+        </span>
+      ) : (
+        <span
+          className="size-3 rounded-full shadow-inner"
+          style={{ backgroundColor: blueprint.color }}
+        />
+      )}
       {blueprint.name}
     </button>
   );

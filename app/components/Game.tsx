@@ -89,6 +89,7 @@ export function Game({ gameDirectory }: GameProps) {
           subscribe={subscribe}
           engine={engine}
           onRename={setActiveBlueprintName}
+          gameDirectory={gameDirectory}
         />
       ) : null}
       <div className="pointer-events-auto absolute bottom-0 left-0 right-0 flex justify-center px-6 pb-4">
@@ -99,6 +100,7 @@ export function Game({ gameDirectory }: GameProps) {
           onAddBlueprint={handleAddBlueprint}
           onTogglePause={handleTogglePause}
           isPaused={isPaused}
+          gameDirectory={gameDirectory}
         />
       </div>
     </div>
