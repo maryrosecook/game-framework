@@ -43,9 +43,7 @@ export function Toolbar({
           <BlueprintChip
             key={blueprint.name}
             blueprint={blueprint}
-            selected={
-              selectedBlueprintName === blueprint.name
-            }
+            selected={selectedBlueprintName === blueprint.name}
             onSelect={() => onSelectBlueprint(blueprint.name)}
             isPaused={isPaused}
             gameDirectory={gameDirectory}
@@ -81,6 +79,7 @@ function BlueprintChip({
   gameDirectory: string;
 }) {
   const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);
+  const fallbackLabel = blueprint.name.slice(0, 3).toUpperCase();
   return (
     <button
       type="button"
@@ -92,14 +91,14 @@ function BlueprintChip({
         event.dataTransfer.setData("text/plain", blueprint.name);
       }}
       onClick={onSelect}
-      className={`flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold transition ${
+      className={`flex cursor-pointer items-center gap-2 rounded-full border px-1 py-1 text-xs font-semibold transition ${
         selected
           ? "border-slate-400 bg-slate-100 text-slate-900"
           : "border-transparent bg-slate-50 text-slate-600 hover:border-slate-200"
       }`}
     >
       {imageUrl ? (
-        <span className="flex size-3 items-center justify-center overflow-hidden rounded-sm shadow-inner">
+        <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-md border border-slate-200 shadow-inner">
           <img
             src={imageUrl}
             alt={`${blueprint.name} image`}
@@ -109,11 +108,14 @@ function BlueprintChip({
         </span>
       ) : (
         <span
-          className="size-3 rounded-full shadow-inner"
+          className="flex h-7 w-7 items-center justify-center rounded-md border border-slate-200 text-[10px] font-bold uppercase shadow-inner"
           style={{ backgroundColor: blueprint.color }}
-        />
+        >
+          <div className="flex items-center justify-center w-full">
+            {fallbackLabel}
+          </div>
+        </span>
       )}
-      {blueprint.name}
     </button>
   );
 }
