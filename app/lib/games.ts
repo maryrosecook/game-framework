@@ -4,6 +4,7 @@ import {
   BlueprintData,
   GameFile,
   PhysicsType,
+  RawThing,
   Shape,
 } from "@/engine/types";
 
@@ -195,6 +196,50 @@ function isPhysicsType(value: unknown): value is PhysicsType {
   return value === "dynamic" || value === "static" || value === "ambient";
 }
 
+function isThing(value: unknown): value is RawThing {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const record = value as Record<string, unknown>;
+  const hasRequiredFields =
+    typeof record.id === "string" &&
+    typeof record.x === "number" &&
+    typeof record.y === "number" &&
+    typeof record.angle === "number" &&
+    typeof record.velocityX === "number" &&
+    typeof record.velocityY === "number" &&
+    typeof record.blueprintName === "string";
+  if (!hasRequiredFields) {
+    return false;
+  }
+
+  const numericOptionalKeys: (keyof Pick<
+    RawThing,
+    "z" | "width" | "height"
+  >)[] = ["z", "width", "height"];
+  const hasValidOptionalNumbers = numericOptionalKeys.every(
+    (key) =>
+      record[key] === undefined || typeof record[key] === "number"
+  );
+  if (!hasValidOptionalNumbers) {
+    return false;
+  }
+
+  if (
+    record.physicsType !== undefined &&
+    !isPhysicsType(record.physicsType)
+  ) {
+    return false;
+  }
+  if (record.color !== undefined && typeof record.color !== "string") {
+    return false;
+  }
+  if (record.shape !== undefined && !isShape(record.shape)) {
+    return false;
+  }
+  return true;
+}
+
 function isBlueprintData(value: unknown): value is BlueprintData {
   if (typeof value !== "object" || value === null) {
     return false;
@@ -221,9 +266,7 @@ export function isGameFile(value: unknown): value is GameFile {
   const hasScreen = isScreen(record.screen);
   const hasThings =
     Array.isArray(record.things) &&
-    record.things.every(
-      (thing) => typeof thing === "object" && thing !== null
-    );
+    record.things.every((thing) => isThing(thing));
   const hasBlueprints =
     Array.isArray(record.blueprints) &&
     record.blueprints.every((bp) => isBlueprintData(bp));

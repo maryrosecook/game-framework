@@ -11,8 +11,7 @@ type RouteContext = {
 };
 
 export async function GET(_request: Request, context: RouteContext) {
-  const rawParams = await context.params;
-  const rawPath = rawParams.path;
+  const rawPath = (await context.params).path;
   const segments = Array.isArray(rawPath)
     ? rawPath
     : rawPath

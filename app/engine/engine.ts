@@ -22,9 +22,31 @@ import { createThingFromBlueprint, getBlueprintForThing } from "./blueprints";
 import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
 
-type LoadedGameResponse = {
+export type LoadedGame = {
   game: GameFile;
   gameDirectory: string;
+};
+
+export type GameEngineDataSource = {
+  loadGame: (gameDirectory: string) => Promise<LoadedGame>;
+  persistGame: (gameDirectory: string, game: GameFile) => Promise<void>;
+};
+
+export type GameEngineSideEffects = {
+  onBlueprintCreated?: (input: {
+    gameDirectory: string;
+    blueprintName: string;
+  }) => Promise<void> | void;
+  onBlueprintRenamed?: (input: {
+    gameDirectory: string;
+    previousName: string;
+    nextName: string;
+  }) => Promise<void> | void;
+};
+
+export type GameEngineDependencies = {
+  dataSource: GameEngineDataSource;
+  sideEffects?: GameEngineSideEffects;
 };
 
 function cloneDefaultRawGameState(): RawGameState {
@@ -83,6 +105,8 @@ export class GameEngine {
   private blueprintLookup = new Map<string, Blueprint>();
   private thingHashes = new Map<string, string>();
   private blueprintImages = new Map<string, HTMLImageElement>();
+
+  constructor(private readonly dependencies: GameEngineDependencies) {}
 
   async initialize(canvas: HTMLCanvasElement, gameDirectory: string) {
     const isNewGame = this.gameDirectory !== gameDirectory;
@@ -225,13 +249,7 @@ export class GameEngine {
   }
 
   private async loadGame(gameDirectory: string) {
-    const response = await fetch(
-      `/api/games/${encodeURIComponent(gameDirectory)}`
-    );
-    if (!response.ok) {
-      throw new Error("Failed to load game");
-    }
-    const payload = (await response.json()) as LoadedGameResponse;
+    const payload = await this.dependencies.dataSource.loadGame(gameDirectory);
     this.gameDirectory = payload.gameDirectory;
     this.persistedGameState = persistedStateFromGameFile(payload.game);
     this.isPersistedDirty = false;
@@ -449,19 +467,11 @@ export class GameEngine {
     }
     try {
       const gameDirectory = this.requireGameDirectory();
-      const response = await fetch(
-        `/api/games/${encodeURIComponent(gameDirectory)}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            game: serializeGame(this.persistedGameState),
-          }),
-        }
+      await this.dependencies.dataSource.persistGame(
+        gameDirectory,
+        serializeGame(this.persistedGameState)
       );
-      if (response.ok) {
-        this.isPersistedDirty = false;
-      }
+      this.isPersistedDirty = false;
     } catch (error) {
       console.warn("Failed to persist game", error);
     }
@@ -773,33 +783,33 @@ export class GameEngine {
   }
 
   private handleSideEffects(action: GameAction) {
+    const sideEffects = this.dependencies.sideEffects;
+    if (!sideEffects) {
+      return;
+    }
     switch (action.type) {
       case "addBlueprint": {
         const gameDirectory = this.requireGameDirectory();
-        void fetch("/api/blueprints", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+        void Promise.resolve(
+          sideEffects.onBlueprintCreated?.({
             gameDirectory,
             blueprintName: action.blueprint.name,
-          }),
-        }).catch((error) => {
-          console.warn("Failed to scaffold blueprint file", error);
+          })
+        ).catch((error) => {
+          console.warn("Failed to run blueprint add side effect", error);
         });
         break;
       }
       case "renameBlueprint": {
         const gameDirectory = this.requireGameDirectory();
-        void fetch("/api/blueprints", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+        void Promise.resolve(
+          sideEffects.onBlueprintRenamed?.({
             gameDirectory,
             previousName: action.previousName,
-            blueprintName: action.nextName,
-          }),
-        }).catch((error) => {
-          console.warn("Failed to rename blueprint file", error);
+            nextName: action.nextName,
+          })
+        ).catch((error) => {
+          console.warn("Failed to run blueprint rename side effect", error);
         });
         break;
       }

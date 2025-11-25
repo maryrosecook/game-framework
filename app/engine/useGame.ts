@@ -8,8 +8,9 @@ import {
   useRef,
   useSyncExternalStore,
 } from "react";
-import { GameEngine } from "./engine";
+import { GameEngine, GameEngineDependencies } from "./engine";
 import { GameAction, SubscriptionPath } from "./types";
+import { createGameEngineDependencies } from "@/lib/gameApiClient";
 
 export type GameSubscribe = <T = unknown>(
   path: SubscriptionPath
@@ -19,9 +20,13 @@ export function useGame(
   canvasRef: RefObject<HTMLCanvasElement | null>,
   gameDirectory: string
 ): { isPaused: boolean; subscribe: GameSubscribe; engine: GameEngine } {
+  const dependenciesRef = useRef<GameEngineDependencies | null>(null);
+  const dependencies =
+    dependenciesRef.current ??
+    (dependenciesRef.current = createGameEngineDependencies());
   const engineRef = useRef<GameEngine | null>(null);
   if (!engineRef.current) {
-    engineRef.current = new GameEngine();
+    engineRef.current = new GameEngine(dependencies);
   }
 
   const engine = engineRef.current!;
