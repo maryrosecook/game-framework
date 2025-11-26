@@ -16,7 +16,7 @@ type GameProps = {
 
 export function Game({ gameDirectory }: GameProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const { isPaused, subscribe, engine } = useGame(canvasRef, gameDirectory);
+  const { subscribe, engine } = useGame(canvasRef, gameDirectory);
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
   const [things] = subscribe<RawThing[]>(["things"]);
   const [selectedThingId] = subscribe<string | null>(["selectedThingId"]);
@@ -48,7 +48,7 @@ export function Game({ gameDirectory }: GameProps) {
     }
   }, [selectedThingId, things]);
 
-  useKeyboardShortcuts({ engine, isPaused, selectedThingIds });
+  useKeyboardShortcuts({ engine, selectedThingIds });
 
   const handleSelectBlueprint = (name: string) => {
     setActiveBlueprintName(name);
@@ -56,7 +56,6 @@ export function Game({ gameDirectory }: GameProps) {
   };
 
   const handleAddBlueprint = () => {
-    if (!isPaused) return;
     const name = getNextBlueprintName(blueprints ?? []);
     const index = blueprints?.length ?? 0;
     const colors = getColorOptions();
@@ -64,10 +63,6 @@ export function Game({ gameDirectory }: GameProps) {
     const newBlueprint: Blueprint = createBlueprint({ name, color });
     engine.dispatch({ type: "addBlueprint", blueprint: newBlueprint });
     setActiveBlueprintName(newBlueprint.name);
-  };
-
-  const handleTogglePause = () => {
-    engine.dispatch({ type: "setPaused", isPaused: !isPaused });
   };
 
   return (
@@ -93,8 +88,6 @@ export function Game({ gameDirectory }: GameProps) {
           selectedBlueprintName={activeBlueprintName}
           onSelectBlueprint={handleSelectBlueprint}
           onAddBlueprint={handleAddBlueprint}
-          onTogglePause={handleTogglePause}
-          isPaused={isPaused}
           gameDirectory={gameDirectory}
         />
       </div>

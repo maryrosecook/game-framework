@@ -11,17 +11,25 @@ const EPSILON = 0.0001;
 
 export function physicsStep(
   gameState: RuntimeGameState,
-  blueprintLookup: Map<string, Blueprint>
+  blueprintLookup: Map<string, Blueprint>,
+  suspendedThingIds: ReadonlySet<string> = new Set()
 ) {
   const things = [...gameState.things];
 
   for (const thing of things) {
+    if (suspendedThingIds.has(thing.id)) continue;
     thing.x += thing.velocityX;
     thing.y += thing.velocityY;
   }
 
   for (let i = 0; i < things.length; i += 1) {
     for (let j = i + 1; j < things.length; j += 1) {
+      if (
+        suspendedThingIds.has(things[i].id) ||
+        suspendedThingIds.has(things[j].id)
+      ) {
+        continue;
+      }
       resolveCollision(things[i], things[j], blueprintLookup, gameState);
     }
   }

@@ -3,24 +3,13 @@ import { GameEngine } from "@/engine/engine";
 
 export function useKeyboardShortcuts({
   engine,
-  isPaused,
   selectedThingIds,
 }: {
   engine: GameEngine;
-  isPaused: boolean;
   selectedThingIds: string[];
 }) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Enter" && event.metaKey) {
-        event.preventDefault();
-        const paused = engine.getStateAtPath(["isPaused"]) as boolean;
-        engine.dispatch({ type: "setPaused", isPaused: !paused });
-        return;
-      }
-
-      if (!isPaused) return;
-      if (event.key !== "Backspace") return;
       const target = event.target as HTMLElement | null;
       if (
         target &&
@@ -29,6 +18,10 @@ export function useKeyboardShortcuts({
       ) {
         return;
       }
+      if (event.metaKey || event.ctrlKey) {
+        return;
+      }
+      if (event.key !== "Backspace") return;
       if (selectedThingIds.length === 0) return;
       event.preventDefault();
       for (const id of selectedThingIds) {
@@ -40,5 +33,5 @@ export function useKeyboardShortcuts({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [engine, isPaused, selectedThingIds]);
+  }, [engine, selectedThingIds]);
 }

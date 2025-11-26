@@ -27,7 +27,6 @@ export function BlueprintPanel({
     "blueprints",
     blueprintName,
   ]);
-  const [isPaused] = subscribe<boolean>(["isPaused"]);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -103,14 +102,12 @@ export function BlueprintPanel({
     property: K,
     value: BlueprintData[K]
   ) => {
-    if (!isPaused) return;
     dispatchBlueprint(
       buildBlueprintPropertyAction(blueprint.name, property, value)
     );
   };
 
   const handleRename = (value: string) => {
-    if (!isPaused) return;
     const trimmed = value.trim();
     if (!trimmed || trimmed === blueprint.name) {
       return;
@@ -126,7 +123,6 @@ export function BlueprintPanel({
 
   const handleImageDrop = async (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    if (!isPaused) return;
     const [file] = Array.from(event.dataTransfer.files ?? []);
     if (!file) return;
     if (
@@ -170,7 +166,6 @@ export function BlueprintPanel({
   };
 
   const handleClearImage = () => {
-    if (!isPaused) return;
     updateField("image", undefined);
   };
 
@@ -189,7 +184,6 @@ export function BlueprintPanel({
           onBlur={(event) => {
             handleRename(event.target.value);
           }}
-          disabled={!isPaused}
         />
       </header>
       <div className="space-y-3">
@@ -199,9 +193,7 @@ export function BlueprintPanel({
           </p>
           <div
             className={`mt-1 flex h-28 items-center justify-center overflow-hidden rounded-lg border border-dashed ${
-              isPaused
-                ? "border-slate-300 bg-slate-50"
-                : "border-slate-200 bg-slate-100"
+              "border-slate-300 bg-slate-50"
             } ${isUploading ? "opacity-70" : ""}`}
             onDragOver={(event) => event.preventDefault()}
             onDrop={handleImageDrop}
@@ -215,9 +207,7 @@ export function BlueprintPanel({
               />
             ) : (
               <p className="px-3 text-center text-xs text-slate-500">
-                {isPaused
-                  ? "Drop a PNG here to use it for this blueprint"
-                  : "Pause to set an image"}
+                Drop a PNG here to use it for this blueprint
               </p>
             )}
           </div>
@@ -230,7 +220,7 @@ export function BlueprintPanel({
                 type="button"
                 className="text-xs text-slate-600 underline decoration-slate-400 decoration-2 underline-offset-2 disabled:cursor-not-allowed disabled:text-slate-300"
                 onClick={handleClearImage}
-                disabled={!isPaused || isUploading}
+                disabled={isUploading}
               >
                 Remove
               </button>
@@ -242,13 +232,11 @@ export function BlueprintPanel({
             label="W"
             value={blueprint.width}
             onChange={(value) => updateField("width", value)}
-            disabled={!isPaused}
           />
           <Field
             label="H"
             value={blueprint.height}
             onChange={(value) => updateField("height", value)}
-            disabled={!isPaused}
           />
         </div>
         <SelectField
@@ -259,7 +247,6 @@ export function BlueprintPanel({
             { label: "Triangle", value: "triangle" },
           ]}
           onChange={(value) => updateField("shape", value)}
-          disabled={!isPaused}
         />
         <SelectField
           label="Physics"
@@ -270,18 +257,15 @@ export function BlueprintPanel({
             { label: "Ambient (no pushback)", value: "ambient" },
           ]}
           onChange={(value) => updateField("physicsType", value)}
-          disabled={!isPaused}
         />
         <Field
           label="Z"
           value={blueprint.z}
           onChange={(value) => updateField("z", value)}
-          disabled={!isPaused}
         />
         <ColorGrid
           selected={blueprint.color}
           onSelect={(color) => updateField("color", color)}
-          disabled={!isPaused}
         />
       </div>
     </div>
