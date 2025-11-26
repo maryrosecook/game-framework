@@ -22,6 +22,7 @@ import { getBlueprintForThing, createThingFromBlueprint } from "./blueprints";
 import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
 import { loadImages } from "./imageLoader";
+import { CameraPauseReason, TimeWitnessDrive } from "./timeWitnessDrive";
 
 export type LoadedGame = {
   game: GameFile;
@@ -48,6 +49,7 @@ export type GameEngineSideEffects = {
 export type GameEngineDependencies = {
   dataSource: GameEngineDataSource;
   sideEffects?: GameEngineSideEffects;
+  timeWitnessDrive?: TimeWitnessDrive;
 };
 
 function cloneDefaultRawGameState(): RawGameState {
@@ -97,6 +99,7 @@ export class GameEngine {
   private blueprintImages = new Map<string, CanvasImageSource>();
   private blueprintImageLoadVersion = 0;
   private editingThingIds = new Set<string>();
+  private cameraPauseReasons = new Set<CameraPauseReason>();
 
   constructor(private readonly dependencies: GameEngineDependencies) {}
 
@@ -172,6 +175,7 @@ export class GameEngine {
     this.thingHashes.clear();
     this.blueprintImages.clear();
     this.blueprintImageLoadVersion = 0;
+    this.resetCameraPauses();
     this.editingThingIds.clear();
     this.isPersistedDirty = false;
     this.gameDirectory = "";
@@ -250,20 +254,61 @@ export class GameEngine {
   }
 
   beginEditingThings(ids: string[]) {
+    const wasEditing = this.editingThingIds.size > 0;
     for (const id of ids) {
       this.editingThingIds.add(id);
       this.zeroThingVelocity(id);
+    }
+    if (!wasEditing && this.editingThingIds.size > 0) {
+      this.pauseCamera("editing");
     }
   }
 
   endEditingThings(ids?: string[]) {
     if (!ids) {
+      const hadEditing = this.editingThingIds.size > 0;
       this.editingThingIds.clear();
+      if (hadEditing) {
+        this.resumeCamera("editing");
+      }
       return;
     }
+    const wasEditing = this.editingThingIds.size > 0;
     for (const id of ids) {
       this.editingThingIds.delete(id);
     }
+    if (wasEditing && this.editingThingIds.size === 0) {
+      this.resumeCamera("editing");
+    }
+  }
+
+  private pauseCamera(reason: CameraPauseReason) {
+    const wasPaused = this.isCameraPaused();
+    this.cameraPauseReasons.add(reason);
+    if (!wasPaused) {
+      this.dependencies.timeWitnessDrive?.pauseCamera(reason);
+    }
+  }
+
+  private resumeCamera(reason: CameraPauseReason) {
+    const removed = this.cameraPauseReasons.delete(reason);
+    if (removed && !this.isCameraPaused()) {
+      this.dependencies.timeWitnessDrive?.resumeCamera(reason);
+    }
+  }
+
+  private resetCameraPauses() {
+    if (this.cameraPauseReasons.size === 0) {
+      return;
+    }
+    for (const reason of this.cameraPauseReasons) {
+      this.dependencies.timeWitnessDrive?.resumeCamera(reason);
+    }
+    this.cameraPauseReasons.clear();
+  }
+
+  private isCameraPaused() {
+    return this.cameraPauseReasons.size > 0;
   }
 
   private zeroThingVelocity(id: string) {
@@ -421,7 +466,7 @@ export class GameEngine {
   }
 
   private updateCameraPosition() {
-    if (!this.cameraModule) {
+    if (!this.cameraModule || this.isCameraPaused()) {
       return;
     }
     const nextCamera = this.cameraModule.update(this.gameState);
