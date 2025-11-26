@@ -21,6 +21,7 @@ import { reduceState } from "./reducer";
 import { createThingFromBlueprint, getBlueprintForThing } from "./blueprints";
 import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
+import { loadImages } from "./imageLoader";
 
 export type LoadedGame = {
   game: GameFile;
@@ -93,7 +94,8 @@ export class GameEngine {
   private ready = false;
   private blueprintLookup = new Map<string, Blueprint>();
   private thingHashes = new Map<string, string>();
-  private blueprintImages = new Map<string, HTMLImageElement>();
+  private blueprintImages = new Map<string, CanvasImageSource>();
+  private blueprintImageLoadVersion = 0;
 
   constructor(private readonly dependencies: GameEngineDependencies) {}
 
@@ -104,6 +106,7 @@ export class GameEngine {
     if (isNewGame) {
       this.ready = false;
       this.blueprintImages.clear();
+      this.blueprintImageLoadVersion = 0;
       if (this.persistHandle) {
         clearTimeout(this.persistHandle);
         this.persistHandle = null;
@@ -167,6 +170,7 @@ export class GameEngine {
     this.blueprintLookup.clear();
     this.thingHashes.clear();
     this.blueprintImages.clear();
+    this.blueprintImageLoadVersion = 0;
     this.isPersistedDirty = false;
     this.gameDirectory = "";
     this.listeners.clear();
@@ -183,6 +187,7 @@ export class GameEngine {
     this.rebuildBlueprintLookup();
     this.updateRuntimeState();
     this.refreshThingHashes();
+    void this.syncBlueprintImages(this.rawGameState.blueprints);
 
     const persistedChanged = this.applyActionToPersistedState(action);
     if (persistedChanged) {
@@ -268,6 +273,7 @@ export class GameEngine {
       selectedThingIds: [],
     };
 
+    await this.syncBlueprintImages(this.rawGameState.blueprints);
     this.rebuildBlueprintLookup();
     this.updateRuntimeState();
     this.refreshThingHashes();
@@ -500,32 +506,56 @@ export class GameEngine {
   private getImageForThing(
     thing: RuntimeThing,
     blueprint?: Blueprint
-  ): HTMLImageElement | null {
+  ): CanvasImageSource | null {
     const imageName = blueprint?.image;
     const src = getBlueprintImageUrl(this.gameDirectory, imageName);
     if (!src) {
       return null;
     }
-    const cached = this.blueprintImages.get(src);
-    if (cached) {
-      if (cached.complete && cached.naturalWidth > 0) {
-        return cached;
+    return this.blueprintImages.get(src) ?? null;
+  }
+
+  private sourcesForBlueprints(blueprints: Blueprint[]) {
+    const sources = new Set<string>();
+    for (const blueprint of blueprints) {
+      const src = getBlueprintImageUrl(this.gameDirectory, blueprint.image);
+      if (src) {
+        sources.add(src);
       }
-      return null;
     }
-    if (typeof Image === "undefined") {
-      return null;
+    return sources;
+  }
+
+  private async syncBlueprintImages(nextBlueprints: Blueprint[]) {
+    if (!this.gameDirectory) {
+      return;
     }
-    const image = new Image();
-    image.src = src;
-    image.onload = () => {
-      this.notify();
-    };
-    image.onerror = () => {
-      this.blueprintImages.delete(src);
-    };
-    this.blueprintImages.set(src, image);
-    return null;
+
+    const nextSources = this.sourcesForBlueprints(nextBlueprints);
+    const loadVersion = ++this.blueprintImageLoadVersion;
+
+    for (const src of [...this.blueprintImages.keys()]) {
+      if (!nextSources.has(src)) {
+        this.blueprintImages.delete(src);
+      }
+    }
+
+    const missingSources = [...nextSources].filter(
+      (src) => !this.blueprintImages.has(src)
+    );
+    if (missingSources.length === 0) {
+      return;
+    }
+
+    const loaded = await loadImages(missingSources);
+    if (loadVersion !== this.blueprintImageLoadVersion) {
+      return;
+    }
+
+    for (const [src, image] of loaded) {
+      this.blueprintImages.set(src, image);
+    }
+    this.notify();
   }
 
   private updateRuntimeState() {
