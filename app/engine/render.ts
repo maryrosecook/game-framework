@@ -15,7 +15,7 @@ export function renderGame(
   getImageForThing?: (
     thing: RuntimeThing,
     blueprint?: Blueprint
-  ) => HTMLImageElement | null
+  ) => CanvasImageSource | null
 ) {
   const { canvas } = ctx;
   ctx.save();
@@ -64,7 +64,7 @@ function renderThing(
   getImageForThing?: (
     thing: RuntimeThing,
     blueprint?: Blueprint
-  ) => HTMLImageElement | null
+  ) => CanvasImageSource | null
 ) {
   ctx.save();
   ctx.translate(thing.x + thing.width / 2, thing.y + thing.height / 2);
@@ -74,12 +74,8 @@ function renderThing(
   const blueprint = getBlueprintForThing(thing, blueprintLookup);
   const renderer = blueprint?.render;
   const shape = thing.shape ?? blueprint?.shape ?? "rectangle";
-  const image = getImageForThing?.(thing, blueprint);
-  const imageReady =
-    !!image &&
-    image.complete &&
-    image.naturalWidth > 0 &&
-    image.naturalHeight > 0;
+  const image = getImageForThing ? getImageForThing(thing, blueprint) : null;
+  const imageReady = isImageReady(image);
 
   ctx.imageSmoothingEnabled = false;
 
@@ -132,6 +128,40 @@ function renderThing(
   }
 
   ctx.restore();
+}
+
+function isImageReady(
+  image: CanvasImageSource | null
+): image is CanvasImageSource {
+  if (!image) {
+    return false;
+  }
+  if (
+    typeof HTMLImageElement !== "undefined" &&
+    image instanceof HTMLImageElement
+  ) {
+    return (
+      image.complete &&
+      image.naturalWidth > 0 &&
+      image.naturalHeight > 0
+    );
+  }
+  if (typeof ImageBitmap !== "undefined" && image instanceof ImageBitmap) {
+    return image.width > 0 && image.height > 0;
+  }
+  if (
+    typeof HTMLCanvasElement !== "undefined" &&
+    image instanceof HTMLCanvasElement
+  ) {
+    return image.width > 0 && image.height > 0;
+  }
+  if (
+    typeof OffscreenCanvas !== "undefined" &&
+    image instanceof OffscreenCanvas
+  ) {
+    return image.width > 0 && image.height > 0;
+  }
+  return true;
 }
 
 function drawTriangle(
