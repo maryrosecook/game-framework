@@ -51,14 +51,14 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const { gameDirectory, previousName, blueprintName } =
+  const { gameDirectory, previousName, nextName } =
     (await request.json()) as {
       gameDirectory: string;
       previousName: string;
-      blueprintName: string;
+      nextName: string;
     };
 
-  if (!gameDirectory || !previousName || !blueprintName) {
+  if (!gameDirectory || !previousName || !nextName) {
     return NextResponse.json(
       { error: "Invalid blueprint rename data" },
       { status: 400 }
@@ -73,7 +73,7 @@ export async function PUT(request: Request) {
     "blueprints"
   );
   const prevSlug = blueprintSlug(previousName);
-  const nextSlug = blueprintSlug(blueprintName);
+  const nextSlug = blueprintSlug(nextName);
   if (prevSlug === nextSlug) {
     return NextResponse.json({ ok: true, renamed: false });
   }
