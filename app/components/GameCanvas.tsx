@@ -5,8 +5,11 @@ import { GameEngine } from "@/engine/engine";
 import { Blueprint, RuntimeGameState, RuntimeThing } from "@/engine/types";
 import { GameSubscribe } from "@/engine/useGame";
 import { createThingFromBlueprint } from "@/engine/blueprints";
+import { createThingId } from "@/lib/id";
 
 const BLUEPRINT_MIME = "application/x-blueprint";
+
+type DragTarget = { thingId: string; offsetX: number; offsetY: number };
 
 type GameCanvasProps = {
   canvasRef: RefObject<HTMLCanvasElement | null>;
@@ -31,7 +34,7 @@ export const GameCanvas = memo(function GameCanvas({
   const dragRef = useRef<{
     mode: "move" | "resize";
     pointerId: number;
-    targets?: { thingId: string; offsetX: number; offsetY: number }[];
+    targets?: DragTarget[];
     thingId?: string;
     anchor?: { x: number; y: number };
     angle?: number;
@@ -67,7 +70,8 @@ export const GameCanvas = memo(function GameCanvas({
       return blueprint?.z ?? 1;
     };
 
-    const hit = findTopThing(point, things ?? [], getBlueprintZ);
+    const currentThings = things ?? [];
+    const hit = findTopThing(point, currentThings, getBlueprintZ);
     if (hit) {
       const nextSelected = nextSelectedIdsForClick(
         selectedThingIds,
@@ -75,27 +79,66 @@ export const GameCanvas = memo(function GameCanvas({
         event.shiftKey
       );
 
+      if (!nextSelected.includes(hit.id)) {
+        engine.dispatch({
+          type: "setSelectedThingIds",
+          thingIds: nextSelected,
+        });
+        return;
+      }
+
+      const targets = buildDragTargets(nextSelected, currentThings, point);
+      if (targets.length === 0) {
+        engine.dispatch({
+          type: "setSelectedThingIds",
+          thingIds: nextSelected,
+        });
+        return;
+      }
+
+      if (event.altKey) {
+        const duplicateTargets = duplicateDragTargets(
+          targets,
+          currentThings,
+          engine
+        );
+        if (duplicateTargets) {
+          const duplicateIds = duplicateTargets.targets.map(
+            (target) => target.thingId
+          );
+          engine.dispatch({
+            type: "setSelectedThingIds",
+            thingIds: duplicateIds,
+          });
+          onSelectBlueprint?.(hit.blueprintName);
+          engine.beginEditingThings(duplicateIds);
+          dragRef.current = {
+            mode: "move",
+            targets: duplicateTargets.targets,
+            pointerId: event.pointerId,
+            editingIds: duplicateIds,
+          };
+          event.currentTarget.setPointerCapture(event.pointerId);
+          return;
+        }
+      }
+
       engine.dispatch({
         type: "setSelectedThingIds",
         thingIds: nextSelected,
       });
 
-      if (nextSelected.includes(hit.id)) {
-        onSelectBlueprint?.(hit.blueprintName);
-        const targets = buildDragTargets(nextSelected, things ?? [], point);
+      onSelectBlueprint?.(hit.blueprintName);
 
-        if (targets.length > 0) {
-          const editingIds = targets.map((target) => target.thingId);
-          engine.beginEditingThings(editingIds);
-          dragRef.current = {
-            mode: "move",
-            targets,
-            pointerId: event.pointerId,
-            editingIds,
-          };
-          event.currentTarget.setPointerCapture(event.pointerId);
-        }
-      }
+      const editingIds = targets.map((target) => target.thingId);
+      engine.beginEditingThings(editingIds);
+      dragRef.current = {
+        mode: "move",
+        targets,
+        pointerId: event.pointerId,
+        editingIds,
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
     } else {
       engine.dispatch({ type: "setSelectedThingIds", thingIds: [] });
     }
@@ -287,7 +330,7 @@ function buildDragTargets(
   things: RuntimeThing[],
   point: { x: number; y: number }
 ) {
-  const targets: { thingId: string; offsetX: number; offsetY: number }[] = [];
+  const targets: DragTarget[] = [];
   for (const id of selectedIds) {
     const target = things.find((thing) => thing.id === id);
     if (!target) continue;
@@ -298,6 +341,42 @@ function buildDragTargets(
     });
   }
   return targets;
+}
+
+function duplicateDragTargets(
+  targets: DragTarget[],
+  things: RuntimeThing[],
+  engine: GameEngine
+) {
+  const thingLookup = new Map(things.map((thing) => [thing.id, thing]));
+  const duplicates: { thing: RuntimeThing; target: DragTarget }[] = [];
+
+  for (const target of targets) {
+    const original = thingLookup.get(target.thingId);
+    if (!original) continue;
+    const clone: RuntimeThing = {
+      ...original,
+      id: createThingId(),
+      velocityX: 0,
+      velocityY: 0,
+    };
+    duplicates.push({
+      thing: clone,
+      target: { ...target, thingId: clone.id },
+    });
+  }
+
+  if (duplicates.length === 0) {
+    return null;
+  }
+
+  for (const duplicate of duplicates) {
+    engine.dispatch({ type: "addThing", thing: duplicate.thing });
+  }
+
+  return {
+    targets: duplicates.map((entry) => entry.target),
+  };
 }
 
 function toggleThingSelection(selectedIds: string[], id: string) {
