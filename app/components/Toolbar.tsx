@@ -2,7 +2,7 @@
 
 import { Blueprint } from "@/engine/types";
 import { Button } from "@/components/ui/button";
-import { Pause, Play, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getBlueprintImageUrl } from "@/lib/images";
 
 const BLUEPRINT_MIME = "application/x-blueprint";
@@ -12,8 +12,6 @@ type ToolbarProps = {
   selectedBlueprintName: string | null;
   onSelectBlueprint: (name: string) => void;
   onAddBlueprint: () => void;
-  onTogglePause: () => void;
-  isPaused: boolean;
   gameDirectory: string;
 };
 
@@ -22,22 +20,10 @@ export function Toolbar({
   selectedBlueprintName,
   onSelectBlueprint,
   onAddBlueprint,
-  onTogglePause,
-  isPaused,
   gameDirectory,
 }: ToolbarProps) {
   return (
     <div className="inline-flex max-w-[800px] min-w-fit items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-lg">
-      <Button
-        type="button"
-        size="icon"
-        variant="secondary"
-        aria-label={isPaused ? "Play" : "Pause"}
-        onClick={onTogglePause}
-        className="rounded-full border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
-      >
-        {isPaused ? <Play className="size-5" /> : <Pause className="size-5" />}
-      </Button>
       <div className="flex flex-1 gap-2 overflow-x-auto py-1">
         {blueprints.map((blueprint) => (
           <BlueprintChip
@@ -45,7 +31,6 @@ export function Toolbar({
             blueprint={blueprint}
             selected={selectedBlueprintName === blueprint.name}
             onSelect={() => onSelectBlueprint(blueprint.name)}
-            isPaused={isPaused}
             gameDirectory={gameDirectory}
           />
         ))}
@@ -54,8 +39,7 @@ export function Toolbar({
         type="button"
         variant="outline"
         size="icon"
-        onClick={isPaused ? onAddBlueprint : undefined}
-        disabled={!isPaused}
+        onClick={onAddBlueprint}
         aria-label="Add blueprint"
         className="border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
       >
@@ -69,13 +53,11 @@ function BlueprintChip({
   blueprint,
   selected,
   onSelect,
-  isPaused,
   gameDirectory,
 }: {
   blueprint: Blueprint;
   selected: boolean;
   onSelect: () => void;
-  isPaused: boolean;
   gameDirectory: string;
 }) {
   const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);
@@ -83,9 +65,8 @@ function BlueprintChip({
   return (
     <button
       type="button"
-      draggable={isPaused}
+      draggable
       onDragStart={(event) => {
-        if (!isPaused) return;
         event.dataTransfer.setData(BLUEPRINT_MIME, blueprint.name);
         event.dataTransfer.effectAllowed = "copy";
         event.dataTransfer.setData("text/plain", blueprint.name);

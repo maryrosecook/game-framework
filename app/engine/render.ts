@@ -26,16 +26,6 @@ export function renderGame(
   ctx.fillStyle = "#f8fafc";
   ctx.fillRect(0, 0, viewport.width, viewport.height);
 
-  if (state.isPaused) {
-    ctx.save();
-    ctx.font = "100px system-ui, -apple-system, sans-serif";
-    ctx.fillStyle = "#4b5563";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("⏸", viewport.width / 2, viewport.height / 2);
-    ctx.restore();
-  }
-
   const screenOffsetX = (viewport.width - state.screen.width) / 2;
   const screenOffsetY = (viewport.height - state.screen.height) / 2;
 

@@ -27,7 +27,6 @@ export const GameCanvas = memo(function GameCanvas({
   const [camera] = subscribe<RuntimeGameState["camera"]>(["camera"]);
   const [selectedThingIds] = subscribe<string[]>(["selectedThingIds"]);
   const [selectedThingId] = subscribe<string | null>(["selectedThingId"]);
-  const [isPaused] = subscribe<boolean>(["isPaused"]);
 
   const dragRef = useRef<{
     mode: "move" | "resize";
@@ -36,10 +35,10 @@ export const GameCanvas = memo(function GameCanvas({
     thingId?: string;
     anchor?: { x: number; y: number };
     angle?: number;
+    editingIds: string[];
   } | null>(null);
 
   const handlePointerDown = (event: PointerEvent<HTMLCanvasElement>) => {
-    if (!isPaused) return;
     const point = getWorldPoint(event, screen, camera, canvasRef);
 
     const primarySelectedThing = (things ?? []).find(
@@ -47,12 +46,15 @@ export const GameCanvas = memo(function GameCanvas({
     );
     if (primarySelectedThing && isOnResizeHandle(point, primarySelectedThing)) {
       const anchor = getResizeAnchor(primarySelectedThing);
+      const editingIds = [primarySelectedThing.id];
+      engine.beginEditingThings(editingIds);
       dragRef.current = {
         mode: "resize",
         thingId: primarySelectedThing.id,
         pointerId: event.pointerId,
         anchor,
         angle: primarySelectedThing.angle,
+        editingIds,
       };
       event.currentTarget.setPointerCapture(event.pointerId);
       return;
@@ -83,10 +85,13 @@ export const GameCanvas = memo(function GameCanvas({
         const targets = buildDragTargets(nextSelected, things ?? [], point);
 
         if (targets.length > 0) {
+          const editingIds = targets.map((target) => target.thingId);
+          engine.beginEditingThings(editingIds);
           dragRef.current = {
             mode: "move",
             targets,
             pointerId: event.pointerId,
+            editingIds,
           };
           event.currentTarget.setPointerCapture(event.pointerId);
         }
@@ -100,8 +105,7 @@ export const GameCanvas = memo(function GameCanvas({
     if (!dragRef.current) {
       return;
     }
-    if (!isPaused) {
-      dragRef.current = null;
+    if (dragRef.current.pointerId !== event.pointerId) {
       return;
     }
     if (dragRef.current.mode === "move" && dragRef.current.targets) {
@@ -163,14 +167,32 @@ export const GameCanvas = memo(function GameCanvas({
   };
 
   const handlePointerUp = (event: PointerEvent<HTMLCanvasElement>) => {
-    if (!isPaused) return;
     if (dragRef.current?.pointerId === event.pointerId) {
+      if (dragRef.current.editingIds.length > 0) {
+        engine.endEditingThings(dragRef.current.editingIds);
+      }
       dragRef.current = null;
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
   };
 
-  const handlePointerLeave = () => {
+  const handlePointerLeave = (event: PointerEvent<HTMLCanvasElement>) => {
+    if (dragRef.current?.editingIds.length) {
+      engine.endEditingThings(dragRef.current.editingIds);
+    }
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    dragRef.current = null;
+  };
+
+  const handlePointerCancel = (event: PointerEvent<HTMLCanvasElement>) => {
+    if (dragRef.current?.editingIds.length) {
+      engine.endEditingThings(dragRef.current.editingIds);
+    }
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
     dragRef.current = null;
   };
 
@@ -180,7 +202,6 @@ export const GameCanvas = memo(function GameCanvas({
 
   const handleDrop = (event: DragEvent<HTMLCanvasElement>) => {
     event.preventDefault();
-    if (!isPaused) return;
     const blueprintName =
       event.dataTransfer.getData(BLUEPRINT_MIME) ||
       event.dataTransfer.getData("text/plain");
@@ -202,6 +223,7 @@ export const GameCanvas = memo(function GameCanvas({
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
       onPointerLeave={handlePointerLeave}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
