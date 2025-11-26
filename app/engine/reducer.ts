@@ -48,13 +48,34 @@ export function reduceState(
         ...state,
         blueprints: [...state.blueprints, action.blueprint],
       };
-    case "removeBlueprint":
+    case "removeBlueprint": {
+      const remainingThings = state.things.filter(
+        (thing) => thing.blueprintName !== action.blueprintName
+      );
+      const removedThingIds = new Set(
+        state.things
+          .filter((thing) => thing.blueprintName === action.blueprintName)
+          .map((thing) => thing.id)
+      );
+      const remainingSelectedIds = state.selectedThingIds.filter(
+        (id) => !removedThingIds.has(id)
+      );
+      const selectedThingId = removedThingIds.has(
+        state.selectedThingId ?? ""
+      )
+        ? remainingSelectedIds[remainingSelectedIds.length - 1] ?? null
+        : state.selectedThingId;
+
       return {
         ...state,
         blueprints: state.blueprints.filter(
           (bp) => bp.name !== action.blueprintName
         ),
+        things: remainingThings,
+        selectedThingIds: remainingSelectedIds,
+        selectedThingId,
       };
+    }
     case "renameBlueprint":
       return renameBlueprint(state, action.previousName, action.nextName);
     case "setCameraPosition":

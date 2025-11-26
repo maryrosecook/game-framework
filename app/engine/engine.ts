@@ -730,14 +730,19 @@ export class GameEngine {
         const nextBlueprints = this.persistedGameState.blueprints.filter(
           (bp) => bp.name !== action.blueprintName
         );
+        const nextThings = this.persistedGameState.things.filter(
+          (thing) => thing.blueprintName !== action.blueprintName
+        );
         if (
-          nextBlueprints.length === this.persistedGameState.blueprints.length
+          nextBlueprints.length === this.persistedGameState.blueprints.length &&
+          nextThings.length === this.persistedGameState.things.length
         ) {
           return false;
         }
         this.persistedGameState = {
           ...this.persistedGameState,
           blueprints: nextBlueprints,
+          things: nextThings,
         };
         return true;
       }
