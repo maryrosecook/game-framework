@@ -170,9 +170,15 @@ export function BlueprintPanel({
   };
 
   const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);
+  const handleDeleteBlueprint = () => {
+    engine.dispatch({
+      type: "removeBlueprint",
+      blueprintName: blueprint.name,
+    });
+  };
 
   return (
-    <div className="pointer-events-auto absolute right-4 top-4 z-10 w-64 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-900 shadow-xl">
+    <div className="pointer-events-auto absolute right-4 top-4 z-10 w-64 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-900 shadow-xl flex flex-col">
       <header className="mb-4">
         <p className="text-xs uppercase tracking-wide text-slate-500">
           Blueprint
@@ -268,6 +274,13 @@ export function BlueprintPanel({
           onSelect={(color) => updateField("color", color)}
         />
       </div>
+      <button
+        type="button"
+        className="mt-4 self-start text-xs font-semibold text-red-600 underline decoration-red-500 decoration-2 underline-offset-2 hover:text-red-700"
+        onClick={handleDeleteBlueprint}
+      >
+        Delete blueprint and items
+      </button>
     </div>
   );
 }
