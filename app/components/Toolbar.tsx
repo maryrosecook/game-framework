@@ -24,6 +24,23 @@ export function Toolbar({
 }: ToolbarProps) {
   return (
     <div className="inline-flex max-w-[800px] min-w-fit items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-lg">
+      <div className="flex items-center border-r border-slate-200 pr-3">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={() => window.location.reload()}
+          aria-label="Reload window"
+          className="border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+        >
+          <img
+            src="/icons/reload.png"
+            alt="Reload"
+            className="h-4 w-4"
+            style={{ imageRendering: "pixelated" }}
+          />
+        </Button>
+      </div>
       <div className="flex flex-1 gap-2 overflow-x-auto py-1">
         {blueprints.map((blueprint) => (
           <BlueprintChip
