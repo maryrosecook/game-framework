@@ -18,7 +18,7 @@ import {
 } from "./types";
 import { blueprintSlug } from "@/lib/blueprints";
 import { reduceState } from "./reducer";
-import { createThingFromBlueprint, getBlueprintForThing } from "./blueprints";
+import { getBlueprintForThing, createThingFromBlueprint } from "./blueprints";
 import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
 import { loadImages } from "./imageLoader";
@@ -472,9 +472,9 @@ export class GameEngine {
       request.position,
       request.overrides ?? {}
     );
-    const proxy = createThingProxy(rawThing, this.blueprintLookup);
-    pendingSpawns.push(proxy);
-    return proxy;
+    const runtimeThing = createThingProxy(rawThing, this.blueprintLookup);
+    pendingSpawns.push(runtimeThing);
+    return runtimeThing;
   }
 
   private resolveBlueprintForSpawn(request: SpawnRequest): Blueprint | null {
@@ -916,7 +916,6 @@ function hashThing(thing: RuntimeThing) {
     thing.velocityX,
     thing.velocityY,
     thing.physicsType,
-    thing.color,
     thing.shape,
     thing.blueprintName,
   ].join("|");
@@ -932,7 +931,6 @@ function runtimeThingToThing(thing: RuntimeThing): RawThing {
     angle: thing.angle,
     velocityX: thing.velocityX,
     velocityY: thing.velocityY,
-    color: thing.color,
     blueprintName: thing.blueprintName,
     shape: thing.shape,
   };
