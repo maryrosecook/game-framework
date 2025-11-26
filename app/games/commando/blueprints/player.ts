@@ -6,6 +6,7 @@ import {
   UpdateContext,
 } from "@/engine/types";
 import { createThingFromBlueprint } from "@/engine/blueprints";
+import { createThingProxy } from "@/engine/proxy";
 
 const MOVE_SPEED = 1.5;
 const TURN_SPEED = 2;
@@ -96,11 +97,15 @@ function spawnBullet(
     y: origin.y + direction.y * spawnOffset,
   };
 
-  const bullet = createThingFromBlueprint(bulletBlueprint, spawnPoint, {
+  const bulletRaw = createThingFromBlueprint(bulletBlueprint, spawnPoint, {
     velocityX: direction.x * BULLET_SPEED,
     velocityY: direction.y * BULLET_SPEED,
     angle: thing.angle,
   });
+  const bullet = createThingProxy(
+    bulletRaw,
+    new Map([[bulletBlueprint.name, bulletBlueprint]])
+  );
   gameState.things = [...gameState.things, bullet];
   lastFireTimes.set(thing.id, now);
 }

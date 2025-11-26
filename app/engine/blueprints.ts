@@ -1,5 +1,5 @@
 import { createThingId } from "@/lib/id";
-import { Blueprint, RuntimeThing, RawThing } from "./types";
+import { Blueprint, RawThing } from "./types";
 
 export function getBlueprintForThing(
   thing: RawThing,
@@ -12,7 +12,7 @@ export function createThingFromBlueprint(
   blueprint: Blueprint,
   point: { x: number; y: number },
   thing: Partial<RawThing> = {}
-): RuntimeThing {
+): RawThing {
   const width = thing.width ?? blueprint.width;
   const height = thing.height ?? blueprint.height;
   const x = thing.x ?? point.x - width / 2;
@@ -28,7 +28,6 @@ export function createThingFromBlueprint(
     blueprintName: thing.blueprintName ?? blueprint.name,
     width,
     height,
-    color: thing.color ?? blueprint.color,
     shape: thing.shape ?? blueprint.shape,
   };
 }

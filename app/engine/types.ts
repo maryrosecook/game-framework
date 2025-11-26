@@ -80,7 +80,6 @@ export type RawThing = {
   velocityX: number;
   velocityY: number;
   physicsType?: PhysicsType;
-  color?: string;
   shape?: Shape;
   blueprintName: string;
 };
@@ -89,9 +88,9 @@ export type RuntimeThing = RawThing &
   Required<
     Pick<
       RawThing,
-      keyof Omit<BlueprintData, "name" | "physicsType" | "image" | "z">
+      keyof Omit<BlueprintData, "name" | "physicsType" | "image" | "z" | "color">
     >
-  >;
+  > & { color: string };
 
 export type RuntimeGameState = {
   things: RuntimeThing[];

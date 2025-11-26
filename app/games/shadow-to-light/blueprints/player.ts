@@ -5,6 +5,7 @@ import {
   KeyState,
 } from "@/engine/types";
 import { createThingFromBlueprint } from "@/engine/blueprints";
+import { createThingProxy } from "@/engine/proxy";
 
 const PLAYER_SPEED = 3;
 const BULLET_SPEED = 6;
@@ -130,11 +131,15 @@ function spawnBullet(
     y: origin.y + direction.y * spawnOffset,
   };
 
-  const bullet = createThingFromBlueprint(bulletBlueprint, spawnPoint, {
+  const bulletRaw = createThingFromBlueprint(bulletBlueprint, spawnPoint, {
     velocityX: direction.x * BULLET_SPEED,
     velocityY: direction.y * BULLET_SPEED,
     angle: vectorToAngle(direction),
   });
+  const bullet = createThingProxy(
+    bulletRaw,
+    new Map([[bulletBlueprint.name, bulletBlueprint]])
+  );
 
   state.things = [...state.things, bullet];
   lastFireTimes.set(thing.id, now);
