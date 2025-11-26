@@ -96,6 +96,7 @@ export class GameEngine {
   private thingHashes = new Map<string, string>();
   private blueprintImages = new Map<string, CanvasImageSource>();
   private blueprintImageLoadVersion = 0;
+  private editingThingIds = new Set<string>();
 
   constructor(private readonly dependencies: GameEngineDependencies) {}
 
@@ -171,6 +172,7 @@ export class GameEngine {
     this.thingHashes.clear();
     this.blueprintImages.clear();
     this.blueprintImageLoadVersion = 0;
+    this.editingThingIds.clear();
     this.isPersistedDirty = false;
     this.gameDirectory = "";
     this.listeners.clear();
@@ -192,8 +194,6 @@ export class GameEngine {
     const persistedChanged = this.applyActionToPersistedState(action);
     if (persistedChanged) {
       this.isPersistedDirty = true;
-    }
-    if (this.rawGameState.isPaused && this.isPersistedDirty) {
       this.schedulePersist();
     }
 
@@ -247,6 +247,36 @@ export class GameEngine {
 
   getGameDirectory() {
     return this.gameDirectory;
+  }
+
+  beginEditingThings(ids: string[]) {
+    for (const id of ids) {
+      this.editingThingIds.add(id);
+      this.zeroThingVelocity(id);
+    }
+  }
+
+  endEditingThings(ids?: string[]) {
+    if (!ids) {
+      this.editingThingIds.clear();
+      return;
+    }
+    for (const id of ids) {
+      this.editingThingIds.delete(id);
+    }
+  }
+
+  private zeroThingVelocity(id: string) {
+    const runtime = this.gameState.things.find((thing) => thing.id === id);
+    if (runtime) {
+      runtime.velocityX = 0;
+      runtime.velocityY = 0;
+    }
+    const raw = this.rawGameState.things.find((thing) => thing.id === id);
+    if (raw) {
+      raw.velocityX = 0;
+      raw.velocityY = 0;
+    }
   }
 
   private async loadGame(gameDirectory: string) {
@@ -325,12 +355,14 @@ export class GameEngine {
       return;
     }
 
-    if (!this.gameState.isPaused) {
-      physicsStep(this.gameState, this.blueprintLookup);
-      this.handleInput();
-      this.handleUpdates();
-      this.updateCameraPosition();
-    }
+    physicsStep(
+      this.gameState,
+      this.blueprintLookup,
+      this.editingThingIds
+    );
+    this.handleInput();
+    this.handleUpdates();
+    this.updateCameraPosition();
     this.syncMutableThings();
 
     renderGame(
@@ -345,6 +377,7 @@ export class GameEngine {
   private handleInput() {
     if (!this.inputManager) return;
     for (const thing of this.gameState.things) {
+      if (this.editingThingIds.has(thing.id)) continue;
       const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
       blueprint?.input?.(thing, this.gameState, this.inputManager.keyState);
     }
@@ -365,6 +398,7 @@ export class GameEngine {
     };
 
     for (const thing of thingsView) {
+      if (this.editingThingIds.has(thing.id)) continue;
       if (pendingRemovals.has(thing.id)) continue;
       const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
       const updateResult = blueprint?.update?.({
