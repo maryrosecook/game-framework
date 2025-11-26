@@ -1,4 +1,5 @@
 import { GameEngineDependencies, LoadedGame } from "@/engine/engine";
+import { createTimeWitnessDrive } from "@/engine/timeWitnessDrive";
 import { GameFile } from "@/engine/types";
 
 type GameApiPayload = {
@@ -17,6 +18,7 @@ export function createGameEngineDependencies(): GameEngineDependencies {
       onBlueprintCreated: scaffoldBlueprintFile,
       onBlueprintRenamed: renameBlueprintFile,
     },
+    timeWitnessDrive: createTimeWitnessDrive(),
   };
 }
 
