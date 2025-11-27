@@ -1,6 +1,6 @@
 import {
   BlueprintData,
-  RuntimeGameState,
+  GameContext,
   RuntimeThing,
   KeyState,
   Vector,
@@ -17,7 +17,7 @@ export default function createBlueprint3(data: BlueprintData) {
     ...data,
     input: (
       thing: RuntimeThing,
-      _state: RuntimeGameState,
+      _game: GameContext,
       _keys: KeyState
     ) => {
       return thing;
@@ -26,7 +26,7 @@ export default function createBlueprint3(data: BlueprintData) {
     collision: (
       thing: RuntimeThing,
       other: RuntimeThing,
-      gameState: RuntimeGameState
+      game: GameContext
     ) => {
       if (isBullet(other)) {
         return;
@@ -38,7 +38,7 @@ export default function createBlueprint3(data: BlueprintData) {
       if (
         isWall(other) &&
         canBulletPassWall({
-          things: gameState.things,
+          things: game.gameState.things,
           wall: other,
           bulletDirection: direction,
         })
@@ -46,11 +46,10 @@ export default function createBlueprint3(data: BlueprintData) {
         return;
       }
       const targetIsCharacter = isCharacter(other);
-      gameState.things = gameState.things.filter((candidate) => {
-        if (candidate.id === thing.id) return false;
-        if (targetIsCharacter && candidate.id === other.id) return false;
-        return true;
-      });
+      game.destroy(thing);
+      if (targetIsCharacter) {
+        game.destroy(other);
+      }
     },
   };
 }

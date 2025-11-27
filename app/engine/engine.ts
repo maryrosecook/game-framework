@@ -7,6 +7,7 @@ import {
   CameraController,
   GameAction,
   GameFile,
+  GameContext,
   RuntimeGameState,
   PersistedGameState,
   RawGameState,
@@ -400,41 +401,85 @@ export class GameEngine {
       return;
     }
 
+    const pendingSpawns: RuntimeThing[] = [];
+    const pendingRemovals = new Set<string>();
+    const collidingThingIds = new Map<string, string[]>();
+    const gameContext = this.createGameContext(
+      collidingThingIds,
+      pendingSpawns,
+      pendingRemovals
+    );
+
     physicsStep(
       this.gameState,
       this.blueprintLookup,
+      gameContext,
       this.editingThingIds
     );
-    this.handleInput();
-    this.handleUpdates();
+    this.handleInput(gameContext, pendingRemovals);
+    this.handleUpdates(gameContext, pendingSpawns, pendingRemovals);
+    this.applyPendingChanges(pendingSpawns, pendingRemovals);
     this.updateCameraPosition();
     this.syncMutableThings();
 
     renderGame(
       { ctx: this.ctx, viewport: this.viewportSize },
-      this.gameState,
+      gameContext,
       this.blueprintLookup,
       (thing, blueprint) => this.getImageForThing(thing, blueprint)
     );
     this.notify();
   }
 
-  private handleInput() {
+  private handleInput(
+    game: GameContext,
+    pendingRemovals: Set<string>
+  ) {
     if (!this.inputManager) return;
     for (const thing of this.gameState.things) {
       if (this.editingThingIds.has(thing.id)) continue;
+      if (pendingRemovals.has(thing.id)) continue;
       const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
-      blueprint?.input?.(thing, this.gameState, this.inputManager.keyState);
+      blueprint?.input?.(thing, game, this.inputManager.keyState);
     }
   }
 
-  private handleUpdates() {
+  private handleUpdates(
+    game: GameContext,
+    pendingSpawns: RuntimeThing[],
+    pendingRemovals: Set<string>
+  ) {
     const thingsView = Object.freeze([...this.gameState.things]);
-    const { things: _omit, ...rest } = this.gameState;
-    const gameView = Object.freeze(rest);
-    const pendingSpawns: RuntimeThing[] = [];
-    const pendingRemovals = new Set<string>();
 
+    for (const thing of thingsView) {
+      if (this.editingThingIds.has(thing.id)) continue;
+      if (pendingRemovals.has(thing.id)) continue;
+      const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
+      const updateResult = blueprint?.update?.(thing, game);
+      this.collectUpdateCommands(updateResult, pendingSpawns, pendingRemovals);
+    }
+  }
+
+  private applyPendingChanges(
+    pendingSpawns: RuntimeThing[],
+    pendingRemovals: Set<string>
+  ) {
+    if (pendingRemovals.size === 0 && pendingSpawns.length === 0) {
+      return;
+    }
+
+    const survivors = this.gameState.things.filter(
+      (candidate) => !pendingRemovals.has(candidate.id)
+    );
+    const nextRuntimeThings = [...survivors, ...pendingSpawns];
+    this.gameState = { ...this.gameState, things: nextRuntimeThings };
+  }
+
+  private createGameContext(
+    collidingThingIds: Map<string, string[]>,
+    pendingSpawns: RuntimeThing[],
+    pendingRemovals: Set<string>
+  ): GameContext {
     const spawn = (request: SpawnRequest) =>
       this.spawnFromRequest(request, pendingSpawns);
     const destroy = (target: RuntimeThing | string) => {
@@ -442,27 +487,15 @@ export class GameEngine {
       pendingRemovals.add(id);
     };
 
-    for (const thing of thingsView) {
-      if (this.editingThingIds.has(thing.id)) continue;
-      if (pendingRemovals.has(thing.id)) continue;
-      const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
-      const updateResult = blueprint?.update?.({
-        thing,
-        things: thingsView,
-        game: gameView,
-        spawn,
-        destroy,
-      });
-      this.collectUpdateCommands(updateResult, pendingSpawns, pendingRemovals);
-    }
-
-    if (pendingRemovals.size > 0 || pendingSpawns.length > 0) {
-      const survivors = this.gameState.things.filter(
-        (candidate) => !pendingRemovals.has(candidate.id)
-      );
-      const nextRuntimeThings = [...survivors, ...pendingSpawns];
-      this.gameState = { ...this.gameState, things: nextRuntimeThings };
-    }
+    const self = this;
+    return {
+      get gameState() {
+        return self.gameState;
+      },
+      collidingThingIds,
+      spawn,
+      destroy,
+    };
   }
 
   private updateCameraPosition() {
