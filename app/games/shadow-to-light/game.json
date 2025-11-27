@@ -93,8 +93,8 @@
     },
     {
       "id": "5j7xnluwpug2",
-      "x": 724.80981673056,
-      "y": 350.4702430838935,
+      "x": -2.235617773437525,
+      "y": 607.8592413807928,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -275,8 +275,8 @@
     },
     {
       "id": "tpan9ia8gqdm",
-      "x": 865.752685546875,
-      "y": 285.05340576171875,
+      "x": 838.8828125,
+      "y": 270.2669677734375,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -583,19 +583,6 @@
       "width": 56.66796875,
       "height": 64.38671875,
       "color": "#ffcc99",
-      "shape": "rectangle"
-    },
-    {
-      "id": "zdmvc5nq57ur",
-      "x": 1238.9765625,
-      "y": 894.9375,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "lighthouse",
-      "width": 50,
-      "height": 50,
-      "color": "#ff9966",
       "shape": "rectangle"
     },
     {
@@ -1324,45 +1311,6 @@
       "width": 50,
       "height": 50,
       "color": "#b399ff",
-      "shape": "rectangle"
-    },
-    {
-      "id": "58b0mixgnv4d",
-      "x": 1319.38671875,
-      "y": 943.39453125,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "lighthouse",
-      "width": 50,
-      "height": 50,
-      "color": "#ff9966",
-      "shape": "rectangle"
-    },
-    {
-      "id": "eyryfwjgw58y",
-      "x": 1157.38671875,
-      "y": 952.21875,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "house2",
-      "width": 10,
-      "height": 11.229406729607945,
-      "color": "#ffcc99",
-      "shape": "rectangle"
-    },
-    {
-      "id": "1zqm9vhmbybv",
-      "x": 1375.19140625,
-      "y": 957.7890625,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "castle",
-      "width": 50,
-      "height": 50,
-      "color": "#66cc99",
       "shape": "rectangle"
     },
     {
@@ -2329,8 +2277,8 @@
     },
     {
       "id": "rlm1csipm6ka",
-      "x": 4,
-      "y": 605.5,
+      "x": 3.69287109375,
+      "y": 594.9322509765625,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -3381,19 +3329,6 @@
       "shape": "rectangle"
     },
     {
-      "id": "x2nm9n0uce8p",
-      "x": -502,
-      "y": -76.5,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "shadow-minion",
-      "width": 50,
-      "height": 50,
-      "color": "#99b3ff",
-      "shape": "rectangle"
-    },
-    {
       "id": "7nj3yo5fmhll",
       "x": -214.609375,
       "y": 91.90103149414062,
@@ -3410,19 +3345,6 @@
       "id": "hq7i0gbcxd10",
       "x": -229.7506603515625,
       "y": 127.79168701171875,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "shadow-minion",
-      "width": 50,
-      "height": 50,
-      "color": "#99b3ff",
-      "shape": "rectangle"
-    },
-    {
-      "id": "ncsvjt6071f3",
-      "x": 1192.487110546875,
-      "y": 262.6730567382813,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -4246,8 +4168,8 @@
     },
     {
       "id": "12b1b6h1h61l",
-      "x": 1056.197777639205,
-      "y": -78.85275650295455,
+      "x": 1720.25515068608,
+      "y": -52.04547500881392,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -4258,8 +4180,8 @@
     },
     {
       "id": "7qgi12z1vtak",
-      "x": 837.182152639205,
-      "y": -75.1600685146733,
+      "x": 1718.31227959233,
+      "y": -54.7278175381108,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -4547,14 +4469,86 @@
     },
     {
       "id": "lh05rbhzv6vo",
-      "x": 839.7745979271135,
-      "y": 322.7393348764315,
+      "x": 840.3995979271135,
+      "y": 296.68202286471274,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
       "blueprintName": "water",
       "width": 435.23956298828125,
       "height": 181.4375,
+      "shape": "rectangle"
+    },
+    {
+      "id": "uot7n4vgr4jf",
+      "x": -126.07742493244234,
+      "y": 678.2593625663154,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-29",
+      "width": 49.90379755859374,
+      "height": 60.14573798828121,
+      "shape": "rectangle"
+    },
+    {
+      "id": "spqqavf4vzx0",
+      "x": -125.73745986328129,
+      "y": 670.339944060456,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-30",
+      "width": 40.24732548828126,
+      "height": 39.94792597656249,
+      "shape": "rectangle"
+    },
+    {
+      "id": "5l8cvxay3l9b",
+      "x": -128.9020089176816,
+      "y": 623.1707615897528,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-31",
+      "width": 50,
+      "height": 50,
+      "shape": "rectangle"
+    },
+    {
+      "id": "8sloks49nt1p",
+      "x": -124.59438242187503,
+      "y": 583.3676296109738,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-32",
+      "width": 50,
+      "height": 50,
+      "shape": "rectangle"
+    },
+    {
+      "id": "wdz3p3f1k0hs",
+      "x": 834.368996484375,
+      "y": 473.28115,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "shadow-minion",
+      "width": 442.72412109375,
+      "height": 150.1771240234375,
+      "shape": "rectangle"
+    },
+    {
+      "id": "t33wwbwelf9u",
+      "x": 874.208213463643,
+      "y": -265.8616414476264,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "water",
+      "width": 731.604066128687,
+      "height": 609.4048810384218,
       "shape": "rectangle"
     }
   ],
@@ -4573,7 +4567,7 @@
       "name": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
+      "z": 5,
       "color": "#99b3ff",
       "image": "blueprint-2-1764032226327.png",
       "shape": "rectangle",
@@ -4745,7 +4739,7 @@
       "height": 50,
       "z": 2,
       "color": "#99e6cc",
-      "image": "blueprint-19-1764033338437.png",
+      "image": "boat-1764263081532.png",
       "shape": "rectangle",
       "physicsType": "ambient"
     },
@@ -4803,7 +4797,7 @@
       "name": "water",
       "width": 50,
       "height": 50,
-      "z": 1,
+      "z": 0,
       "color": "#b3b3b3",
       "image": "blueprint-25-1764104558304.png",
       "shape": "rectangle",
@@ -4838,6 +4832,46 @@
       "image": "blueprint-28-1764186326717.png",
       "shape": "rectangle",
       "physicsType": "dynamic"
+    },
+    {
+      "name": "blueprint-29",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#99d6ff",
+      "image": "blueprint-29-1764263371137.png",
+      "shape": "rectangle",
+      "physicsType": "ambient"
+    },
+    {
+      "name": "blueprint-30",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#ffcc99",
+      "image": "blueprint-30-1764263424337.png",
+      "shape": "rectangle",
+      "physicsType": "ambient"
+    },
+    {
+      "name": "blueprint-31",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#ff9966",
+      "image": "blueprint-31-1764263506339.png",
+      "shape": "rectangle",
+      "physicsType": "ambient"
+    },
+    {
+      "name": "blueprint-32",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#99e6cc",
+      "image": "blueprint-32-1764263541460.png",
+      "shape": "rectangle",
+      "physicsType": "ambient"
     }
   ],
   "camera": {
