@@ -1,12 +1,9 @@
 import {
   BlueprintData,
-  RuntimeGameState,
+  GameContext,
   KeyState,
   RuntimeThing,
-  UpdateContext,
 } from "@/engine/types";
-import { createThingFromBlueprint } from "@/engine/blueprints";
-import { createThingProxy } from "@/engine/proxy";
 
 const MOVE_SPEED = 1.5;
 const TURN_SPEED = 2;
@@ -20,7 +17,7 @@ export default function createPlayerBlueprint(data: BlueprintData) {
     ...data,
     input: (
       thing: RuntimeThing,
-      gameState: RuntimeGameState,
+      game: GameContext,
       keys: KeyState
     ) => {
       thing.velocityX = 0;
@@ -44,10 +41,10 @@ export default function createPlayerBlueprint(data: BlueprintData) {
       }
 
       if (keys.space) {
-        spawnBullet(thing, gameState, direction);
+        spawnBullet(thing, game, direction);
       }
     },
-    update: ({ thing }: UpdateContext) => {
+    update: (thing: RuntimeThing, _game: GameContext) => {
       // Slight damping to make the player feel less slippery.
       thing.velocityX *= 0.95;
       thing.velocityY *= 0.95;
@@ -55,7 +52,7 @@ export default function createPlayerBlueprint(data: BlueprintData) {
     collision: (
       thing: RuntimeThing,
       _other: RuntimeThing,
-      _gameState: RuntimeGameState
+      _game: GameContext
     ) => {
       thing.velocityX = 0;
       thing.velocityY = 0;
@@ -70,7 +67,7 @@ function angleToVector(angle: number) {
 
 function spawnBullet(
   thing: RuntimeThing,
-  gameState: RuntimeGameState,
+  game: GameContext,
   direction: { x: number; y: number }
 ) {
   const now = Date.now();
@@ -79,7 +76,7 @@ function spawnBullet(
     return;
   }
 
-  const bulletBlueprint = gameState.blueprints.find(
+  const bulletBlueprint = game.gameState.blueprints.find(
     (bp) => bp.name === "bullet"
   );
   if (!bulletBlueprint) {
@@ -97,15 +94,14 @@ function spawnBullet(
     y: origin.y + direction.y * spawnOffset,
   };
 
-  const bulletRaw = createThingFromBlueprint(bulletBlueprint, spawnPoint, {
-    velocityX: direction.x * BULLET_SPEED,
-    velocityY: direction.y * BULLET_SPEED,
-    angle: thing.angle,
+  game.spawn({
+    blueprint: bulletBlueprint,
+    position: spawnPoint,
+    overrides: {
+      velocityX: direction.x * BULLET_SPEED,
+      velocityY: direction.y * BULLET_SPEED,
+      angle: thing.angle,
+    },
   });
-  const bullet = createThingProxy(
-    bulletRaw,
-    new Map([[bulletBlueprint.name, bulletBlueprint]])
-  );
-  gameState.things = [...gameState.things, bullet];
   lastFireTimes.set(thing.id, now);
 }

@@ -4,6 +4,7 @@ export type KeyState = {
   arrowUp: boolean;
   arrowDown: boolean;
   digit0: boolean;
+  digit9: boolean;
   space: boolean;
   shift: boolean;
   keyW: boolean;
@@ -30,10 +31,11 @@ export type UpdateCommand =
 
 export type UpdateResult = void | UpdateCommand | UpdateCommand[];
 
-export type UpdateContext = {
-  thing: RuntimeThing;
-  things: ReadonlyArray<RuntimeThing>;
-  game: Readonly<Omit<RuntimeGameState, "things">>;
+export type CollisionMap = Map<string, string[]>;
+
+export type GameContext = {
+  gameState: RuntimeGameState;
+  collidingThingIds: CollisionMap;
   spawn: (request: SpawnRequest) => RuntimeThing | null;
   destroy: (target: RuntimeThing | string) => void;
 };
@@ -50,22 +52,27 @@ export type BlueprintData = {
 };
 
 export type BlueprintModule = Partial<{
-  update: (context: UpdateContext) => UpdateResult;
+  update: (thing: RuntimeThing, game: GameContext) => UpdateResult;
   render: (
     thing: RuntimeThing,
-    gameState: RuntimeGameState,
+    game: GameContext,
     ctx: CanvasRenderingContext2D
   ) => void;
   input: (
     thing: RuntimeThing,
-    gameState: RuntimeGameState,
+    game: GameContext,
     keyState: KeyState
   ) => void;
   collision: (
     thing: RuntimeThing,
     otherThing: RuntimeThing,
-    gameState: RuntimeGameState
+    game: GameContext
   ) => void;
+  getAdjustedVelocity: (
+    thing: RuntimeThing,
+    proposedVelocity: Vector,
+    game: GameContext
+  ) => Vector;
 }>;
 
 export type Blueprint = BlueprintData & BlueprintModule;

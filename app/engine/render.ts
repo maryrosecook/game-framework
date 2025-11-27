@@ -1,5 +1,5 @@
 import { getBlueprintForThing } from "./blueprints";
-import { Blueprint, RuntimeGameState, RuntimeThing } from "./types";
+import { Blueprint, GameContext, RuntimeThing } from "./types";
 
 type RenderConfig = {
   ctx: CanvasRenderingContext2D;
@@ -10,13 +10,14 @@ const RESIZE_HANDLE_SIZE = 12;
 
 export function renderGame(
   { ctx, viewport }: RenderConfig,
-  state: RuntimeGameState,
+  game: GameContext,
   blueprintLookup: Map<string, Blueprint>,
   getImageForThing?: (
     thing: RuntimeThing,
     blueprint?: Blueprint
   ) => CanvasImageSource | null
 ) {
+  const state = game.gameState;
   const { canvas } = ctx;
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -50,7 +51,7 @@ export function renderGame(
       (blueprintLookup.get(b.blueprintName)?.z ?? 1)
   );
   for (const thing of sorted) {
-    renderThing(ctx, thing, state, blueprintLookup, getImageForThing);
+    renderThing(ctx, thing, game, blueprintLookup, getImageForThing);
   }
 
   ctx.restore();
@@ -59,7 +60,7 @@ export function renderGame(
 function renderThing(
   ctx: CanvasRenderingContext2D,
   thing: RuntimeThing,
-  state: RuntimeGameState,
+  game: GameContext,
   blueprintLookup: Map<string, Blueprint>,
   getImageForThing?: (
     thing: RuntimeThing,
@@ -82,7 +83,7 @@ function renderThing(
   if (imageReady && image) {
     ctx.drawImage(image, 0, 0, thing.width, thing.height);
   } else if (renderer) {
-    renderer(thing, state, ctx);
+    renderer(thing, game, ctx);
   } else {
     ctx.fillStyle = thing.color || blueprint?.color || "#888";
     if (shape === "triangle") {
@@ -93,8 +94,8 @@ function renderThing(
   }
 
   const isSelected =
-    state.selectedThingIds.includes(thing.id) ||
-    state.selectedThingId === thing.id;
+    game.gameState.selectedThingIds.includes(thing.id) ||
+    game.gameState.selectedThingId === thing.id;
 
   if (isSelected) {
     ctx.save();
@@ -104,7 +105,7 @@ function renderThing(
     ctx.strokeRect(-2, -2, thing.width + 4, thing.height + 4);
     ctx.restore();
 
-    if (state.selectedThingId === thing.id) {
+    if (game.gameState.selectedThingId === thing.id) {
       ctx.save();
       ctx.setLineDash([]);
       ctx.fillStyle = "#ffffff";

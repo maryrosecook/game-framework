@@ -1,15 +1,15 @@
-import { BlueprintData, RuntimeGameState, RuntimeThing, KeyState } from "@/engine/types";
+import { BlueprintData, GameContext, RuntimeThing, KeyState } from "@/engine/types";
 
 export default function createBlueprint7(data: BlueprintData) {
   return {
     ...data,
-    input: (thing: RuntimeThing, _state: RuntimeGameState, _keys: KeyState) => {
+    input: (thing: RuntimeThing, _game: GameContext, _keys: KeyState) => {
       return thing;
     },
-    update: (thing: RuntimeThing, _state: RuntimeGameState, _things: RuntimeThing[]) => {
+    update: (thing: RuntimeThing, _game: GameContext) => {
       return thing;
     },
-    render: (thing: RuntimeThing, _state: RuntimeGameState, ctx: CanvasRenderingContext2D) => {
+    render: (thing: RuntimeThing, _game: GameContext, ctx: CanvasRenderingContext2D) => {
       ctx.fillStyle = thing.color;
       ctx.fillRect(0, 0, thing.width, thing.height);
     },

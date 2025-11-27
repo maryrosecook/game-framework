@@ -1,6 +1,8 @@
 import { getBlueprintForThing } from "./blueprints";
 import {
   Blueprint,
+  CollisionMap,
+  GameContext,
   RuntimeGameState,
   RuntimeThing,
   Shape,
@@ -12,8 +14,25 @@ const EPSILON = 0.0001;
 export function physicsStep(
   gameState: RuntimeGameState,
   blueprintLookup: Map<string, Blueprint>,
+  game: GameContext,
   suspendedThingIds: ReadonlySet<string> = new Set()
 ) {
+  game.collidingThingIds.clear();
+
+  for (const thing of gameState.things) {
+    if (suspendedThingIds.has(thing.id)) continue;
+    const blueprint = getBlueprintForThing(thing, blueprintLookup);
+    if (blueprint?.getAdjustedVelocity) {
+      const adjusted = blueprint.getAdjustedVelocity(
+        thing,
+        { x: thing.velocityX, y: thing.velocityY },
+        game
+      );
+      thing.velocityX = adjusted.x;
+      thing.velocityY = adjusted.y;
+    }
+  }
+
   const things = [...gameState.things];
 
   for (const thing of things) {
@@ -30,7 +49,14 @@ export function physicsStep(
       ) {
         continue;
       }
-      resolveCollision(things[i], things[j], blueprintLookup, gameState);
+      resolveCollision(
+        things[i],
+        things[j],
+        blueprintLookup,
+        gameState,
+        game.collidingThingIds,
+        game
+      );
     }
   }
 }
@@ -39,7 +65,9 @@ function resolveCollision(
   a: RuntimeThing,
   b: RuntimeThing,
   blueprintLookup: Map<string, Blueprint>,
-  gameState: RuntimeGameState
+  gameState: RuntimeGameState,
+  collidingThingIds: CollisionMap,
+  game: GameContext
 ) {
   const stillExistsA = gameState.things.includes(a);
   const stillExistsB = gameState.things.includes(b);
@@ -55,8 +83,10 @@ function resolveCollision(
     return;
   }
 
+  recordCollision(collidingThingIds, a, b);
+
   if (a.physicsType === "ambient" || b.physicsType === "ambient") {
-    notifyCollision(a, b, blueprintLookup, gameState);
+    notifyCollision(a, b, blueprintLookup, game);
     return;
   }
 
@@ -71,7 +101,7 @@ function resolveCollision(
   );
 
   if (!canMoveA && !canMoveB) {
-    notifyCollision(a, b, blueprintLookup, gameState);
+    notifyCollision(a, b, blueprintLookup, game);
     return;
   }
 
@@ -92,19 +122,19 @@ function resolveCollision(
     dampenVelocity(b, mtv.axis);
   }
 
-  notifyCollision(a, b, blueprintLookup, gameState);
+  notifyCollision(a, b, blueprintLookup, game);
 }
 
 function notifyCollision(
   a: RuntimeThing,
   b: RuntimeThing,
   blueprintLookup: Map<string, Blueprint>,
-  gameState: RuntimeGameState
+  game: GameContext
 ) {
   const blueprintA = getBlueprintForThing(a, blueprintLookup);
   const blueprintB = getBlueprintForThing(b, blueprintLookup);
-  blueprintA?.collision?.(a, b, gameState);
-  blueprintB?.collision?.(b, a, gameState);
+  blueprintA?.collision?.(a, b, game);
+  blueprintB?.collision?.(b, a, game);
 }
 
 function getPolygonForThing(
@@ -237,4 +267,25 @@ function dampenVelocity(thing: RuntimeThing, axis: Vector) {
   const projected = thing.velocityX * axis.x + thing.velocityY * axis.y;
   thing.velocityX -= projected * axis.x;
   thing.velocityY -= projected * axis.y;
+}
+
+function recordCollision(
+  map: CollisionMap,
+  first: RuntimeThing,
+  second: RuntimeThing
+) {
+  const existingForFirst = map.get(first.id) ?? [];
+  const existingForSecond = map.get(second.id) ?? [];
+  if (!map.has(first.id)) {
+    map.set(first.id, existingForFirst);
+  }
+  if (!map.has(second.id)) {
+    map.set(second.id, existingForSecond);
+  }
+  if (!existingForFirst.includes(second.id)) {
+    existingForFirst.push(second.id);
+  }
+  if (!existingForSecond.includes(first.id)) {
+    existingForSecond.push(first.id);
+  }
 }

@@ -1,9 +1,8 @@
 import {
   BlueprintData,
-  RuntimeGameState,
+  GameContext,
   RuntimeThing,
   KeyState,
-  UpdateContext,
 } from "@/engine/types";
 import { canBulletPassWall } from "./bullet";
 
@@ -21,11 +20,12 @@ export default function createBlueprint4(data: BlueprintData) {
 
   return {
     ...data,
-    input: (thing: RuntimeThing, _state: RuntimeGameState, _keys: KeyState) => {
+    input: (thing: RuntimeThing, _game: GameContext, _keys: KeyState) => {
       thing.velocityX = 0;
       thing.velocityY = 0;
     },
-    update: ({ thing, things, spawn, game }: UpdateContext) => {
+    update: (thing: RuntimeThing, game: GameContext) => {
+      const things = game.gameState.things;
       const player = findPlayer(things);
       if (!player) {
         return;
@@ -51,7 +51,7 @@ export default function createBlueprint4(data: BlueprintData) {
         return;
       }
 
-      const bulletBlueprint = game.blueprints.find(
+      const bulletBlueprint = game.gameState.blueprints.find(
         (bp) => bp.name === BULLET_BLUEPRINT
       );
       if (!bulletBlueprint) {
@@ -64,7 +64,7 @@ export default function createBlueprint4(data: BlueprintData) {
         x: origin.x + firingDirection.x * spawnOffset,
         y: origin.y + firingDirection.y * spawnOffset,
       };
-      const spawned = spawn({
+      const spawned = game.spawn({
         blueprint: BULLET_BLUEPRINT,
         position: spawnPoint,
         overrides: {
