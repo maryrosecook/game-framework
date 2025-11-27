@@ -93,8 +93,8 @@
     },
     {
       "id": "5j7xnluwpug2",
-      "x": 234.97219170170501,
-      "y": 411.2859077480716,
+      "x": 724.80981673056,
+      "y": 350.4702430838935,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -262,8 +262,8 @@
     },
     {
       "id": "ebbnwotwntqf",
-      "x": 643.30859375,
-      "y": 263.53125,
+      "x": 570.704345703125,
+      "y": 315.4427490234375,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -275,8 +275,8 @@
     },
     {
       "id": "tpan9ia8gqdm",
-      "x": 831.815185546875,
-      "y": 345.43359375,
+      "x": 865.752685546875,
+      "y": 285.05340576171875,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -301,8 +301,8 @@
     },
     {
       "id": "kdcwc45d6v7m",
-      "x": 543.234475,
-      "y": 291.47265625,
+      "x": 470.963723046875,
+      "y": 291.09765625,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -3433,19 +3433,6 @@
       "shape": "rectangle"
     },
     {
-      "id": "hx6nekllbj2s",
-      "x": 1156.3125,
-      "y": 341.8802490234375,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "shadow-minion",
-      "width": 50,
-      "height": 50,
-      "color": "#99b3ff",
-      "shape": "rectangle"
-    },
-    {
       "id": "adtobzewwm5q",
       "x": -397.0122291015625,
       "y": 629.7890625,
@@ -4557,6 +4544,18 @@
       "width": 194.8177490234375,
       "height": 253.77084350585938,
       "shape": "rectangle"
+    },
+    {
+      "id": "lh05rbhzv6vo",
+      "x": 839.7745979271135,
+      "y": 322.7393348764315,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "water",
+      "width": 435.23956298828125,
+      "height": 181.4375,
+      "shape": "rectangle"
     }
   ],
   "blueprints": [
@@ -4584,7 +4583,7 @@
       "name": "player",
       "width": 50,
       "height": 50,
-      "z": 1,
+      "z": 3,
       "color": "#99d6ff",
       "image": "blueprint-3-1764032366437.png",
       "shape": "rectangle",
@@ -4744,11 +4743,11 @@
       "name": "boat",
       "width": 50,
       "height": 50,
-      "z": 1,
+      "z": 2,
       "color": "#99e6cc",
       "image": "blueprint-19-1764033338437.png",
       "shape": "rectangle",
-      "physicsType": "static"
+      "physicsType": "ambient"
     },
     {
       "name": "castle",
