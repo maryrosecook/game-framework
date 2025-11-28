@@ -14,8 +14,8 @@
     },
     {
       "id": "ryesfafh6lpw",
-      "x": -28.9357440839251,
-      "y": 409.11668535829267,
+      "x": -1749.131056583925,
+      "y": -705.9536271417073,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -706,18 +706,6 @@
       "blueprintName": "fake-wall",
       "width": 598.8541870117188,
       "height": 195.1724000298907,
-      "shape": "rectangle"
-    },
-    {
-      "id": "bq7cmwir8owu",
-      "x": 728.3326376652201,
-      "y": -502.1877396267619,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "blueprint-5",
-      "width": 340.2265625,
-      "height": 228.5546875,
       "shape": "rectangle"
     },
     {
