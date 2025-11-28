@@ -6,6 +6,13 @@ import { Blueprint, RuntimeGameState, RuntimeThing } from "@/engine/types";
 import { GameSubscribe } from "@/engine/useGame";
 import { createThingFromBlueprint } from "@/engine/blueprints";
 import { createThingId } from "@/lib/id";
+import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
+import {
+  getDroppedPngFile,
+  loadImageDimensions,
+  uploadBlueprintImage,
+} from "@/lib/imageUploads";
+import { getColorOptions } from "@/components/ColorGrid";
 
 const BLUEPRINT_MIME = "application/x-blueprint";
 
@@ -15,6 +22,7 @@ type GameCanvasProps = {
   canvasRef: RefObject<HTMLCanvasElement | null>;
   subscribe: GameSubscribe;
   engine: GameEngine;
+  gameDirectory: string;
   onSelectBlueprint?: (name: string) => void;
 };
 
@@ -22,6 +30,7 @@ export const GameCanvas = memo(function GameCanvas({
   canvasRef,
   subscribe,
   engine,
+  gameDirectory,
   onSelectBlueprint,
 }: GameCanvasProps) {
   const [things] = subscribe<RuntimeThing[]>(["things"]);
@@ -40,6 +49,7 @@ export const GameCanvas = memo(function GameCanvas({
     angle?: number;
     editingIds: string[];
   } | null>(null);
+  const importingRef = useRef(false);
 
   const handlePointerDown = (event: PointerEvent<HTMLCanvasElement>) => {
     const point = getWorldPoint(event, screen, camera, canvasRef);
@@ -240,11 +250,26 @@ export const GameCanvas = memo(function GameCanvas({
   };
 
   const handleDragOver = (event: DragEvent<HTMLCanvasElement>) => {
+    if (event.dataTransfer?.types?.includes("Files")) {
+      event.dataTransfer.dropEffect = "copy";
+    }
     event.preventDefault();
   };
 
-  const handleDrop = (event: DragEvent<HTMLCanvasElement>) => {
+  const handleDrop = async (event: DragEvent<HTMLCanvasElement>) => {
     event.preventDefault();
+    const dropPoint = getWorldPoint(event, screen, camera, canvasRef);
+
+    const { file, error } = getDroppedPngFile(event);
+    if (error) {
+      window.alert(error);
+      return;
+    }
+    if (file) {
+      await handleImageDrop(file, dropPoint);
+      return;
+    }
+
     const blueprintName =
       event.dataTransfer.getData(BLUEPRINT_MIME) ||
       event.dataTransfer.getData("text/plain");
@@ -253,11 +278,64 @@ export const GameCanvas = memo(function GameCanvas({
       (bp) => bp.name === blueprintName
     );
     if (!blueprint) return;
-    const point = getWorldPoint(event, screen, camera, canvasRef);
-    const thing = createThingFromBlueprint(blueprint, point);
+    const thing = createThingFromBlueprint(blueprint, dropPoint);
     engine.dispatch({ type: "addThing", thing });
     engine.dispatch({ type: "setSelectedThingId", thingId: thing.id });
     onSelectBlueprint?.(thing.blueprintName);
+  };
+
+  const handleImageDrop = async (
+    file: File,
+    dropPoint: { x: number; y: number }
+  ) => {
+    if (importingRef.current) {
+      return;
+    }
+    importingRef.current = true;
+    try {
+      const existingBlueprints = blueprints ?? [];
+      const blueprintName = getNextBlueprintName(
+        existingBlueprints,
+        file.name.replace(/\.[^.]+$/, "")
+      );
+      const [dimensions, imageName] = await Promise.all([
+        loadImageDimensions(file),
+        uploadBlueprintImage({
+          gameDirectory,
+          blueprintName,
+          file,
+        }),
+      ]);
+      const colors = getColorOptions();
+      const color =
+        colors[existingBlueprints.length % colors.length] ?? "#888888";
+      const width =
+        dimensions && Number.isFinite(dimensions.width)
+          ? Math.max(10, dimensions.width)
+          : undefined;
+      const height =
+        dimensions && Number.isFinite(dimensions.height)
+          ? Math.max(10, dimensions.height)
+          : undefined;
+      const blueprint = createBlueprint({
+        name: blueprintName,
+        color,
+        image: imageName,
+        width,
+        height,
+      });
+      const thing = createThingFromBlueprint(blueprint, dropPoint);
+      engine.dispatch({ type: "addBlueprint", blueprint });
+      engine.dispatch({ type: "addThing", thing });
+      engine.dispatch({ type: "setSelectedThingId", thingId: thing.id });
+      onSelectBlueprint?.(blueprint.name);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to import image";
+      window.alert(message);
+    } finally {
+      importingRef.current = false;
+    }
   };
 
   return (

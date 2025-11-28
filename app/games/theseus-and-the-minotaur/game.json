@@ -14,8 +14,8 @@
     },
     {
       "id": "ryesfafh6lpw",
-      "x": -1684.232619083925,
-      "y": 560.6713728582927,
+      "x": -28.9357440839251,
+      "y": 409.11668535829267,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -326,7 +326,7 @@
     },
     {
       "id": "gx51av16cg55",
-      "x": -1903.057249240478,
+      "x": -1902.604124240478,
       "y": -907.6514587402344,
       "angle": 0,
       "velocityX": 0,
@@ -337,20 +337,8 @@
       "shape": "rectangle"
     },
     {
-      "id": "dwszqddxmnbr",
-      "x": -1274.77104609375,
-      "y": 746.3844091363364,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "blueprint-5",
-      "width": 233.484375,
-      "height": 600.567626953125,
-      "shape": "rectangle"
-    },
-    {
       "id": "lp6kuz436i8w",
-      "x": 996.6873279296874,
+      "x": 1003.7185779296874,
       "y": -882.1131264648437,
       "angle": 0,
       "velocityX": 0,
@@ -494,8 +482,8 @@
     },
     {
       "id": "xcphx49h1mll",
-      "x": 1207.2450451171876,
-      "y": -960.9614859979083,
+      "x": 1207.6981701171876,
+      "y": -959.6021109979083,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -506,8 +494,8 @@
     },
     {
       "id": "7l3dgwc34b5f",
-      "x": 1799.0106701171876,
-      "y": -955.1750251214435,
+      "x": 1830.6981701171876,
+      "y": -951.5812751214435,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -553,33 +541,9 @@
       "shape": "rectangle"
     },
     {
-      "id": "y91dg6r3prsz",
-      "x": -1417.296875,
-      "y": 552.2754759466718,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "blueprint-7",
-      "width": 598.8541870117188,
-      "height": 195.1724000298907,
-      "shape": "rectangle"
-    },
-    {
       "id": "baqzbo0ce002",
       "x": -1670.1405139648436,
       "y": -521.7739592950275,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "blueprint-5",
-      "width": 583.671875,
-      "height": 226.80977988281248,
-      "shape": "rectangle"
-    },
-    {
-      "id": "pnvb4pa1zpmd",
-      "x": -1886.5832210266112,
-      "y": -53.18017877744933,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -615,11 +579,11 @@
     {
       "id": "19pfqyqxgfjp",
       "x": -1906.4114685058594,
-      "y": -495.9798035943438,
+      "y": -496.4407410943438,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
-      "blueprintName": "blueprint-7",
+      "blueprintName": "fake-wall",
       "width": 598.8541870117188,
       "height": 195.1724000298907,
       "shape": "rectangle"
@@ -719,6 +683,30 @@
       "width": 706.3805652343749,
       "height": 223.22532190489073,
       "shape": "rectangle"
+    },
+    {
+      "id": "b1t8hhobpq07",
+      "x": -1419.8256725585939,
+      "y": 546.6238730468751,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-5",
+      "width": 822.8614352238139,
+      "height": 203.35244982636306,
+      "shape": "rectangle"
+    },
+    {
+      "id": "jq320mqlocnu",
+      "x": -1873.9974060058594,
+      "y": -51.01886609434382,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "fake-wall",
+      "width": 598.8541870117188,
+      "height": 195.1724000298907,
+      "shape": "rectangle"
     }
   ],
   "blueprints": [
@@ -771,7 +759,7 @@
       "physicsType": "static"
     },
     {
-      "name": "blueprint-7",
+      "name": "fake-wall",
       "width": 50,
       "height": 50,
       "z": 1,

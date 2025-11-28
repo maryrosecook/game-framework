@@ -63,3 +63,28 @@ export function createBlueprint(
     physicsType,
   };
 }
+
+export function getNextBlueprintName(
+  blueprints: { name: string }[],
+  preferredBase?: string
+) {
+  const existing = new Set(blueprints.map((bp) => bp.name));
+  if (preferredBase) {
+    const base = blueprintSlug(preferredBase) || "blueprint";
+    let candidate = base;
+    let counter = 2;
+    while (existing.has(candidate)) {
+      candidate = `${base}-${counter}`;
+      counter += 1;
+    }
+    return candidate;
+  }
+
+  let counter = blueprints.length + 1;
+  let candidate = `blueprint-${counter}`;
+  while (existing.has(candidate)) {
+    counter += 1;
+    candidate = `blueprint-${counter}`;
+  }
+  return candidate;
+}

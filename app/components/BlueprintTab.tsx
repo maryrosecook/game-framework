@@ -9,6 +9,10 @@ import { ColorGrid } from "@/components/ColorGrid";
 import { SelectField } from "@/components/SelectField";
 import { ArrangeButton } from "@/components/ArrangeButton";
 import { getBlueprintImageUrl } from "@/lib/images";
+import {
+  getDroppedPngFile,
+  uploadBlueprintImage,
+} from "@/lib/imageUploads";
 
 type BlueprintTabProps = {
   blueprint: Blueprint;
@@ -40,43 +44,26 @@ export function BlueprintTab({
 
   const handleImageDrop = async (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    const [file] = Array.from(event.dataTransfer.files ?? []);
-    if (!file) return;
-    if (
-      file.type !== "image/png" &&
-      !file.name.toLowerCase().endsWith(".png")
-    ) {
-      setUploadError("Only PNG files are supported.");
+    const { file, error } = getDroppedPngFile(event);
+    if (error) {
+      setUploadError(error);
       return;
     }
+    if (!file) return;
     setUploadError(null);
     setIsUploading(true);
     try {
-      const formData = new FormData();
-      formData.append("gameDirectory", gameDirectory);
-      formData.append("blueprintName", blueprint.name);
-      formData.append("file", file);
-      const response = await fetch("/api/images", {
-        method: "POST",
-        body: formData,
+      const fileName = await uploadBlueprintImage({
+        gameDirectory,
+        blueprintName: blueprint.name,
+        file,
       });
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as {
-          error?: string;
-        } | null;
-        setUploadError(payload?.error ?? "Failed to save image.");
-        return;
-      }
-      const payload = (await response.json()) as { fileName?: string };
-      const fileName =
-        payload && typeof payload.fileName === "string"
-          ? payload.fileName
-          : file.name;
-      setUploadError(null);
       handleUpdate("image", fileName);
     } catch (error) {
       console.warn("Image upload failed", error);
-      setUploadError("Failed to save image.");
+      const message =
+        error instanceof Error ? error.message : "Failed to save image.";
+      setUploadError(message);
     } finally {
       setIsUploading(false);
     }
