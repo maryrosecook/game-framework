@@ -24,7 +24,7 @@ export function renderGame(
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.restore();
 
-  ctx.fillStyle = "#f8fafc";
+  ctx.fillStyle = state.backgroundColor;
   ctx.fillRect(0, 0, viewport.width, viewport.height);
 
   const screenOffsetX = (viewport.width - state.screen.width) / 2;

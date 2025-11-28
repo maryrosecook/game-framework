@@ -88,6 +88,11 @@ export function reduceState(
         ...state,
         screen: { width: action.width, height: action.height },
       };
+    case "setBackgroundColor":
+      return {
+        ...state,
+        backgroundColor: action.color,
+      };
     case "setPaused":
       return {
         ...state,

@@ -104,6 +104,7 @@ export type RuntimeGameState = {
   blueprints: Blueprint[];
   camera: Vector;
   screen: { width: number; height: number };
+  backgroundColor: string;
   isPaused: boolean;
   selectedThingId: string | null;
   selectedThingIds: string[];
@@ -171,13 +172,15 @@ export type GameAction =
   | { type: "setScreenSize"; width: number; height: number }
   | { type: "setPaused"; isPaused: boolean }
   | { type: "setSelectedThingId"; thingId: string | null }
-  | { type: "setSelectedThingIds"; thingIds: string[] };
+  | { type: "setSelectedThingIds"; thingIds: string[] }
+  | { type: "setBackgroundColor"; color: string };
 
 export type GameFile = {
   things: RawThing[];
   blueprints: BlueprintData[];
   camera: Vector;
   screen: { width: number; height: number };
+  backgroundColor?: string;
   image?: string | null;
 };
 
@@ -189,6 +192,7 @@ export type SubscriptionPath =
   | ["blueprints", string]
   | ["camera"]
   | ["screen"]
+  | ["backgroundColor"]
   | ["isPaused"]
   | ["selectedThingId"]
   | ["selectedThingIds"];

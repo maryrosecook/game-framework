@@ -37,18 +37,6 @@
       "shape": "rectangle"
     },
     {
-      "id": "f6m0s2cbpyg7",
-      "x": -1829.4270002170406,
-      "y": -880.4952087402344,
-      "angle": 0,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "blueprint-4",
-      "width": 4498.151243381103,
-      "height": 2385.333526611328,
-      "shape": "rectangle"
-    },
-    {
       "id": "kdtjmd12tagu",
       "x": -391.8595470703125,
       "y": -44.08431000358593,
@@ -829,5 +817,6 @@
     "width": 800,
     "height": 600
   },
+  "backgroundColor": "#4d4d4d",
   "image": null
 }
