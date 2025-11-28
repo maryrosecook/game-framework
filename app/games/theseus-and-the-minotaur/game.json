@@ -2,20 +2,20 @@
   "things": [
     {
       "id": "cps679dd0ehs",
-      "x": 810.30224609375,
-      "y": -154.09378051757812,
+      "x": -1143.563898137488,
+      "y": -123.31476172281128,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
-      "blueprintName": "blueprint-1",
+      "blueprintName": "minotaur",
       "width": 126.890625,
       "height": 130.2083740234375,
       "shape": "rectangle"
     },
     {
       "id": "ryesfafh6lpw",
-      "x": -1739.697932788086,
-      "y": -625.9536271417073,
+      "x": -1684.232619083925,
+      "y": 560.6713728582927,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -590,8 +590,8 @@
     },
     {
       "id": "pnvb4pa1zpmd",
-      "x": -1970.9113460266112,
-      "y": -52.80517877744933,
+      "x": -1886.5832210266112,
+      "y": -53.18017877744933,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -735,14 +735,14 @@
   ],
   "blueprints": [
     {
-      "name": "blueprint-1",
+      "name": "minotaur",
       "width": 50,
       "height": 50,
       "z": 1,
       "color": "#b399ff",
       "image": "blueprint-1-1764267164333.png",
       "shape": "rectangle",
-      "physicsType": "static"
+      "physicsType": "dynamic"
     },
     {
       "name": "theseus",
@@ -783,16 +783,6 @@
       "physicsType": "static"
     },
     {
-      "name": "blueprint-6",
-      "width": 50,
-      "height": 50,
-      "z": 1,
-      "color": "#99e6cc",
-      "image": "blueprint-6-1764272848488.png",
-      "shape": "rectangle",
-      "physicsType": "dynamic"
-    },
-    {
       "name": "blueprint-7",
       "width": 50,
       "height": 50,
@@ -816,7 +806,7 @@
       "width": 50,
       "height": 50,
       "z": 1,
-      "color": "#ff6699",
+      "color": "#b399ff",
       "shape": "rectangle",
       "physicsType": "dynamic"
     }
