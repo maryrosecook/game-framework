@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import type { GameSummary } from "@/lib/games";
 import { getGameImageUrl } from "@/lib/images";
 import { GameCard } from "./GameCard";
+import {
+  getDroppedPngFile,
+  uploadGameCoverImage,
+} from "@/lib/imageUploads";
 
 type HomeProps = {
   games: GameSummary[];
@@ -57,23 +61,23 @@ export function Home({ games }: HomeProps) {
     event.preventDefault();
     event.stopPropagation();
     setActiveDrop(null);
-    const [file] = Array.from(event.dataTransfer.files ?? []);
-    if (!file) return;
-    if (
-      file.type !== "image/png" &&
-      !file.name.toLowerCase().endsWith(".png")
-    ) {
+    const { file, error } = getDroppedPngFile(event);
+    if (error) {
       setUploadErrors((prev) => ({
         ...prev,
-        [gameDirectory]: "Only PNG files are supported.",
+        [gameDirectory]: error,
       }));
       return;
     }
+    if (!file) return;
 
     setUploadErrors((prev) => ({ ...prev, [gameDirectory]: null }));
     setUploadingFor(gameDirectory);
     try {
-      const imageName = await uploadGameImage(gameDirectory, file);
+      const imageName = await uploadGameCoverImage({
+        gameDirectory,
+        file,
+      });
       setGameCards((previous) =>
         previous.map((entry) =>
           entry.directory === gameDirectory
@@ -157,44 +161,4 @@ export function Home({ games }: HomeProps) {
       </div>
     </div>
   );
-}
-
-async function uploadGameImage(gameDirectory: string, file: File) {
-  const formData = new FormData();
-  formData.append("gameDirectory", gameDirectory);
-  formData.append("file", file);
-  const response = await fetch("/api/images", {
-    method: "POST",
-    body: formData,
-  });
-
-  const payload = (await response.json().catch(() => null)) as {
-    fileName?: string;
-    error?: string;
-  } | null;
-
-  if (!response.ok || !payload?.fileName) {
-    throw new Error(payload?.error ?? "Failed to upload image");
-  }
-
-  const settingsResponse = await fetch(
-    `/api/game-settings/${encodeURIComponent(gameDirectory)}`,
-    {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image: payload.fileName }),
-    }
-  );
-
-  const settingsPayload = (await settingsResponse.json().catch(() => null)) as {
-    error?: string;
-  } | null;
-
-  if (!settingsResponse.ok) {
-    throw new Error(
-      settingsPayload?.error ?? "Failed to save game cover image"
-    );
-  }
-
-  return payload.fileName;
 }

@@ -7,7 +7,7 @@ import { EditPanel } from "@/components/EditPanel";
 import { useGame } from "@/engine/useGame";
 import { Blueprint, RawThing } from "@/engine/types";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import { createBlueprint } from "@/lib/blueprints";
+import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
 import { getColorOptions } from "@/components/ColorGrid";
 
 type GameProps = {
@@ -71,6 +71,7 @@ export function Game({ gameDirectory }: GameProps) {
         canvasRef={canvasRef}
         subscribe={subscribe}
         engine={engine}
+        gameDirectory={gameDirectory}
         onSelectBlueprint={setActiveBlueprintName}
       />
       {activeBlueprintName ? (
@@ -92,16 +93,4 @@ export function Game({ gameDirectory }: GameProps) {
       </div>
     </div>
   );
-}
-
-
-function getNextBlueprintName(blueprints: Blueprint[]) {
-  const existing = new Set(blueprints.map((bp) => bp.name));
-  let counter = blueprints.length + 1;
-  let candidate = `blueprint-${counter}`;
-  while (existing.has(candidate)) {
-    counter += 1;
-    candidate = `blueprint-${counter}`;
-  }
-  return candidate;
 }
