@@ -53,12 +53,15 @@ export type GameEngineDependencies = {
   timeWitnessDrive?: TimeWitnessDrive;
 };
 
+const DEFAULT_BACKGROUND_COLOR = "#f8fafc";
+
 function cloneDefaultRawGameState(): RawGameState {
   return {
     things: [],
     blueprints: [],
     camera: { x: 0, y: 0 },
     screen: { width: 800, height: 600 },
+    backgroundColor: DEFAULT_BACKGROUND_COLOR,
     isPaused: false,
     selectedThingId: null,
     selectedThingIds: [],
@@ -233,6 +236,8 @@ export class GameEngine {
         return this.gameState.camera;
       case "screen":
         return this.gameState.screen;
+      case "backgroundColor":
+        return this.gameState.backgroundColor;
       case "isPaused":
         return this.gameState.isPaused;
       case "selectedThingId":
@@ -345,6 +350,7 @@ export class GameEngine {
       blueprints,
       camera: payload.game.camera,
       screen: payload.game.screen,
+      backgroundColor: this.persistedGameState.backgroundColor,
       isPaused: false,
       selectedThingId: null,
       selectedThingIds: [],
@@ -844,6 +850,16 @@ export class GameEngine {
         };
         return true;
       }
+      case "setBackgroundColor": {
+        if (this.persistedGameState.backgroundColor === action.color) {
+          return false;
+        }
+        this.persistedGameState = {
+          ...this.persistedGameState,
+          backgroundColor: action.color,
+        };
+        return true;
+      }
       default:
         return false;
     }
@@ -959,11 +975,20 @@ export class GameEngine {
 }
 
 function persistedStateFromGameFile(game: GameFile): PersistedGameState {
+  const fallbackClear = (game as { clearColor?: string }).clearColor;
+  const backgroundColor =
+    typeof game.backgroundColor === "string" &&
+    game.backgroundColor.trim().length > 0
+      ? game.backgroundColor
+      : typeof fallbackClear === "string" && fallbackClear.trim().length > 0
+        ? fallbackClear
+        : DEFAULT_BACKGROUND_COLOR;
   return {
     things: game.things.map((thing) => normalizeThingFromFile({ ...thing })),
     blueprints: game.blueprints.map((blueprint) => ({ ...blueprint })),
     camera: { ...game.camera },
     screen: { ...game.screen },
+    backgroundColor,
     image: game.image ?? null,
     isPaused: false,
     selectedThingId: null,
@@ -1079,6 +1104,7 @@ function serializeGame(state: PersistedGameState): GameFile {
     blueprints: state.blueprints,
     camera: state.camera,
     screen: state.screen,
+    backgroundColor: state.backgroundColor,
     image: state.image ?? null,
   };
 }

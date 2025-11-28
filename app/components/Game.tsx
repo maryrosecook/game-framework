@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { GameCanvas } from "@/components/GameCanvas";
 import { Toolbar } from "@/components/Toolbar";
-import { BlueprintPanel } from "@/components/BlueprintPanel";
+import { EditPanel } from "@/components/EditPanel";
 import { useGame } from "@/engine/useGame";
 import { Blueprint, RawThing } from "@/engine/types";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
@@ -74,10 +74,9 @@ export function Game({ gameDirectory }: GameProps) {
         onSelectBlueprint={setActiveBlueprintName}
       />
       {activeBlueprintName ? (
-        <BlueprintPanel
+        <EditPanel
           blueprintName={activeBlueprintName}
           subscribe={subscribe}
-          engine={engine}
           onRename={setActiveBlueprintName}
           gameDirectory={gameDirectory}
         />

@@ -8,6 +8,7 @@ const COLOR_OPTIONS = [
   "#66cc99",
   "#ffb3cc",
   "#ff6699",
+  "#f8fafc",
   "#f5f5f5",
   "#d9d9d9",
   "#b3b3b3",

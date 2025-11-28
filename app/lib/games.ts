@@ -11,6 +11,7 @@ import {
 const ROOT = process.cwd();
 const GAMES_ROOT = path.join(ROOT, "app", "games");
 const EDITOR_SETTINGS_PATH = path.join(ROOT, "data", "editorSettings.json");
+const DEFAULT_BACKGROUND_COLOR = "#f8fafc";
 
 const GAME_NAME_PATTERN = /[^a-z0-9]+/g;
 
@@ -22,6 +23,7 @@ const DEFAULT_GAME_FILE: GameFile = {
   blueprints: [],
   camera: { x: 0, y: 0 },
   screen: { width: 800, height: 600 },
+  backgroundColor: DEFAULT_BACKGROUND_COLOR,
   image: null,
 };
 
@@ -277,9 +279,21 @@ export function isGameFile(value: unknown): value is GameFile {
   const hasBlueprints =
     Array.isArray(record.blueprints) &&
     record.blueprints.every((bp) => isBlueprintData(bp));
+  const hasBackgroundColor =
+    record.backgroundColor === undefined ||
+    typeof record.backgroundColor === "string" ||
+    record.clearColor === undefined ||
+    typeof record.clearColor === "string";
   const hasValidImage =
     record.image === undefined ||
     record.image === null ||
     typeof record.image === "string";
-  return hasCamera && hasScreen && hasThings && hasBlueprints && hasValidImage;
+  return (
+    hasCamera &&
+    hasScreen &&
+    hasThings &&
+    hasBlueprints &&
+    hasBackgroundColor &&
+    hasValidImage
+  );
 }
