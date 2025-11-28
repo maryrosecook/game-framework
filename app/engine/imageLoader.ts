@@ -1,72 +1,26 @@
 import { getBlueprintImageUrl } from "@/lib/images";
-import {
-  imageColorToTransparent,
-  WHITE_THRESHOLD,
-} from "./imageColorToTransparent";
 import { Blueprint } from "./types";
-
-type LoadOptions = {
-  threshold?: number;
-};
-
-export function renderWithTransparentWhite(
-  image: HTMLImageElement,
-  threshold: number
-): CanvasImageSource | null {
-  const width = image.naturalWidth || image.width;
-  const height = image.naturalHeight || image.height;
-  if (width === 0 || height === 0) {
-    return null;
-  }
-
-  const canvas =
-    typeof OffscreenCanvas !== "undefined"
-      ? new OffscreenCanvas(width, height)
-      : document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-
-  const context =
-    canvas instanceof OffscreenCanvas
-      ? canvas.getContext("2d")
-      : canvas.getContext("2d");
-  if (!context) {
-    return null;
-  }
-
-  context.drawImage(image, 0, 0, width, height);
-  const [processed] = imageColorToTransparent(
-    [context.getImageData(0, 0, width, height)],
-    { threshold }
-  );
-  context.putImageData(processed, 0, 0);
-  return canvas;
-}
 
 export async function loadBlueprintImages(
   gameDirectory: string,
-  blueprints: Blueprint[],
-  options: LoadOptions = {}
+  blueprints: Blueprint[]
 ): Promise<Map<string, CanvasImageSource>> {
   const sources = uniqueSources(gameDirectory, blueprints);
-  return loadImages(sources, options);
+  return loadImages(sources);
 }
 
 export async function loadImages(
-  sources: string[],
-  options: LoadOptions = {}
+  sources: string[]
 ): Promise<Map<string, CanvasImageSource>> {
   if (sources.length === 0 || typeof Image === "undefined") {
     return new Map();
   }
 
-  const threshold = options.threshold ?? WHITE_THRESHOLD;
   const pairs = await Promise.all(
     sources.map(async (src) => {
       try {
         const image = await loadImage(src);
-        const processed = renderWithTransparentWhite(image, threshold);
-        return processed ? [src, processed] : null;
+        return [src, image] as [string, CanvasImageSource];
       } catch (error) {
         console.warn("Failed to load blueprint image", error);
         return null;
