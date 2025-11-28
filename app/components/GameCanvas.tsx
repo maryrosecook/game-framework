@@ -7,14 +7,11 @@ import { GameSubscribe } from "@/engine/useGame";
 import { createThingFromBlueprint } from "@/engine/blueprints";
 import { createThingId } from "@/lib/id";
 import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
-import {
-  getDroppedPngFile,
-  loadImageDimensions,
-  uploadBlueprintImage,
-} from "@/lib/imageUploads";
+import { getDroppedPngFile, uploadBlueprintImage } from "@/lib/imageUploads";
 import { getColorOptions } from "@/components/ColorGrid";
 
 const BLUEPRINT_MIME = "application/x-blueprint";
+const IMPORTED_BLUEPRINT_SIZE = 100;
 
 type DragTarget = { thingId: string; offsetX: number; offsetY: number };
 
@@ -298,25 +295,16 @@ export const GameCanvas = memo(function GameCanvas({
         existingBlueprints,
         file.name.replace(/\.[^.]+$/, "")
       );
-      const [dimensions, imageName] = await Promise.all([
-        loadImageDimensions(file),
-        uploadBlueprintImage({
-          gameDirectory,
-          blueprintName,
-          file,
-        }),
-      ]);
+      const imageName = await uploadBlueprintImage({
+        gameDirectory,
+        blueprintName,
+        file,
+      });
       const colors = getColorOptions();
       const color =
         colors[existingBlueprints.length % colors.length] ?? "#888888";
-      const width =
-        dimensions && Number.isFinite(dimensions.width)
-          ? Math.max(10, dimensions.width)
-          : undefined;
-      const height =
-        dimensions && Number.isFinite(dimensions.height)
-          ? Math.max(10, dimensions.height)
-          : undefined;
+      const width = IMPORTED_BLUEPRINT_SIZE;
+      const height = IMPORTED_BLUEPRINT_SIZE;
       const blueprint = createBlueprint({
         name: blueprintName,
         color,
