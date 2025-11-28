@@ -18,6 +18,7 @@ export function EditPanel({
   onRename: (next: string) => void;
   gameDirectory: string;
 }) {
+  const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
   const [blueprint, dispatchGame] = subscribe<Blueprint | undefined>([
     "blueprints",
     blueprintName,
@@ -46,6 +47,7 @@ export function EditPanel({
       {activeTab === "blueprint" ? (
         <BlueprintTab
           blueprint={blueprint}
+          blueprints={blueprints ?? []}
           dispatch={dispatchGame}
           gameDirectory={gameDirectory}
           onRename={onRename}

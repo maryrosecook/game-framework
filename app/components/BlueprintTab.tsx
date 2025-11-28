@@ -7,10 +7,12 @@ import {
 } from "@/engine/types";
 import { ColorGrid } from "@/components/ColorGrid";
 import { SelectField } from "@/components/SelectField";
+import { ArrangeButton } from "@/components/ArrangeButton";
 import { getBlueprintImageUrl } from "@/lib/images";
 
 type BlueprintTabProps = {
   blueprint: Blueprint;
+  blueprints: Blueprint[];
   gameDirectory: string;
   dispatch: (action: GameAction) => void;
   onRename: (value: string) => void;
@@ -18,6 +20,7 @@ type BlueprintTabProps = {
 
 export function BlueprintTab({
   blueprint,
+  blueprints,
   gameDirectory,
   dispatch,
   onRename,
@@ -26,6 +29,7 @@ export function BlueprintTab({
   const [isUploading, setIsUploading] = useState(false);
 
   const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);
+  const zBounds = getZBounds(blueprints, blueprint.z);
 
   const handleUpdate = <K extends keyof BlueprintData>(
     property: K,
@@ -102,6 +106,22 @@ export function BlueprintTab({
     });
   };
 
+  const handleSendToFront = () => {
+    const targetZ =
+      blueprint.z >= zBounds.maxZ ? blueprint.z : zBounds.maxZ + 1;
+    if (targetZ !== blueprint.z) {
+      handleUpdate("z", targetZ);
+    }
+  };
+
+  const handleSendToBack = () => {
+    const targetZ =
+      blueprint.z <= zBounds.minZ ? blueprint.z : zBounds.minZ - 1;
+    if (targetZ !== blueprint.z) {
+      handleUpdate("z", targetZ);
+    }
+  };
+
   return (
     <>
       <header className="mb-4">
@@ -170,6 +190,20 @@ export function BlueprintTab({
             onChange={(value) => handleUpdate("height", value)}
           />
         </div>
+        <div className="grid grid-cols-2 gap-2">
+          <ArrangeButton
+            label="Front"
+            icon="↑"
+            onClick={handleSendToFront}
+            disabled={blueprint.z >= zBounds.maxZ}
+          />
+          <ArrangeButton
+            label="Back"
+            icon="↓"
+            onClick={handleSendToBack}
+            disabled={blueprint.z <= zBounds.minZ}
+          />
+        </div>
         <SelectField
           label="Shape"
           value={blueprint.shape}
@@ -233,6 +267,19 @@ function Field({
       />
     </label>
   );
+}
+
+function getZBounds(blueprints: Blueprint[], fallback: number) {
+  if (blueprints.length === 0) {
+    return { minZ: fallback, maxZ: fallback };
+  }
+  let minZ = blueprints[0].z;
+  let maxZ = blueprints[0].z;
+  for (const blueprint of blueprints) {
+    minZ = Math.min(minZ, blueprint.z);
+    maxZ = Math.max(maxZ, blueprint.z);
+  }
+  return { minZ, maxZ };
 }
 
 function buildBlueprintPropertyAction(
