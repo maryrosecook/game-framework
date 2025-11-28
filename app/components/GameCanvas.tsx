@@ -1,10 +1,22 @@
 "use client";
 
-import { DragEvent, memo, PointerEvent, RefObject, useRef } from "react";
+import {
+  DragEvent,
+  memo,
+  PointerEvent,
+  RefObject,
+  useMemo,
+  useRef,
+} from "react";
 import { GameEngine } from "@/engine/engine";
 import { Blueprint, RuntimeGameState, RuntimeThing } from "@/engine/types";
 import { GameSubscribe } from "@/engine/useGame";
 import { createThingFromBlueprint } from "@/engine/blueprints";
+import {
+  ThingStack,
+  createThingStack,
+  findTopmostInStack,
+} from "@/engine/thingStacking";
 import { createThingId } from "@/lib/id";
 
 const BLUEPRINT_MIME = "application/x-blueprint";
@@ -30,6 +42,14 @@ export const GameCanvas = memo(function GameCanvas({
   const [camera] = subscribe<RuntimeGameState["camera"]>(["camera"]);
   const [selectedThingIds] = subscribe<string[]>(["selectedThingIds"]);
   const [selectedThingId] = subscribe<string | null>(["selectedThingId"]);
+
+  const blueprintLookup = useMemo(
+    () =>
+      new Map<string, Blueprint>(
+        (blueprints ?? []).map((blueprint) => [blueprint.name, blueprint])
+      ),
+    [blueprints]
+  );
 
   const dragRef = useRef<{
     mode: "move" | "resize";
@@ -63,15 +83,9 @@ export const GameCanvas = memo(function GameCanvas({
       return;
     }
 
-    const getBlueprintZ = (blueprintName: string) => {
-      const blueprint = (blueprints ?? []).find(
-        (bp) => bp.name === blueprintName
-      );
-      return blueprint?.z ?? 1;
-    };
-
     const currentThings = things ?? [];
-    const hit = findTopThing(point, currentThings, getBlueprintZ);
+    const stack = createThingStack(currentThings, blueprintLookup);
+    const hit = findTopThing(point, stack);
     if (hit) {
       const nextSelected = nextSelectedIdsForClick(
         selectedThingIds,
@@ -294,20 +308,21 @@ function getWorldPoint(
   };
 }
 
-function findTopThing(
-  point: { x: number; y: number },
-  things: RuntimeThing[],
-  getBlueprintZ: (blueprintName: string) => number
-) {
-  const sorted = [...things].sort(
-    (a, b) => getBlueprintZ(b.blueprintName) - getBlueprintZ(a.blueprintName)
+function findTopThing(point: { x: number; y: number }, stack: ThingStack) {
+  return findTopmostInStack(stack, (thing) =>
+    isPointInsideThing(point, thing)
   );
-  return sorted.find(
-    (thing) =>
-      point.x >= thing.x &&
-      point.x <= thing.x + thing.width &&
-      point.y >= thing.y &&
-      point.y <= thing.y + thing.height
+}
+
+function isPointInsideThing(
+  point: { x: number; y: number },
+  thing: RuntimeThing
+) {
+  return (
+    point.x >= thing.x &&
+    point.x <= thing.x + thing.width &&
+    point.y >= thing.y &&
+    point.y <= thing.y + thing.height
   );
 }
 

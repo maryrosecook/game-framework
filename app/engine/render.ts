@@ -1,4 +1,5 @@
 import { getBlueprintForThing } from "./blueprints";
+import { createThingStack } from "./thingStacking";
 import { Blueprint, GameContext, RuntimeThing } from "./types";
 
 type RenderConfig = {
@@ -45,12 +46,8 @@ export function renderGame(
   ctx.save();
   ctx.translate(screenOffsetX - state.camera.x, screenOffsetY - state.camera.y);
 
-  const sorted = [...state.things].sort(
-    (a, b) =>
-      (blueprintLookup.get(a.blueprintName)?.z ?? 1) -
-      (blueprintLookup.get(b.blueprintName)?.z ?? 1)
-  );
-  for (const thing of sorted) {
+  const stacking = createThingStack(state.things, blueprintLookup);
+  for (const thing of stacking) {
     renderThing(ctx, thing, game, blueprintLookup, getImageForThing);
   }
 
