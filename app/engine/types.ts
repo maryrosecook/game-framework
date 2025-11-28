@@ -111,6 +111,7 @@ export type RuntimeGameState = {
 
 export type RawGameState = Omit<RuntimeGameState, "things"> & {
   things: RawThing[];
+  image?: string | null;
 };
 
 export type PersistedGameState = Omit<RawGameState, "blueprints"> & {
@@ -177,6 +178,7 @@ export type GameFile = {
   blueprints: BlueprintData[];
   camera: Vector;
   screen: { width: number; height: number };
+  image?: string | null;
 };
 
 export type SubscriptionPath =

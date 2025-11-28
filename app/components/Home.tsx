@@ -1,22 +1,25 @@
 "use client";
 
-import Link from "next/link";
+import { DragEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import type { GameSummary } from "@/lib/games";
+import { getGameImageUrl } from "@/lib/images";
+import { GameCard } from "./GameCard";
 
 type HomeProps = {
-  games: string[];
+  games: GameSummary[];
 };
 
 export function Home({ games }: HomeProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-
-  const sortedGames = useMemo(
-    () => [...games].sort((a, b) => a.localeCompare(b)),
-    [games]
-  );
+  const [gameCards, setGameCards] = useState<GameSummary[]>(games);
+  const [activeDrop, setActiveDrop] = useState<string | null>(null);
+  const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+  const [uploadErrors, setUploadErrors] = useState<
+    Record<string, string | null>
+  >({});
 
   const handleCreateGame = async () => {
     const name = window.prompt("Name your new game");
@@ -47,19 +50,66 @@ export function Home({ games }: HomeProps) {
     }
   };
 
+  const handleDropImage = async (
+    gameDirectory: string,
+    event: DragEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setActiveDrop(null);
+    const [file] = Array.from(event.dataTransfer.files ?? []);
+    if (!file) return;
+    if (
+      file.type !== "image/png" &&
+      !file.name.toLowerCase().endsWith(".png")
+    ) {
+      setUploadErrors((prev) => ({
+        ...prev,
+        [gameDirectory]: "Only PNG files are supported.",
+      }));
+      return;
+    }
+
+    setUploadErrors((prev) => ({ ...prev, [gameDirectory]: null }));
+    setUploadingFor(gameDirectory);
+    try {
+      const imageName = await uploadGameImage(gameDirectory, file);
+      setGameCards((previous) =>
+        previous.map((entry) =>
+          entry.directory === gameDirectory
+            ? { ...entry, image: imageName }
+            : entry
+        )
+      );
+    } catch (uploadError) {
+      const message =
+        uploadError instanceof Error
+          ? uploadError.message
+          : "Failed to save image";
+      setUploadErrors((prev) => ({ ...prev, [gameDirectory]: message }));
+    } finally {
+      setUploadingFor(null);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-slate-900 px-6 py-12 text-white">
-      <div className="w-full max-w-3xl space-y-8 rounded-2xl bg-slate-800/70 p-10 shadow-2xl ring-1 ring-white/10">
+    <div className="min-h-screen w-full bg-gradient-to-br from-sky-50 via-indigo-50 to-white text-slate-900">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10">
         <header className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-slate-400">
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
               Commando
             </p>
-            <h1 className="text-3xl font-semibold">Select a game</h1>
+            <h1 className="text-3xl font-semibold leading-tight">
+              Select a game
+            </h1>
+            <p className="text-sm text-slate-500">
+              Drop a PNG on a game square to set its cover art.
+            </p>
           </div>
           <button
             type="button"
-            className="rounded-full bg-lime-400 px-5 py-2 text-slate-950 transition hover:bg-lime-300 focus:outline-none focus:ring-4 focus:ring-lime-200 disabled:cursor-not-allowed disabled:bg-slate-600 disabled:text-slate-300"
+            className="rounded-full bg-indigo-500 px-5 py-2 text-sm font-semibold text-white shadow-lg transition hover:translate-y-[-1px] hover:bg-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:bg-indigo-200"
             onClick={handleCreateGame}
             disabled={isCreating}
           >
@@ -67,36 +117,84 @@ export function Home({ games }: HomeProps) {
           </button>
         </header>
 
-        <div className="space-y-3">
-          {sortedGames.length === 0 ? (
-            <p className="text-slate-300">No games yet. Create one to start.</p>
+        <div className="relative flex justify-center">
+          {gameCards.length === 0 ? (
+            <p className="text-center text-sm text-slate-600">
+              No games yet. Create one to start building.
+            </p>
           ) : (
-            sortedGames.map((game) => (
-              <Link
-                key={game}
-                href={`/${game}`}
-                className="group flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-5 py-4 transition hover:-translate-y-0.5 hover:border-lime-300 hover:bg-white/10 hover:text-white"
-              >
-                <div className="flex flex-col">
-                  <span className="text-lg font-medium">{game}</span>
-                  <span className="text-sm text-slate-300">
-                    Open editor and runtime
-                  </span>
+            <div className="flex max-w-full items-stretch gap-5 overflow-x-auto pb-2">
+              {gameCards.map((game) => (
+                <div key={game.directory} className="flex flex-col gap-2">
+                  <GameCard
+                    game={game}
+                    isActiveDrop={activeDrop === game.directory}
+                    isUploading={uploadingFor === game.directory}
+                    imageUrl={getGameImageUrl(game.directory, game.image)}
+                    onDropImage={(event) =>
+                      handleDropImage(game.directory, event)
+                    }
+                    onNavigate={() => router.push(`/${game.directory}`)}
+                    onDragEnter={() => setActiveDrop(game.directory)}
+                    onDragLeave={() => setActiveDrop(null)}
+                  />
+                  {uploadErrors[game.directory] ? (
+                    <p className="text-xs text-red-600">
+                      {uploadErrors[game.directory]}
+                    </p>
+                  ) : null}
                 </div>
-                <span className="text-sm font-semibold text-lime-300 opacity-0 transition group-hover:opacity-100">
-                  Launch →
-                </span>
-              </Link>
-            ))
+              ))}
+            </div>
           )}
         </div>
 
         {error ? (
-          <div className="rounded-lg bg-red-500/10 px-4 py-3 text-sm text-red-100 ring-1 ring-red-500/30">
+          <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-200">
             {error}
           </div>
         ) : null}
       </div>
     </div>
   );
+}
+
+async function uploadGameImage(gameDirectory: string, file: File) {
+  const formData = new FormData();
+  formData.append("gameDirectory", gameDirectory);
+  formData.append("file", file);
+  const response = await fetch("/api/images", {
+    method: "POST",
+    body: formData,
+  });
+
+  const payload = (await response.json().catch(() => null)) as {
+    fileName?: string;
+    error?: string;
+  } | null;
+
+  if (!response.ok || !payload?.fileName) {
+    throw new Error(payload?.error ?? "Failed to upload image");
+  }
+
+  const settingsResponse = await fetch(
+    `/api/game-settings/${encodeURIComponent(gameDirectory)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: payload.fileName }),
+    }
+  );
+
+  const settingsPayload = (await settingsResponse.json().catch(() => null)) as {
+    error?: string;
+  } | null;
+
+  if (!settingsResponse.ok) {
+    throw new Error(
+      settingsPayload?.error ?? "Failed to save game cover image"
+    );
+  }
+
+  return payload.fileName;
 }

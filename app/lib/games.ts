@@ -15,12 +15,14 @@ const EDITOR_SETTINGS_PATH = path.join(ROOT, "data", "editorSettings.json");
 const GAME_NAME_PATTERN = /[^a-z0-9]+/g;
 
 export type EditorSettings = { currentGameDirectory: string };
+export type GameSummary = { directory: string; image: string | null };
 
 const DEFAULT_GAME_FILE: GameFile = {
   things: [],
   blueprints: [],
   camera: { x: 0, y: 0 },
   screen: { width: 800, height: 600 },
+  image: null,
 };
 
 const DEFAULT_CAMERA_TEMPLATE = `import { RuntimeGameState } from "@/engine/types";
@@ -50,18 +52,25 @@ export function gameSlug(name: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-export async function listGames() {
+export async function listGames(): Promise<GameSummary[]> {
   const entries = await fs.readdir(GAMES_ROOT, { withFileTypes: true });
-  const candidates: string[] = [];
+  const candidates: GameSummary[] = [];
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
     const gameFilePath = getGameFilePath(entry.name);
     const hasGameFile = await fileExists(gameFilePath);
     if (hasGameFile) {
-      candidates.push(entry.name);
+      let image: string | null = null;
+      try {
+        const game = await readGameFile(entry.name);
+        image = game.image ?? null;
+      } catch (error) {
+        console.warn("Failed to read game file for listing", error);
+      }
+      candidates.push({ directory: entry.name, image });
     }
   }
-  return candidates.sort();
+  return candidates.sort((a, b) => a.directory.localeCompare(b.directory));
 }
 
 export async function readEditorSettings(): Promise<EditorSettings> {
@@ -268,6 +277,9 @@ export function isGameFile(value: unknown): value is GameFile {
   const hasBlueprints =
     Array.isArray(record.blueprints) &&
     record.blueprints.every((bp) => isBlueprintData(bp));
-  console.log(hasCamera, hasScreen, hasThings, hasBlueprints);
-  return hasCamera && hasScreen && hasThings && hasBlueprints;
+  const hasValidImage =
+    record.image === undefined ||
+    record.image === null ||
+    typeof record.image === "string";
+  return hasCamera && hasScreen && hasThings && hasBlueprints && hasValidImage;
 }

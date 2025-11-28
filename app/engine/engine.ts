@@ -70,6 +70,7 @@ function cloneDefaultPersistedState(): PersistedGameState {
   return {
     ...base,
     blueprints: [],
+    image: null,
     things: [],
   };
 }
@@ -963,6 +964,7 @@ function persistedStateFromGameFile(game: GameFile): PersistedGameState {
     blueprints: game.blueprints.map((blueprint) => ({ ...blueprint })),
     camera: { ...game.camera },
     screen: { ...game.screen },
+    image: game.image ?? null,
     isPaused: false,
     selectedThingId: null,
     selectedThingIds: [],
@@ -1077,5 +1079,6 @@ function serializeGame(state: PersistedGameState): GameFile {
     blueprints: state.blueprints,
     camera: state.camera,
     screen: state.screen,
+    image: state.image ?? null,
   };
 }

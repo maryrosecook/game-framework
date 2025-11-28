@@ -17,7 +17,8 @@ export default async function GamePage({ params }: PageProps) {
 
   const availableGames = await listGames();
   const resolvedGame =
-    availableGames.find((game) => gameSlug(game) === slug) ?? null;
+    availableGames.find((game) => gameSlug(game.directory) === slug)
+      ?.directory ?? null;
   if (!resolvedGame) {
     notFound();
   }
