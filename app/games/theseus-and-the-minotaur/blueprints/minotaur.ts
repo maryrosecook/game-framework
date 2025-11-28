@@ -106,6 +106,16 @@ export default function createMinotaurBlueprint(data: BlueprintData) {
       }
       followPath(thing, state);
     },
+    collision: (
+      _thing: RuntimeThing,
+      other: RuntimeThing,
+      game: GameContext
+    ) => {
+      if (other.blueprintName !== THESEUS_BLUEPRINT) {
+        return;
+      }
+      game.destroy(other);
+    },
     render: (
       thing: RuntimeThing,
       _game: GameContext,
