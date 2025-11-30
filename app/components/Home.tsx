@@ -98,50 +98,28 @@ export function Home({ games }: HomeProps) {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-sky-50 via-indigo-50 to-white text-slate-900">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div className="space-y-1">
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-              Commando
-            </p>
-            <h1 className="text-3xl font-semibold leading-tight">
-              Select a game
-            </h1>
-            <p className="text-sm text-slate-500">
-              Drop a PNG on a game square to set its cover art.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="rounded-full bg-indigo-500 px-5 py-2 text-sm font-semibold text-white shadow-lg transition hover:translate-y-[-1px] hover:bg-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:bg-indigo-200"
-            onClick={handleCreateGame}
-            disabled={isCreating}
-          >
-            {isCreating ? "Creating…" : "New game"}
-          </button>
+      <div className="flex w-full flex-col gap-8 px-6 py-10 sm:px-10 lg:px-[100px]">
+        <header className="text-left">
+          <h1 className="text-2xl font-semibold leading-tight text-slate-900">
+            Game editor
+          </h1>
         </header>
-
-        <div className="relative flex justify-center">
-          {gameCards.length === 0 ? (
-            <p className="text-center text-sm text-slate-600">
-              No games yet. Create one to start building.
-            </p>
-          ) : (
-            <div className="flex max-w-full items-stretch gap-5 overflow-x-auto pb-2">
-              {gameCards.map((game) => (
-                <div key={game.directory} className="flex flex-col gap-2">
-                  <GameCard
-                    game={game}
-                    isActiveDrop={activeDrop === game.directory}
-                    isUploading={uploadingFor === game.directory}
-                    imageUrl={getGameImageUrl(game.directory, game.image)}
-                    onDropImage={(event) =>
-                      handleDropImage(game.directory, event)
-                    }
-                    onNavigate={() => router.push(`/${game.directory}`)}
-                    onDragEnter={() => setActiveDrop(game.directory)}
-                    onDragLeave={() => setActiveDrop(null)}
-                  />
+        <div className="relative flex justify-start">
+          <div className="flex w-full flex-wrap items-stretch justify-start gap-5 pb-2">
+            {gameCards.map((game) => (
+              <div key={game.directory} className="flex flex-col gap-2">
+                <GameCard
+                  game={game}
+                  isActiveDrop={activeDrop === game.directory}
+                  isUploading={uploadingFor === game.directory}
+                  imageUrl={getGameImageUrl(game.directory, game.image)}
+                  onDropImage={(event) =>
+                    handleDropImage(game.directory, event)
+                  }
+                  onNavigate={() => router.push(`/${game.directory}`)}
+                  onDragEnter={() => setActiveDrop(game.directory)}
+                  onDragLeave={() => setActiveDrop(null)}
+                />
                   {uploadErrors[game.directory] ? (
                     <p className="text-xs text-red-600">
                       {uploadErrors[game.directory]}
@@ -149,8 +127,8 @@ export function Home({ games }: HomeProps) {
                   ) : null}
                 </div>
               ))}
-            </div>
-          )}
+            <NewGameTile onCreate={handleCreateGame} isCreating={isCreating} />
+          </div>
         </div>
 
         {error ? (
@@ -160,5 +138,31 @@ export function Home({ games }: HomeProps) {
         ) : null}
       </div>
     </div>
+  );
+}
+
+function NewGameTile({
+  isCreating,
+  onCreate,
+}: {
+  isCreating: boolean;
+  onCreate: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onCreate}
+      disabled={isCreating}
+      className="group relative aspect-square h-48 w-48 shrink-0 cursor-pointer bg-white shadow-lg ring-4 ring-transparent transition hover:ring-indigo-300 focus:outline-none disabled:cursor-not-allowed disabled:opacity-70 md:h-56 md:w-56"
+    >
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-5xl font-semibold text-slate-300 transition group-hover:text-indigo-400">
+          {isCreating ? "…" : "+"}
+        </span>
+      </div>
+      <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-center bg-white px-3 py-2 text-sm font-semibold text-slate-900">
+        <span className="block min-w-0 flex-1 truncate">New game</span>
+      </div>
+    </button>
   );
 }
