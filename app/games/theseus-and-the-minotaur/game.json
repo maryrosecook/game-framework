@@ -14,8 +14,8 @@
     },
     {
       "id": "ryesfafh6lpw",
-      "x": -1749.131056583925,
-      "y": -705.9536271417073,
+      "x": -133.92810246798854,
+      "y": 390.3341855169844,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -934,5 +934,5 @@
     "height": 600
   },
   "backgroundColor": "#4d4d4d",
-  "image": null
+  "image": "pixel-art-1764178801443-zpmoejnum-1764527193747.png"
 }
