@@ -1015,6 +1015,7 @@ function hashThing(thing: RuntimeThing) {
   return [
     thing.x,
     thing.y,
+    thing.z,
     thing.width,
     thing.height,
     thing.angle,
@@ -1023,6 +1024,7 @@ function hashThing(thing: RuntimeThing) {
     thing.physicsType,
     thing.shape,
     thing.blueprintName,
+    JSON.stringify(thing.data),
   ].join("|");
 }
 
@@ -1031,6 +1033,7 @@ function runtimeThingToThing(thing: RuntimeThing): RawThing {
     id: thing.id,
     x: thing.x,
     y: thing.y,
+    z: thing.z,
     width: thing.width,
     height: thing.height,
     angle: thing.angle,
@@ -1038,6 +1041,7 @@ function runtimeThingToThing(thing: RuntimeThing): RawThing {
     velocityY: thing.velocityY,
     blueprintName: thing.blueprintName,
     shape: thing.shape,
+    data: thing.data,
   };
 }
 

@@ -40,7 +40,7 @@ export type GameContext = {
   destroy: (target: RuntimeThing | string) => void;
 };
 
-export type BlueprintData = {
+export type BlueprintData<TData = unknown> = {
   name: string;
   width: number;
   height: number;
@@ -49,38 +49,44 @@ export type BlueprintData = {
   image?: string;
   shape: Shape;
   physicsType: PhysicsType;
+  data?: TData;
 };
 
-export type BlueprintModule = Partial<{
-  update: (thing: RuntimeThing, game: GameContext) => UpdateResult;
+export type BlueprintModule<TData = unknown> = Partial<{
+  update: (
+    thing: RuntimeThing<TData>,
+    game: GameContext
+  ) => UpdateResult;
   render: (
-    thing: RuntimeThing,
+    thing: RuntimeThing<TData>,
     game: GameContext,
     ctx: CanvasRenderingContext2D
   ) => void;
   input: (
-    thing: RuntimeThing,
+    thing: RuntimeThing<TData>,
     game: GameContext,
     keyState: KeyState
   ) => void;
   collision: (
-    thing: RuntimeThing,
+    thing: RuntimeThing<TData>,
     otherThing: RuntimeThing,
     game: GameContext
   ) => void;
   getAdjustedVelocity: (
-    thing: RuntimeThing,
+    thing: RuntimeThing<TData>,
     proposedVelocity: Vector,
     game: GameContext
   ) => Vector;
 }>;
 
-export type Blueprint = BlueprintData & BlueprintModule;
+export type Blueprint<TData = unknown> = BlueprintData<TData> &
+  BlueprintModule<TData>;
 
-export type RawThing = {
+export type RawThing<TData = unknown> = {
   id: string;
   x: number;
   y: number;
+  z?: number;
   width?: number;
   height?: number;
   angle: number;
@@ -89,9 +95,10 @@ export type RawThing = {
   physicsType?: PhysicsType;
   shape?: Shape;
   blueprintName: string;
+  data?: TData;
 };
 
-export type RuntimeThing = RawThing &
+export type RuntimeThing<TData = unknown> = RawThing<TData> &
   Required<
     Pick<
       RawThing,
@@ -196,3 +203,25 @@ export type SubscriptionPath =
   | ["isPaused"]
   | ["selectedThingId"]
   | ["selectedThingIds"];
+
+type InferBlueprintData<T> = T extends BlueprintData<infer D> ? D : unknown;
+
+export type BlueprintKind<Name extends string, TData = unknown> = Blueprint<
+  TData
+> & {
+  name: Name;
+};
+
+export type ThingForBlueprint<B extends BlueprintKind<string, unknown>> =
+  RuntimeThing<InferBlueprintData<B>> & {
+    blueprintName: B["name"];
+    data: InferBlueprintData<B>;
+  };
+
+export type ThingFromBlueprints<
+  Bs extends readonly BlueprintKind<string, unknown>[]
+> = {
+  [K in Bs[number] as K["name"]]: ThingForBlueprint<
+    Extract<Bs[number], { name: K["name"] }>
+  >;
+}[Bs[number]["name"]];

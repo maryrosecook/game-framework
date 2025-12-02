@@ -21,7 +21,7 @@ export function createThingStack(
 ): ThingStack {
   const layeredThings: LayeredThing[] = things.map((thing, index) => ({
     thing,
-    z: blueprintLookup.get(thing.blueprintName)?.z ?? 1,
+    z: thing.z ?? blueprintLookup.get(thing.blueprintName)?.z ?? 1,
     sequence: index,
   }));
 

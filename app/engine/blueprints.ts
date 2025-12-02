@@ -17,11 +17,13 @@ export function createThingFromBlueprint(
   const height = thing.height ?? blueprint.height;
   const x = thing.x ?? point.x - width / 2;
   const y = thing.y ?? point.y - height / 2;
+  const data = thing.data ?? blueprint.data;
 
   return {
     id: thing.id ?? createThingId(),
     x,
     y,
+    z: thing.z ?? blueprint.z,
     angle: thing.angle ?? 0,
     velocityX: thing.velocityX ?? 0,
     velocityY: thing.velocityY ?? 0,
@@ -29,5 +31,6 @@ export function createThingFromBlueprint(
     width,
     height,
     shape: thing.shape ?? blueprint.shape,
+    data,
   };
 }
