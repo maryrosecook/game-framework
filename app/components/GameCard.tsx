@@ -1,5 +1,5 @@
 import type { GameSummary } from "@/lib/games";
-import { DragEvent } from "react";
+import { DragEvent, MouseEvent } from "react";
 
 export function GameCard({
   game,
@@ -16,7 +16,7 @@ export function GameCard({
   isActiveDrop: boolean;
   isUploading: boolean;
   onDropImage: (event: DragEvent<HTMLButtonElement>) => void;
-  onNavigate: () => void;
+  onNavigate: (event: MouseEvent<HTMLButtonElement>) => void;
   onDragEnter: () => void;
   onDragLeave: () => void;
 }) {
