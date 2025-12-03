@@ -15,8 +15,8 @@
     },
     {
       "id": "37s2emmbt08r",
-      "x": 284.921875,
-      "y": 282.7271645427569,
+      "x": 179.5859375,
+      "y": 303.384765625,
       "z": 5,
       "angle": 0,
       "velocityX": 0,
@@ -24,6 +24,45 @@
       "blueprintName": "engine",
       "width": 246.3828125,
       "height": 317.43359375,
+      "shape": "rectangle"
+    },
+    {
+      "id": "pr8sgdfuu3tg",
+      "x": 176,
+      "y": 742,
+      "z": -10,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "obstacle-spawner",
+      "width": 10,
+      "height": 10,
+      "shape": "rectangle"
+    },
+    {
+      "id": "1s20nq5lurnk",
+      "x": 817.58203125,
+      "y": 267.36328125,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-7",
+      "width": 213.30859375,
+      "height": 188.140625,
+      "shape": "rectangle"
+    },
+    {
+      "id": "c29tdhfxy6sy",
+      "x": -415.2243657557417,
+      "y": 434.42578125,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-9",
+      "width": 472.19921875,
+      "height": 159.60546875,
       "shape": "rectangle"
     }
   ],
@@ -86,6 +125,34 @@
       "image": "engine-1764541780462.png",
       "shape": "rectangle",
       "physicsType": "ambient"
+    },
+    {
+      "name": "blueprint-7",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#66cc99",
+      "image": "blueprint-7-1764689171974.png",
+      "shape": "rectangle",
+      "physicsType": "dynamic"
+    },
+    {
+      "name": "blueprint-8",
+      "width": 50,
+      "height": 50,
+      "z": -11,
+      "color": "#99d6ff",
+      "shape": "rectangle",
+      "physicsType": "ambient"
+    },
+    {
+      "name": "blueprint-9",
+      "width": 50,
+      "height": 50,
+      "z": 1,
+      "color": "#66cc99",
+      "shape": "rectangle",
+      "physicsType": "ambient"
     }
   ],
   "camera": {
@@ -96,6 +163,6 @@
     "width": 800,
     "height": 600
   },
-  "backgroundColor": "#f8fafc",
+  "backgroundColor": "#99d6ff",
   "image": null
 }

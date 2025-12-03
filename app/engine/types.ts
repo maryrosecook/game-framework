@@ -1,3 +1,9 @@
+import type { ZodType } from "zod";
+
+type BivariantHandler<TArgs extends unknown[], R> = {
+  bivarianceHack(...args: TArgs): R;
+}["bivarianceHack"];
+
 export type KeyState = {
   arrowLeft: boolean;
   arrowRight: boolean;
@@ -49,14 +55,10 @@ export type BlueprintData<TData = unknown> = {
   image?: string;
   shape: Shape;
   physicsType: PhysicsType;
-  data?: TData;
 };
 
 export type BlueprintModule<TData = unknown> = Partial<{
-  update: (
-    thing: RuntimeThing<TData>,
-    game: GameContext
-  ) => UpdateResult;
+  update: (thing: RuntimeThing<TData>, game: GameContext) => UpdateResult;
   render: (
     thing: RuntimeThing<TData>,
     game: GameContext,
@@ -80,7 +82,23 @@ export type BlueprintModule<TData = unknown> = Partial<{
 }>;
 
 export type Blueprint<TData = unknown> = BlueprintData<TData> &
-  BlueprintModule<TData>;
+  BlueprintModule<TData> & { dataSchema?: ZodType<TData> };
+
+export type BlueprintDefinition<Name extends string, TData = unknown> = {
+  name: Name;
+  dataSchema?: ZodType<TData>;
+  createBlueprint: BivariantHandler<
+    [BlueprintData<TData>],
+    BlueprintKind<Name, TData>
+  >;
+  createThing: BivariantHandler<
+    [BlueprintKind<Name, TData>, Vector, Partial<RawThing<TData>>?],
+    RawThing<TData>
+  >;
+  isThing: (
+    value: RuntimeThing | RawThing | null | undefined
+  ) => value is RuntimeThing<TData> & { blueprintName: Name };
+};
 
 export type RawThing<TData = unknown> = {
   id: string;
@@ -102,7 +120,10 @@ export type RuntimeThing<TData = unknown> = RawThing<TData> &
   Required<
     Pick<
       RawThing,
-      keyof Omit<BlueprintData, "name" | "physicsType" | "image" | "z" | "color">
+      keyof Omit<
+        BlueprintData,
+        "name" | "physicsType" | "image" | "z" | "color"
+      >
     >
   > & { color: string };
 
@@ -188,6 +209,7 @@ export type GameFile = {
   camera: Vector;
   screen: { width: number; height: number };
   backgroundColor?: string;
+  clearColor?: string;
   image?: string | null;
 };
 
@@ -204,13 +226,40 @@ export type SubscriptionPath =
   | ["selectedThingId"]
   | ["selectedThingIds"];
 
-type InferBlueprintData<T> = T extends BlueprintData<infer D> ? D : unknown;
+export type InferBlueprintData<T> = T extends BlueprintDefinition<
+  infer _N,
+  infer D
+>
+  ? D
+  : T extends BlueprintData<infer D>
+  ? D
+  : T extends Blueprint<infer D>
+  ? D
+  : unknown;
 
-export type BlueprintKind<Name extends string, TData = unknown> = Blueprint<
-  TData
-> & {
+export type InferBlueprintName<T> = T extends BlueprintDefinition<infer N, any>
+  ? N
+  : T extends { name: infer N extends string }
+  ? N
+  : string;
+
+export type BlueprintKind<
+  Name extends string,
+  TData = unknown
+> = Blueprint<TData> & {
   name: Name;
 };
+
+export type BlueprintInstance<
+  Def extends BlueprintDefinition<string, unknown>
+> = ReturnType<Def["createBlueprint"]>;
+
+export type BlueprintThing<Def> = Def extends BlueprintDefinition<
+  infer N,
+  infer D
+>
+  ? RuntimeThing<D> & { blueprintName: N }
+  : never;
 
 export type ThingForBlueprint<B extends BlueprintKind<string, unknown>> =
   RuntimeThing<InferBlueprintData<B>> & {
