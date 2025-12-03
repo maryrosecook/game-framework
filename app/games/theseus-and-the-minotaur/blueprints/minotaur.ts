@@ -1,5 +1,5 @@
 import { defineBlueprint } from "@/engine/blueprints";
-import { GameContext, RuntimeThing, Vector } from "@/engine/types";
+import { BlueprintData, GameContext, RuntimeThing, Vector } from "@/engine/types";
 import { z } from "zod";
 import {
   NavGrid,
@@ -10,7 +10,7 @@ import {
   hasLineOfSight,
   worldToCell,
 } from "../navigation";
-import TheseusBlueprint from "./theseus";
+import { TheseusBlueprint } from "./theseus";
 
 const THESEUS_BLUEPRINT = "theseus";
 const ROAM_RADIUS_CELLS = 8;
@@ -33,7 +33,7 @@ const MinotaurDataSchema = z.object({
 
 type MinotaurData = z.infer<typeof MinotaurDataSchema>;
 
-const MinotaurBlueprint = defineBlueprint({
+const MinotaurBlueprintDefinition = defineBlueprint({
   name: "minotaur",
   schema: MinotaurDataSchema,
   create: (blueprintData) => ({
@@ -130,7 +130,13 @@ const MinotaurBlueprint = defineBlueprint({
   }),
 });
 
-export default MinotaurBlueprint;
+export const MinotaurBlueprint = MinotaurBlueprintDefinition;
+
+export default function createMinotaurBlueprint(
+  data: BlueprintData<MinotaurData>
+) {
+  return MinotaurBlueprintDefinition.createBlueprint(data);
+}
 
 function ensureState(thing: RuntimeThing): MinotaurData {
   const existingResult = MinotaurDataSchema.safeParse(thing.data);

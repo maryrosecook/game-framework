@@ -1,15 +1,13 @@
 import { defineBlueprint } from "@/engine/blueprints";
 import {
-  BlueprintDefinition,
+  BlueprintData,
   GameContext,
   KeyState,
   RuntimeThing,
 } from "@/engine/types";
 
-export function createSolidFillBlueprint<Name extends string>(
-  name: Name
-): BlueprintDefinition<Name> {
-  return defineBlueprint({
+export function createSolidFillBlueprint<Name extends string>(name: Name) {
+  const definition = defineBlueprint({
     name,
     create: (data) => ({
       ...data,
@@ -25,4 +23,9 @@ export function createSolidFillBlueprint<Name extends string>(
       },
     }),
   });
+
+  const createBlueprint = (data: BlueprintData) =>
+    definition.createBlueprint(data);
+
+  return createBlueprint;
 }
