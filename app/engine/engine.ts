@@ -22,7 +22,6 @@ import { reduceState } from "./reducer";
 import {
   createThingFromBlueprint,
   getBlueprintForThing,
-  isBlueprintDefinition,
   normalizeBlueprintData,
   sanitizeThingData,
 } from "./blueprints";
@@ -1105,36 +1104,38 @@ function resolveBlueprintModule(
   moduleExports: Record<string, unknown>,
   data: BlueprintData
 ): Blueprint {
-  const exported = pickBlueprintExport(moduleExports);
+  const factory = moduleExports.default;
 
-  if (isBlueprintDefinition(exported)) {
-    return exported.createBlueprint(data);
+  if (!isBlueprintFactory(factory)) {
+    console.warn(
+      `Blueprint module for "${data.name}" must default export a factory function.`
+    );
+    return { ...data };
   }
-  if (isBlueprintFactory(exported)) {
-    const functions = exported(data);
-    return { ...data, ...functions };
+
+  const blueprint = factory(data);
+  if (!isBlueprintLike(blueprint)) {
+    throw new Error(
+      `Blueprint factory for "${data.name}" must return an object with blueprint properties.`
+    );
   }
-  if (isBlueprintFactoryObject(exported)) {
-    const functions = exported.createBlueprint(data);
-    return { ...data, ...functions };
-  }
-  if (isBlueprintLike(exported)) {
-    return { ...data, ...exported };
-  }
-  return { ...data };
+
+  return { ...data, ...blueprint };
 }
 
 function resolveCameraModule(
   moduleExports: Record<string, unknown>
 ): CameraController | null {
-  const exported = pickDefaultExport(moduleExports);
-  if (isCameraUpdate(exported)) {
-    return { update: exported };
+  const update = moduleExports.default;
+
+  if (!isCameraUpdate(update)) {
+    console.warn(
+      "Camera module must default export a function that updates the camera position."
+    );
+    return null;
   }
-  if (hasCameraUpdate(exported)) {
-    return { update: exported.update };
-  }
-  return null;
+
+  return { update };
 }
 
 function serializeGame(state: PersistedGameState): GameFile {
@@ -1150,31 +1151,8 @@ function serializeGame(state: PersistedGameState): GameFile {
 
 type BlueprintFactory = (bp: BlueprintData) => Partial<Blueprint> | Blueprint;
 
-function pickBlueprintExport(exports: Record<string, unknown>): unknown {
-  if ("default" in exports && exports.default !== undefined) {
-    return exports.default;
-  }
-  if ("blueprint" in exports && exports.blueprint !== undefined) {
-    return exports.blueprint;
-  }
-  return exports;
-}
-
-function pickDefaultExport(exports: Record<string, unknown>): unknown {
-  if ("default" in exports && exports.default !== undefined) {
-    return exports.default;
-  }
-  return exports;
-}
-
 function isBlueprintFactory(value: unknown): value is BlueprintFactory {
   return typeof value === "function";
-}
-
-function isBlueprintFactoryObject(
-  value: unknown
-): value is { createBlueprint: BlueprintFactory } {
-  return hasCreateBlueprint(value);
 }
 
 function isBlueprintLike(value: unknown): value is Partial<Blueprint> {
@@ -1185,26 +1163,4 @@ function isCameraUpdate(
   value: unknown
 ): value is CameraController["update"] {
   return typeof value === "function";
-}
-
-function hasCreateBlueprint(
-  value: unknown
-): value is { createBlueprint: BlueprintFactory } {
-  return (
-    !!value &&
-    typeof value === "object" &&
-    "createBlueprint" in value &&
-    isBlueprintFactory(Reflect.get(value, "createBlueprint"))
-  );
-}
-
-function hasCameraUpdate(
-  value: unknown
-): value is { update: CameraController["update"] } {
-  return (
-    !!value &&
-    typeof value === "object" &&
-    "update" in value &&
-    isCameraUpdate(Reflect.get(value, "update"))
-  );
 }

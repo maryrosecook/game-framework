@@ -1,9 +1,7 @@
 import { RuntimeGameState, Vector } from "@/engine/types";
 
-export function update(game: RuntimeGameState): Vector {
-  const player = game.things.find(
-    (thing) => thing.blueprintName === "player"
-  );
+export default function updateCamera(game: RuntimeGameState): Vector {
+  const player = game.things.find((thing) => thing.blueprintName === "player");
   if (!player) {
     return game.camera;
   }
@@ -17,5 +15,3 @@ export function update(game: RuntimeGameState): Vector {
     y: center.y - game.screen.height / 2,
   };
 }
-
-export default { update };

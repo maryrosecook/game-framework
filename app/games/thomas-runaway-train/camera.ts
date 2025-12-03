@@ -1,5 +1,5 @@
-import { RuntimeGameState } from "@/engine/types";
+import { RuntimeGameState, Vector } from "@/engine/types";
 
-export function update(game: RuntimeGameState) {
+export default function updateCamera(game: RuntimeGameState): Vector {
   return game.camera;
 }

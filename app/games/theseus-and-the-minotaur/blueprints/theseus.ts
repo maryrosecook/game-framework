@@ -1,5 +1,11 @@
 import { defineBlueprint } from "@/engine/blueprints";
-import { BlueprintThing, GameContext, KeyState, RuntimeThing } from "@/engine/types";
+import {
+  BlueprintData,
+  BlueprintThing,
+  GameContext,
+  KeyState,
+  RuntimeThing,
+} from "@/engine/types";
 import { z } from "zod";
 
 const MOVE_SPEED = 6;
@@ -8,7 +14,7 @@ const TheseusDataSchema = z.object({ number: z.number().default(0) });
 
 export type TheseusData = z.infer<typeof TheseusDataSchema>;
 
-const TheseusBlueprint = defineBlueprint({
+const TheseusBlueprintDefinition = defineBlueprint({
   name: "theseus",
   schema: TheseusDataSchema,
   create: (data) => ({
@@ -28,13 +34,23 @@ const TheseusBlueprint = defineBlueprint({
       thing.velocityY = normalized.y * MOVE_SPEED;
     },
     update: (_thing: RuntimeThing, _game: GameContext) => undefined,
-    render: (thing: RuntimeThing, _game: GameContext, ctx: CanvasRenderingContext2D) => {
+    render: (
+      thing: RuntimeThing,
+      _game: GameContext,
+      ctx: CanvasRenderingContext2D
+    ) => {
       ctx.fillStyle = thing.color;
       ctx.fillRect(0, 0, thing.width, thing.height);
     },
   }),
 });
 
-export type TheseusThing = BlueprintThing<typeof TheseusBlueprint>;
+export const TheseusBlueprint = TheseusBlueprintDefinition;
 
-export default TheseusBlueprint;
+export type TheseusThing = BlueprintThing<typeof TheseusBlueprintDefinition>;
+
+export default function createTheseusBlueprint(
+  data: BlueprintData<TheseusData>
+) {
+  return TheseusBlueprintDefinition.createBlueprint(data);
+}

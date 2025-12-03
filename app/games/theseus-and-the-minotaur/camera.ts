@@ -1,6 +1,6 @@
 import { RuntimeGameState, Vector } from "@/engine/types";
 
-export function update(game: RuntimeGameState): Vector {
+export default function updateCamera(game: RuntimeGameState): Vector {
   const theseus = game.things.find(
     (thing) => thing.blueprintName === "theseus"
   );
@@ -18,5 +18,3 @@ export function update(game: RuntimeGameState): Vector {
     y: center.y - game.screen.height / 2,
   };
 }
-
-export default { update };
