@@ -1,6 +1,6 @@
 "use client";
 
-import { DragEvent, useState } from "react";
+import { DragEvent, MouseEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { GameSummary } from "@/lib/games";
 import { getGameImageUrl } from "@/lib/images";
@@ -24,6 +24,19 @@ export function Home({ games }: HomeProps) {
   const [uploadErrors, setUploadErrors] = useState<
     Record<string, string | null>
   >({});
+
+  const handleNavigate = (
+    gameDirectory: string,
+    event: MouseEvent<HTMLButtonElement>
+  ) => {
+    if (event.metaKey || event.ctrlKey || event.button === 1) {
+      event.preventDefault();
+      window.open(`/${gameDirectory}`, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    router.push(`/${gameDirectory}`);
+  };
 
   const handleCreateGame = async () => {
     const name = window.prompt("Name your new game");
@@ -116,7 +129,9 @@ export function Home({ games }: HomeProps) {
                   onDropImage={(event) =>
                     handleDropImage(game.directory, event)
                   }
-                  onNavigate={() => router.push(`/${game.directory}`)}
+                  onNavigate={(event) =>
+                    handleNavigate(game.directory, event)
+                  }
                   onDragEnter={() => setActiveDrop(game.directory)}
                   onDragLeave={() => setActiveDrop(null)}
                 />
