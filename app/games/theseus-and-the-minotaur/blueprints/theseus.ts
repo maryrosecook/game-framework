@@ -1,16 +1,19 @@
-import {
-  BlueprintData,
-  RuntimeGameState,
-  RuntimeThing,
-  KeyState,
-} from "@/engine/types";
+import { defineBlueprint } from "@/engine/blueprints";
+import { BlueprintThing, GameContext, KeyState, RuntimeThing } from "@/engine/types";
+import { z } from "zod";
 
 const MOVE_SPEED = 6;
 
-export default function createBlueprint2(data: BlueprintData) {
-  return {
+const TheseusDataSchema = z.object({ number: z.number().default(0) });
+
+export type TheseusData = z.infer<typeof TheseusDataSchema>;
+
+const TheseusBlueprint = defineBlueprint({
+  name: "theseus",
+  schema: TheseusDataSchema,
+  create: (data) => ({
     ...data,
-    input: (thing: RuntimeThing, _state: RuntimeGameState, keys: KeyState) => {
+    input: (thing: RuntimeThing, _game: GameContext, keys: KeyState) => {
       const horizontal = Number(keys.arrowRight) - Number(keys.arrowLeft);
       const vertical = Number(keys.arrowDown) - Number(keys.arrowUp);
       if (horizontal === 0 && vertical === 0) {
@@ -24,20 +27,14 @@ export default function createBlueprint2(data: BlueprintData) {
       thing.velocityX = normalized.x * MOVE_SPEED;
       thing.velocityY = normalized.y * MOVE_SPEED;
     },
-    update: (
-      thing: RuntimeThing,
-      _state: RuntimeGameState,
-      _things: RuntimeThing[]
-    ) => {
-      return thing;
-    },
-    render: (
-      thing: RuntimeThing,
-      _state: RuntimeGameState,
-      ctx: CanvasRenderingContext2D
-    ) => {
+    update: (_thing: RuntimeThing, _game: GameContext) => undefined,
+    render: (thing: RuntimeThing, _game: GameContext, ctx: CanvasRenderingContext2D) => {
       ctx.fillStyle = thing.color;
       ctx.fillRect(0, 0, thing.width, thing.height);
     },
-  };
-}
+  }),
+});
+
+export type TheseusThing = BlueprintThing<typeof TheseusBlueprint>;
+
+export default TheseusBlueprint;

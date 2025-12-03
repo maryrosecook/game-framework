@@ -19,7 +19,13 @@ import {
 } from "./types";
 import { blueprintSlug } from "@/lib/blueprints";
 import { reduceState } from "./reducer";
-import { getBlueprintForThing, createThingFromBlueprint } from "./blueprints";
+import {
+  createThingFromBlueprint,
+  getBlueprintForThing,
+  isBlueprintDefinition,
+  normalizeBlueprintData,
+  sanitizeThingData,
+} from "./blueprints";
 import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
 import { loadImages } from "./imageLoader";
@@ -221,7 +227,11 @@ export class GameEngine {
         );
         if (!thing) return undefined;
         if (path.length === 2) return thing;
-        return (thing as Record<string, unknown>)[path[2]];
+        if (isThingPropertyPath(path)) {
+          const key = path[2];
+          return thing[key];
+        }
+        return undefined;
       }
       case "blueprints": {
         if (path.length === 1) {
@@ -342,7 +352,7 @@ export class GameEngine {
       this.gameDirectory
     );
     const things = payload.game.things.map((thing) =>
-      normalizeThingFromFile(thing)
+      stripThingData(normalizeThingFromFile(thing))
     );
 
     this.rawGameState = {
@@ -373,7 +383,8 @@ export class GameEngine {
         /* webpackMode: "lazy" */ `@/games/${directory}/blueprints/${slug}.ts`
       );
       const blueprint = resolveBlueprintModule(blueprintModule, data);
-      resolved.push(blueprint);
+      const normalized = normalizeBlueprintData(blueprint);
+      resolved.push(normalized);
     }
     return resolved;
   }
@@ -678,9 +689,22 @@ export class GameEngine {
   }
 
   private updateRuntimeState() {
+    let rawThingsChanged = false;
+    const sanitizedThings = this.rawGameState.things.map((thing) => {
+      const sanitized = sanitizeThingData(thing, this.blueprintLookup);
+      if (sanitized !== thing) {
+        rawThingsChanged = true;
+      }
+      return sanitized;
+    });
+
+    if (rawThingsChanged) {
+      this.rawGameState = { ...this.rawGameState, things: sanitizedThings };
+    }
+
     this.gameState = {
       ...this.rawGameState,
-      things: this.rawGameState.things.map((thing) =>
+      things: sanitizedThings.map((thing) =>
         createThingProxy(thing, this.blueprintLookup)
       ),
     };
@@ -752,19 +776,26 @@ export class GameEngine {
   private applyActionToPersistedState(action: GameAction): boolean {
     switch (action.type) {
       case "setThingProperty":
-        return this.updatePersistedThing(action.thingId, (thing) => ({
-          ...thing,
-          [action.property]: action.value,
-        }));
+        return this.updatePersistedThing(action.thingId, (thing) =>
+          stripThingData({
+            ...thing,
+            [action.property]: action.value,
+          })
+        );
       case "setThingProperties":
-        return this.updatePersistedThing(action.thingId, (thing) => ({
-          ...thing,
-          ...action.properties,
-        }));
+        return this.updatePersistedThing(action.thingId, (thing) =>
+          stripThingData({
+            ...thing,
+            ...action.properties,
+          })
+        );
       case "addThing": {
         this.persistedGameState = {
           ...this.persistedGameState,
-          things: [...this.persistedGameState.things, { ...action.thing }],
+          things: [
+            ...this.persistedGameState.things,
+            stripThingData({ ...action.thing }),
+          ],
         };
         return true;
       }
@@ -877,7 +908,7 @@ export class GameEngine {
     }
     const nextThings = [...this.persistedGameState.things];
     const updated = updater({ ...nextThings[index] });
-    nextThings[index] = updated;
+    nextThings[index] = stripThingData(updated);
     this.persistedGameState = {
       ...this.persistedGameState,
       things: nextThings,
@@ -897,7 +928,7 @@ export class GameEngine {
     }
     const nextBlueprints = [...this.persistedGameState.blueprints];
     const updated = updater({ ...nextBlueprints[index] });
-    nextBlueprints[index] = updated;
+    nextBlueprints[index] = { ...updated };
     this.persistedGameState = {
       ...this.persistedGameState,
       blueprints: nextBlueprints,
@@ -919,7 +950,7 @@ export class GameEngine {
     nextBlueprints[index] = { ...nextBlueprints[index], name: nextName };
     const nextThings = this.persistedGameState.things.map((thing) =>
       thing.blueprintName === previousName
-        ? { ...thing, blueprintName: nextName }
+        ? stripThingData({ ...thing, blueprintName: nextName })
         : thing
     );
     this.persistedGameState = {
@@ -974,8 +1005,14 @@ export class GameEngine {
   }
 }
 
+function isThingPropertyPath(
+  path: SubscriptionPath
+): path is ["things", string, keyof RuntimeThing] {
+  return path[0] === "things" && path.length === 3;
+}
+
 function persistedStateFromGameFile(game: GameFile): PersistedGameState {
-  const fallbackClear = (game as { clearColor?: string }).clearColor;
+  const fallbackClear = game.clearColor;
   const backgroundColor =
     typeof game.backgroundColor === "string" &&
     game.backgroundColor.trim().length > 0
@@ -984,7 +1021,9 @@ function persistedStateFromGameFile(game: GameFile): PersistedGameState {
         ? fallbackClear
         : DEFAULT_BACKGROUND_COLOR;
   return {
-    things: game.things.map((thing) => normalizeThingFromFile({ ...thing })),
+    things: game.things.map((thing) =>
+      stripThingData(normalizeThingFromFile({ ...thing }))
+    ),
     blueprints: game.blueprints.map((blueprint) => ({ ...blueprint })),
     camera: { ...game.camera },
     screen: { ...game.screen },
@@ -1057,27 +1096,30 @@ function normalizeThingFromFile(
   };
 }
 
+function stripThingData<TData>(thing: RawThing<TData>): RawThing<undefined> {
+  const { data: _ignored, ...rest } = thing;
+  return { ...rest };
+}
+
 function resolveBlueprintModule(
   moduleExports: Record<string, unknown>,
   data: BlueprintData
 ): Blueprint {
-  const exported =
-    moduleExports.default ?? moduleExports.blueprint ?? moduleExports;
-  if (typeof exported === "function") {
-    const functions = (exported as (bp: BlueprintData) => Partial<Blueprint>)(
-      data
-    );
+  const exported = pickBlueprintExport(moduleExports);
+
+  if (isBlueprintDefinition(exported)) {
+    return exported.createBlueprint(data);
+  }
+  if (isBlueprintFactory(exported)) {
+    const functions = exported(data);
     return { ...data, ...functions };
   }
-  if (exported && typeof exported === "object") {
-    if (
-      "createBlueprint" in exported &&
-      typeof exported.createBlueprint === "function"
-    ) {
-      const functions = exported.createBlueprint(data);
-      return { ...data, ...functions };
-    }
-    return { ...data, ...(exported as Partial<Blueprint>) };
+  if (isBlueprintFactoryObject(exported)) {
+    const functions = exported.createBlueprint(data);
+    return { ...data, ...functions };
+  }
+  if (isBlueprintLike(exported)) {
+    return { ...data, ...exported };
   }
   return { ...data };
 }
@@ -1085,30 +1127,84 @@ function resolveBlueprintModule(
 function resolveCameraModule(
   moduleExports: Record<string, unknown>
 ): CameraController | null {
-  const exported =
-    (moduleExports as { default?: unknown }).default ?? moduleExports;
-  if (typeof exported === "function") {
-    return { update: exported as CameraController["update"] };
+  const exported = pickDefaultExport(moduleExports);
+  if (isCameraUpdate(exported)) {
+    return { update: exported };
   }
-  if (
-    exported &&
-    typeof exported === "object" &&
-    "update" in exported &&
-    typeof (exported as Record<string, unknown>).update === "function"
-  ) {
-    const { update } = exported as { update: CameraController["update"] };
-    return { update };
+  if (hasCameraUpdate(exported)) {
+    return { update: exported.update };
   }
   return null;
 }
 
 function serializeGame(state: PersistedGameState): GameFile {
   return {
-    things: state.things.map((thing) => ({ ...thing })),
-    blueprints: state.blueprints,
+    things: state.things.map((thing) => stripThingData({ ...thing })),
+    blueprints: state.blueprints.map((bp) => ({ ...bp })),
     camera: state.camera,
     screen: state.screen,
     backgroundColor: state.backgroundColor,
     image: state.image ?? null,
   };
+}
+
+type BlueprintFactory = (bp: BlueprintData) => Partial<Blueprint> | Blueprint;
+
+function pickBlueprintExport(exports: Record<string, unknown>): unknown {
+  if ("default" in exports && exports.default !== undefined) {
+    return exports.default;
+  }
+  if ("blueprint" in exports && exports.blueprint !== undefined) {
+    return exports.blueprint;
+  }
+  return exports;
+}
+
+function pickDefaultExport(exports: Record<string, unknown>): unknown {
+  if ("default" in exports && exports.default !== undefined) {
+    return exports.default;
+  }
+  return exports;
+}
+
+function isBlueprintFactory(value: unknown): value is BlueprintFactory {
+  return typeof value === "function";
+}
+
+function isBlueprintFactoryObject(
+  value: unknown
+): value is { createBlueprint: BlueprintFactory } {
+  return hasCreateBlueprint(value);
+}
+
+function isBlueprintLike(value: unknown): value is Partial<Blueprint> {
+  return !!value && typeof value === "object";
+}
+
+function isCameraUpdate(
+  value: unknown
+): value is CameraController["update"] {
+  return typeof value === "function";
+}
+
+function hasCreateBlueprint(
+  value: unknown
+): value is { createBlueprint: BlueprintFactory } {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    "createBlueprint" in value &&
+    isBlueprintFactory(Reflect.get(value, "createBlueprint"))
+  );
+}
+
+function hasCameraUpdate(
+  value: unknown
+): value is { update: CameraController["update"] } {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    "update" in value &&
+    isCameraUpdate(Reflect.get(value, "update"))
+  );
 }

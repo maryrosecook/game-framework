@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outDir": "./tmp-decl"
+  },
+  "include": ["app/games/theseus-and-the-minotaur/blueprints/theseus.ts"]
+}

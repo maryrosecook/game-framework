@@ -1,9 +1,6 @@
-import {
-  BlueprintData,
-  GameContext,
-  RuntimeThing,
-  Vector,
-} from "@/engine/types";
+import { defineBlueprint } from "@/engine/blueprints";
+import { GameContext, RuntimeThing, Vector } from "@/engine/types";
+import { z } from "zod";
 import {
   NavGrid,
   cellCenter,
@@ -13,6 +10,7 @@ import {
   hasLineOfSight,
   worldToCell,
 } from "../navigation";
+import TheseusBlueprint from "./theseus";
 
 const THESEUS_BLUEPRINT = "theseus";
 const ROAM_RADIUS_CELLS = 8;
@@ -23,38 +21,40 @@ const ROAM_SPEED = 2.3;
 const CHASE_SPEED = 3.6;
 const WAYPOINT_REACHED_DISTANCE = 6;
 
-type MinotaurState = {
-  path: Vector[];
-  target: Vector | null;
-  mode: "roam" | "chase";
-  lastPlanTimestamp: number;
-  lastGridSignature: string | null;
-};
+const MinotaurDataSchema = z.object({
+  path: z
+    .array(z.object({ x: z.number(), y: z.number() }))
+    .default([]),
+  target: z.object({ x: z.number(), y: z.number() }).nullable().default(null),
+  mode: z.enum(["roam", "chase"]).default("roam"),
+  lastPlanTimestamp: z.number().default(0),
+  lastGridSignature: z.string().nullable().default(null),
+});
 
-const stateById = new Map<string, MinotaurState>();
+type MinotaurData = z.infer<typeof MinotaurDataSchema>;
 
-export default function createMinotaurBlueprint(data: BlueprintData) {
-  return {
-    ...data,
+const MinotaurBlueprint = defineBlueprint({
+  name: "minotaur",
+  schema: MinotaurDataSchema,
+  create: (blueprintData) => ({
+    ...blueprintData,
     input: (thing: RuntimeThing) => {
       thing.velocityX = 0;
       thing.velocityY = 0;
     },
     update: (thing: RuntimeThing, game: GameContext) => {
+      const state = ensureState(thing);
+
       const grid = getNavigationGrid(game.gameState, undefined, {
         x: thing.width / 2,
         y: thing.height / 2,
       });
-      const state = getState(thing.id);
-      const theseus = findTheseus(game.gameState.things);
+
+      const theseus = game.gameState.things.find(TheseusBlueprint.isThing);
+      if (!theseus) return;
+
       const center = getThingCenter(thing);
       const now = Date.now();
-
-      // No Theseus available to chase.
-      if (!theseus) {
-        stopMovement(thing);
-        return;
-      }
 
       // Chase branch when Theseus is visible.
       if (hasLineOfSight(thing, theseus, grid.obstacles)) {
@@ -105,6 +105,9 @@ export default function createMinotaurBlueprint(data: BlueprintData) {
         return;
       }
       followPath(thing, state);
+
+      // Persist state on the thing itself so per-instance state survives without global maps.
+      thing.data = state;
     },
     collision: (
       _thing: RuntimeThing,
@@ -124,20 +127,25 @@ export default function createMinotaurBlueprint(data: BlueprintData) {
       ctx.fillStyle = thing.color;
       ctx.fillRect(0, 0, thing.width, thing.height);
     },
-  };
-}
+  }),
+});
 
-function getState(id: string): MinotaurState {
-  const existing = stateById.get(id);
-  if (existing) return existing;
-  const fresh: MinotaurState = {
+export default MinotaurBlueprint;
+
+function ensureState(thing: RuntimeThing): MinotaurData {
+  const existingResult = MinotaurDataSchema.safeParse(thing.data);
+  if (existingResult.success) {
+    return existingResult.data;
+  }
+
+  const fresh: MinotaurData = {
     path: [],
     target: null,
     mode: "roam",
     lastPlanTimestamp: 0,
     lastGridSignature: null,
   };
-  stateById.set(id, fresh);
+  thing.data = fresh;
   return fresh;
 }
 
@@ -145,11 +153,7 @@ function findTheseus(things: ReadonlyArray<RuntimeThing>) {
   return things.find((thing) => thing.blueprintName === THESEUS_BLUEPRINT);
 }
 
-function chooseRoamTarget(
-  grid: NavGrid,
-  origin: Vector,
-  radiusCells: number
-) {
+function chooseRoamTarget(grid: NavGrid, origin: Vector, radiusCells: number) {
   const originCell = worldToCell(origin, grid);
   for (let i = 0; i < ROAM_ATTEMPTS; i += 1) {
     const offset = randomOffset(radiusCells);
@@ -182,7 +186,7 @@ function randomInt(min: number, max: number) {
   return Math.floor(Math.random() * (upper - lower + 1)) + lower;
 }
 
-function followPath(thing: RuntimeThing, state: MinotaurState) {
+function followPath(thing: RuntimeThing, state: MinotaurData) {
   if (!state.path.length) {
     stopMovement(thing);
     if (state.mode === "roam") {
@@ -195,8 +199,7 @@ function followPath(thing: RuntimeThing, state: MinotaurState) {
   const center = getThingCenter(thing);
   while (
     next &&
-    Math.hypot(next.x - center.x, next.y - center.y) <
-      WAYPOINT_REACHED_DISTANCE
+    Math.hypot(next.x - center.x, next.y - center.y) < WAYPOINT_REACHED_DISTANCE
   ) {
     state.path.shift();
     next = state.path[0];
@@ -239,7 +242,7 @@ function isWithinGrid(cell: { col: number; row: number }, grid: NavGrid) {
 }
 
 function ensurePlannedPath(
-  state: MinotaurState,
+  state: MinotaurData,
   grid: NavGrid,
   origin: Vector,
   now: number
