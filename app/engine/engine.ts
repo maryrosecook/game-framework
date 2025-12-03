@@ -1,4 +1,4 @@
-import { InputManager } from "./input";
+import { InputManager, PointerInputEvent } from "./input";
 import { physicsStep } from "./physics";
 import { renderGame } from "./render";
 import {
@@ -16,6 +16,7 @@ import {
   RawThing,
   SpawnRequest,
   UpdateResult,
+  Vector,
 } from "./types";
 import { blueprintSlug } from "@/lib/blueprints";
 import { reduceState } from "./reducer";
@@ -29,6 +30,8 @@ import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
 import { loadImages } from "./imageLoader";
 import { CameraPauseReason, TimeWitnessDrive } from "./timeWitnessDrive";
+import { createThingStack, findTopmostInStack } from "./thingStacking";
+import { createThingId } from "@/lib/id";
 
 export type LoadedGame = {
   game: GameFile;
@@ -83,6 +86,24 @@ function cloneDefaultPersistedState(): PersistedGameState {
   };
 }
 
+type DragTarget = { thingId: string; offsetX: number; offsetY: number };
+
+type PointerInteraction =
+  | {
+      mode: "move";
+      pointerId: number;
+      targets: DragTarget[];
+      editingIds: string[];
+    }
+  | {
+      mode: "resize";
+      pointerId: number;
+      thingId: string;
+      anchor: Vector;
+      angle: number;
+      editingIds: string[];
+    };
+
 export class GameEngine {
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
@@ -110,6 +131,7 @@ export class GameEngine {
   private blueprintImageLoadVersion = 0;
   private editingThingIds = new Set<string>();
   private cameraPauseReasons = new Set<CameraPauseReason>();
+  private pointerInteraction: PointerInteraction | null = null;
 
   constructor(private readonly dependencies: GameEngineDependencies) {}
 
@@ -144,10 +166,9 @@ export class GameEngine {
       if (!this.inputManager) {
         this.inputManager = new InputManager();
       }
-      if (!this.inputAttached) {
-        this.inputManager.attach();
-        this.inputAttached = true;
-      }
+      this.inputManager.attach();
+      this.inputManager.bindPointerTarget(canvas);
+      this.inputAttached = true;
     }
 
     if (isNewGame || !this.ready) {
@@ -187,6 +208,7 @@ export class GameEngine {
     this.blueprintImageLoadVersion = 0;
     this.resetCameraPauses();
     this.editingThingIds.clear();
+    this.pointerInteraction = null;
     this.isPersistedDirty = false;
     this.gameDirectory = "";
     this.listeners.clear();
@@ -418,6 +440,8 @@ export class GameEngine {
       return;
     }
 
+    this.processPointerEvents();
+
     const pendingSpawns: RuntimeThing[] = [];
     const pendingRemovals = new Set<string>();
     const collidingThingIds = new Map<string, string[]>();
@@ -446,6 +470,288 @@ export class GameEngine {
       (thing, blueprint) => this.getImageForThing(thing, blueprint)
     );
     this.notify();
+  }
+
+  private processPointerEvents() {
+    if (!this.inputManager) return;
+    const events = this.inputManager.consumePointerEvents();
+    if (events.length === 0) {
+      return;
+    }
+
+    for (const event of events) {
+      switch (event.type) {
+        case "down":
+          this.handlePointerDownEvent(event);
+          break;
+        case "move":
+          this.handlePointerMoveEvent(event);
+          break;
+        case "up":
+          this.handlePointerUpEvent(event);
+          break;
+        case "cancel":
+        case "leave":
+          this.handlePointerCancelEvent(event);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  private handlePointerDownEvent(event: PointerInputEvent) {
+    if (this.pointerInteraction) {
+      return;
+    }
+
+    const point = this.getWorldPointFromClient(event.clientX, event.clientY);
+    if (!point) {
+      return;
+    }
+
+    const primarySelectedThing = this.gameState.things.find(
+      (thing) => thing.id === this.gameState.selectedThingId
+    );
+
+    if (primarySelectedThing && isOnResizeHandle(point, primarySelectedThing)) {
+      const anchor = getResizeAnchor(primarySelectedThing);
+      const editingIds = [primarySelectedThing.id];
+      this.beginEditingThings(editingIds);
+      this.pointerInteraction = {
+        mode: "resize",
+        pointerId: event.pointerId,
+        thingId: primarySelectedThing.id,
+        anchor,
+        angle: primarySelectedThing.angle,
+        editingIds,
+      };
+      this.inputManager?.capturePointer(event.pointerId);
+      return;
+    }
+
+    const hit = this.findTopThing(point);
+    if (hit) {
+      const nextSelected = this.nextSelectedIdsForClick(
+        this.gameState.selectedThingIds,
+        hit.id,
+        event.shiftKey
+      );
+
+      if (!nextSelected.includes(hit.id)) {
+        this.dispatch({ type: "setSelectedThingIds", thingIds: nextSelected });
+        return;
+      }
+
+      const targets = this.buildDragTargets(nextSelected, point);
+      if (targets.length === 0) {
+        this.dispatch({ type: "setSelectedThingIds", thingIds: nextSelected });
+        return;
+      }
+
+      if (event.altKey) {
+        const duplicateTargets = this.duplicateDragTargets(targets);
+        if (duplicateTargets) {
+          const duplicateIds = duplicateTargets.map((target) => target.thingId);
+          this.dispatch({
+            type: "setSelectedThingIds",
+            thingIds: duplicateIds,
+          });
+          this.beginEditingThings(duplicateIds);
+          this.pointerInteraction = {
+            mode: "move",
+            pointerId: event.pointerId,
+            targets: duplicateTargets,
+            editingIds: duplicateIds,
+          };
+          this.inputManager?.capturePointer(event.pointerId);
+          return;
+        }
+      }
+
+      this.dispatch({ type: "setSelectedThingIds", thingIds: nextSelected });
+      const editingIds = targets.map((target) => target.thingId);
+      this.beginEditingThings(editingIds);
+      this.pointerInteraction = {
+        mode: "move",
+        pointerId: event.pointerId,
+        targets,
+        editingIds,
+      };
+      this.inputManager?.capturePointer(event.pointerId);
+    } else {
+      this.dispatch({ type: "setSelectedThingIds", thingIds: [] });
+    }
+  }
+
+  private handlePointerMoveEvent(event: PointerInputEvent) {
+    const interaction = this.pointerInteraction;
+    if (!interaction) {
+      return;
+    }
+    if (interaction.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const point = this.getWorldPointFromClient(event.clientX, event.clientY);
+    if (!point) {
+      return;
+    }
+
+    if (interaction.mode === "move") {
+      for (const target of interaction.targets) {
+        this.dispatch({
+          type: "setThingProperties",
+          thingId: target.thingId,
+          properties: {
+            x: point.x - target.offsetX,
+            y: point.y - target.offsetY,
+          },
+        });
+      }
+      return;
+    }
+
+    const activeThing = this.gameState.things.find(
+      (thing) => thing.id === interaction.thingId
+    );
+    if (!activeThing) {
+      return;
+    }
+
+    const anchor = interaction.anchor;
+    const angle = interaction.angle;
+
+    const angleRad = (angle * Math.PI) / 180;
+    const delta = {
+      x: point.x - anchor.x,
+      y: point.y - anchor.y,
+    };
+    const rotated = rotatePoint(delta, -angleRad);
+    const width = Math.max(10, rotated.x);
+    const height = Math.max(10, rotated.y);
+
+    const centerOffset = rotatePoint({ x: width / 2, y: height / 2 }, angleRad);
+    const center = {
+      x: anchor.x + centerOffset.x,
+      y: anchor.y + centerOffset.y,
+    };
+
+    this.dispatch({
+      type: "setThingProperties",
+      thingId: activeThing.id,
+      properties: {
+        width,
+        height,
+        x: center.x - width / 2,
+        y: center.y - height / 2,
+      },
+    });
+  }
+
+  private handlePointerUpEvent(event: PointerInputEvent) {
+    if (this.pointerInteraction?.pointerId === event.pointerId) {
+      if (this.pointerInteraction.editingIds.length > 0) {
+        this.endEditingThings(this.pointerInteraction.editingIds);
+      }
+      this.pointerInteraction = null;
+      this.inputManager?.releasePointerCapture(event.pointerId);
+    }
+  }
+
+  private handlePointerCancelEvent(event: PointerInputEvent) {
+    if (this.pointerInteraction?.pointerId === event.pointerId) {
+      if (this.pointerInteraction.editingIds.length) {
+        this.endEditingThings(this.pointerInteraction.editingIds);
+      }
+      this.pointerInteraction = null;
+    }
+    this.inputManager?.releasePointerCapture(event.pointerId);
+  }
+
+  private getWorldPointFromClient(
+    clientX: number,
+    clientY: number
+  ): Vector | null {
+    const canvas = this.canvas;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const offsetX = (rect.width - this.gameState.screen.width) / 2;
+    const offsetY = (rect.height - this.gameState.screen.height) / 2;
+    return {
+      x: x - offsetX + this.gameState.camera.x,
+      y: y - offsetY + this.gameState.camera.y,
+    };
+  }
+
+  private findTopThing(point: Vector) {
+    const stack = createThingStack(this.gameState.things, this.blueprintLookup);
+    return findTopmostInStack(stack, (thing) => isPointInsideThing(point, thing));
+  }
+
+  private buildDragTargets(selectedIds: string[], point: Vector) {
+    const targets: DragTarget[] = [];
+    for (const id of selectedIds) {
+      const target = this.gameState.things.find((thing) => thing.id === id);
+      if (!target) continue;
+      targets.push({
+        thingId: id,
+        offsetX: point.x - target.x,
+        offsetY: point.y - target.y,
+      });
+    }
+    return targets;
+  }
+
+  private duplicateDragTargets(targets: DragTarget[]) {
+    const thingLookup = new Map(
+      this.gameState.things.map((thing) => [thing.id, thing])
+    );
+    const duplicates: { thing: RuntimeThing; target: DragTarget }[] = [];
+
+    for (const target of targets) {
+      const original = thingLookup.get(target.thingId);
+      if (!original) continue;
+      const clone: RuntimeThing = {
+        ...original,
+        id: createThingId(),
+        velocityX: 0,
+        velocityY: 0,
+      };
+      duplicates.push({ thing: clone, target: { ...target, thingId: clone.id } });
+    }
+
+    if (duplicates.length === 0) {
+      return null;
+    }
+
+    for (const duplicate of duplicates) {
+      this.dispatch({ type: "addThing", thing: duplicate.thing });
+    }
+
+    return duplicates.map((entry) => entry.target);
+  }
+
+  private nextSelectedIdsForClick(
+    currentIds: string[],
+    hitId: string,
+    addToExisting: boolean
+  ) {
+    if (addToExisting) {
+      return this.toggleThingSelection(currentIds, hitId);
+    }
+    if (currentIds.includes(hitId)) {
+      return currentIds;
+    }
+    return [hitId];
+  }
+
+  private toggleThingSelection(selectedIds: string[], id: string) {
+    return selectedIds.includes(id)
+      ? selectedIds.filter((current) => current !== id)
+      : [...selectedIds, id];
   }
 
   private handleInput(
@@ -1002,6 +1308,55 @@ export class GameEngine {
     }
     return this.gameDirectory;
   }
+}
+
+function isPointInsideThing(point: Vector, thing: RuntimeThing) {
+  return (
+    point.x >= thing.x &&
+    point.x <= thing.x + thing.width &&
+    point.y >= thing.y &&
+    point.y <= thing.y + thing.height
+  );
+}
+
+function isOnResizeHandle(point: Vector, thing: RuntimeThing) {
+  const handleSize = 12;
+  const local = worldToLocal(point, thing);
+  return (
+    local.x >= thing.width - handleSize &&
+    local.x <= thing.width &&
+    local.y >= thing.height - handleSize &&
+    local.y <= thing.height
+  );
+}
+
+function getResizeAnchor(thing: RuntimeThing) {
+  const center = getThingCenter(thing);
+  const offset = rotatePoint(
+    { x: -thing.width / 2, y: -thing.height / 2 },
+    (thing.angle * Math.PI) / 180
+  );
+  return { x: center.x + offset.x, y: center.y + offset.y };
+}
+
+function worldToLocal(point: Vector, thing: RuntimeThing) {
+  const anchor = getResizeAnchor(thing);
+  const delta = { x: point.x - anchor.x, y: point.y - anchor.y };
+  const rotated = rotatePoint(delta, (-thing.angle * Math.PI) / 180);
+  return { x: rotated.x, y: rotated.y };
+}
+
+function rotatePoint(point: Vector, angleRad: number) {
+  const cos = Math.cos(angleRad);
+  const sin = Math.sin(angleRad);
+  return {
+    x: point.x * cos - point.y * sin,
+    y: point.x * sin + point.y * cos,
+  };
+}
+
+function getThingCenter(thing: RuntimeThing) {
+  return { x: thing.x + thing.width / 2, y: thing.y + thing.height / 2 };
 }
 
 function isThingPropertyPath(
