@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { GameCanvas } from "@/components/GameCanvas";
 import { Toolbar } from "@/components/Toolbar";
 import { EditPanel } from "@/components/EditPanel";
+import { GameCanvas } from "@/components/GameCanvas";
+import { DragAndDrop } from "@/components/DragAndDrop";
 import { useGame } from "@/engine/useGame";
 import { Blueprint, RawThing } from "@/engine/types";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
@@ -67,13 +68,15 @@ export function Game({ gameDirectory }: GameProps) {
 
   return (
     <div className="relative h-full min-h-screen w-full overflow-hidden bg-white text-slate-900">
-      <GameCanvas
+      <DragAndDrop
         canvasRef={canvasRef}
         subscribe={subscribe}
         engine={engine}
         gameDirectory={gameDirectory}
         onSelectBlueprint={setActiveBlueprintName}
-      />
+      >
+        <GameCanvas canvasRef={canvasRef} />
+      </DragAndDrop>
       {activeBlueprintName ? (
         <EditPanel
           blueprintName={activeBlueprintName}
