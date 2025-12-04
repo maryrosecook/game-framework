@@ -4,11 +4,7 @@ import {
   KeyState,
   RuntimeThing,
 } from "@/engine/types";
-import {
-  TRACK_LANES,
-  TrackLane,
-  getLaneOffset,
-} from "../obstacleApproach";
+import { TRACK_LANES, TrackLane, getLaneOffset } from "../obstacleApproach";
 
 const laneByThingId = new Map<string, TrackLane>();
 const lastSwitchTime = new Map<string, number>();
@@ -16,6 +12,7 @@ const LANE_SWITCH_COOLDOWN_MS = 120;
 
 export default function createEngine(data: BlueprintData) {
   const baseSize = { width: data.width, height: data.height };
+  console.log(new Error().stack, data);
   const baseZ = data.z;
 
   return {
@@ -25,11 +22,7 @@ export default function createEngine(data: BlueprintData) {
 
       const currentLane = laneByThingId.get(thing.id) ?? "center";
       const direction =
-        keys.arrowLeft === keys.arrowRight
-          ? 0
-          : keys.arrowLeft
-            ? -1
-            : 1;
+        keys.arrowLeft === keys.arrowRight ? 0 : keys.arrowLeft ? -1 : 1;
       if (direction === 0) return;
 
       const now = nowMs();
@@ -53,7 +46,11 @@ export default function createEngine(data: BlueprintData) {
       laneByThingId.set(thing.id, lane);
       positionEngine(thing, game, lane, baseSize, baseZ);
     },
-    render: (thing: RuntimeThing, _game: GameContext, ctx: CanvasRenderingContext2D) => {
+    render: (
+      thing: RuntimeThing,
+      _game: GameContext,
+      ctx: CanvasRenderingContext2D
+    ) => {
       ctx.fillStyle = thing.color;
       ctx.fillRect(0, 0, thing.width, thing.height);
     },

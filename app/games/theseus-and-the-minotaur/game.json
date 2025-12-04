@@ -815,6 +815,19 @@
       "width": 83.526123046875,
       "height": 80.20833587646484,
       "shape": "rectangle"
+    },
+    {
+      "id": "cxcssr6zjm08",
+      "x": 592.2236619107452,
+      "y": 471.7732803270736,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "theseus",
+      "width": 50,
+      "height": 50,
+      "shape": "rectangle"
     }
   ],
   "blueprints": [
