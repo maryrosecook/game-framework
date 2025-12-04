@@ -165,19 +165,7 @@ export function BlueprintTab({
             ) : null}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          <Field
-            label="W"
-            value={blueprint.width}
-            onChange={(value) => handleUpdate("width", value)}
-          />
-          <Field
-            label="H"
-            value={blueprint.height}
-            onChange={(value) => handleUpdate("height", value)}
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2 items-center">
           <ArrangeButton
             label="Front"
             icon="↑"
@@ -189,6 +177,13 @@ export function BlueprintTab({
             icon="↓"
             onClick={handleSendToBack}
             disabled={blueprint.z <= zBounds.minZ}
+          />
+          <input
+            type="number"
+            className="w-full rounded-lg border border-slate-200 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-slate-400"
+            value={blueprint.z}
+            onChange={(event) => handleUpdate("z", Number(event.target.value) || 0)}
+            aria-label="Z position"
           />
         </div>
         <SelectField
@@ -210,11 +205,6 @@ export function BlueprintTab({
           ]}
           onChange={(value) => handleUpdate("physicsType", value)}
         />
-        <Field
-          label="Z"
-          value={blueprint.z}
-          onChange={(value) => handleUpdate("z", value)}
-        />
         <ColorGrid
           selected={blueprint.color}
           onSelect={(color) => handleUpdate("color", color)}
@@ -228,31 +218,6 @@ export function BlueprintTab({
         Delete blueprint and items
       </button>
     </>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  disabled = false,
-}: {
-  label: string;
-  value: number;
-  onChange: (value: number) => void;
-  disabled?: boolean;
-}) {
-  return (
-    <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
-      {label}
-      <input
-        type="number"
-        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
-        disabled={disabled}
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value) || 0)}
-      />
-    </label>
   );
 }
 

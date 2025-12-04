@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Toolbar } from "@/components/Toolbar";
 import { EditPanel } from "@/components/EditPanel";
 import { GameCanvas } from "@/components/GameCanvas";
 import { DragAndDrop } from "@/components/DragAndDrop";
 import { useGame } from "@/engine/useGame";
 import { Blueprint, RawThing } from "@/engine/types";
+import { PointerMode } from "@/engine/input/pointer";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
 import { getColorOptions } from "@/components/ColorGrid";
@@ -24,6 +25,11 @@ export function Game({ gameDirectory }: GameProps) {
   const [selectedThingIds] = subscribe<string[]>(["selectedThingIds"]);
   const [activeBlueprintName, setActiveBlueprintName] = useState<string | null>(
     null
+  );
+  const palette = useMemo(() => getColorOptions(), []);
+  const [pointerMode, setPointerMode] = useState<PointerMode>("pointer");
+  const [paintColor, setPaintColor] = useState<string>(
+    palette[0] ?? "#000000"
   );
 
   useEffect(() => {
@@ -59,11 +65,21 @@ export function Game({ gameDirectory }: GameProps) {
   const handleAddBlueprint = () => {
     const name = getNextBlueprintName(blueprints ?? []);
     const index = blueprints?.length ?? 0;
-    const colors = getColorOptions();
+    const colors = palette.length > 0 ? palette : getColorOptions();
     const color = colors[index % colors.length];
     const newBlueprint: Blueprint = createBlueprint({ name, color });
     engine.dispatch({ type: "addBlueprint", blueprint: newBlueprint });
     setActiveBlueprintName(newBlueprint.name);
+  };
+
+  const handlePointerModeChange = (mode: PointerMode) => {
+    setPointerMode(mode);
+    engine.setPointerMode(mode);
+  };
+
+  const handlePaintColorChange = (color: string) => {
+    setPaintColor(color);
+    engine.setPaintColor(color);
   };
 
   return (
@@ -75,7 +91,7 @@ export function Game({ gameDirectory }: GameProps) {
         gameDirectory={gameDirectory}
         onSelectBlueprint={setActiveBlueprintName}
       >
-        <GameCanvas canvasRef={canvasRef} />
+        <GameCanvas canvasRef={canvasRef} pointerMode={pointerMode} />
       </DragAndDrop>
       {activeBlueprintName ? (
         <EditPanel
@@ -92,6 +108,10 @@ export function Game({ gameDirectory }: GameProps) {
           onSelectBlueprint={handleSelectBlueprint}
           onAddBlueprint={handleAddBlueprint}
           gameDirectory={gameDirectory}
+          pointerMode={pointerMode}
+          onChangePointerMode={handlePointerModeChange}
+          paintColor={paintColor}
+          onChangePaintColor={handlePaintColorChange}
         />
       </div>
     </div>

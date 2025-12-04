@@ -7,6 +7,13 @@ type RenderConfig = {
   viewport: { width: number; height: number };
 };
 
+export type PaintOverlay = {
+  selectedThingId: string | null;
+  hoverPixel: { x: number; y: number } | null;
+  color: string;
+  gridColor: string;
+};
+
 const RESIZE_HANDLE_SIZE = 12;
 
 export function renderGame(
@@ -16,7 +23,8 @@ export function renderGame(
   getImageForThing?: (
     thing: RuntimeThing,
     blueprint?: Blueprint
-  ) => CanvasImageSource | null
+  ) => CanvasImageSource | null,
+  paintOverlay?: PaintOverlay
 ) {
   const state = game.gameState;
   const { canvas } = ctx;
@@ -48,7 +56,14 @@ export function renderGame(
 
   const stacking = createThingStack(state.things, blueprintLookup);
   for (const thing of stacking) {
-    renderThing(ctx, thing, game, blueprintLookup, getImageForThing);
+    renderThing(
+      ctx,
+      thing,
+      game,
+      blueprintLookup,
+      getImageForThing,
+      paintOverlay
+    );
   }
 
   ctx.restore();
@@ -62,7 +77,8 @@ function renderThing(
   getImageForThing?: (
     thing: RuntimeThing,
     blueprint?: Blueprint
-  ) => CanvasImageSource | null
+  ) => CanvasImageSource | null,
+  paintOverlay?: PaintOverlay
 ) {
   ctx.save();
   ctx.translate(thing.x + thing.width / 2, thing.y + thing.height / 2);
@@ -121,6 +137,45 @@ function renderThing(
         RESIZE_HANDLE_SIZE,
         RESIZE_HANDLE_SIZE
       );
+      ctx.restore();
+    }
+  }
+
+  // Paint grid + hover preview for paint mode.
+  if (paintOverlay?.selectedThingId === thing.id) {
+    const gridColor = paintOverlay.gridColor;
+    const stepX = thing.width / 16;
+    const stepY = thing.height / 16;
+    ctx.save();
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.5;
+    // Vertical lines
+    for (let i = 0; i <= 16; i += 1) {
+      const x = Math.round(i * stepX) + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, thing.height);
+      ctx.stroke();
+    }
+    // Horizontal lines
+    for (let j = 0; j <= 16; j += 1) {
+      const y = Math.round(j * stepY) + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(thing.width, y);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    if (paintOverlay.hoverPixel) {
+      const { x, y } = paintOverlay.hoverPixel;
+      const pixelX = x * stepX;
+      const pixelY = y * stepY;
+      ctx.save();
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = paintOverlay.color;
+      ctx.fillRect(pixelX, pixelY, stepX, stepY);
       ctx.restore();
     }
   }

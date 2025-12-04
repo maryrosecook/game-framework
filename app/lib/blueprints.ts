@@ -41,8 +41,8 @@ const DEFAULTS: Pick<
   Blueprint,
   "width" | "height" | "z" | "shape" | "physicsType" | "image"
 > = {
-  width: 50,
-  height: 50,
+  width: 100,
+  height: 100,
   z: 1,
   shape: "rectangle",
   physicsType: "dynamic",
