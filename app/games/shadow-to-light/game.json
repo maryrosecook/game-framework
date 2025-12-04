@@ -93,8 +93,8 @@
     },
     {
       "id": "5j7xnluwpug2",
-      "x": -2.235617773437525,
-      "y": 607.8592413807928,
+      "x": -11.255149023437525,
+      "y": 646.0975226307928,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -171,8 +171,8 @@
     },
     {
       "id": "ihhkgjtzqw3w",
-      "x": 109.75,
-      "y": 537.6171875,
+      "x": 107.5,
+      "y": 538.84765625,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
@@ -4882,5 +4882,6 @@
     "width": 800,
     "height": 600
   },
+  "backgroundColor": "#f8fafc",
   "image": "pixel-art-1763930007201-oo2aqaocf-1764528858864.png"
 }
