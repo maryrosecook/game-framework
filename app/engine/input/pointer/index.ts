@@ -2,9 +2,11 @@ import { PointerInterpreter } from "./interpreter";
 import { createMoveStrategy } from "./moveStrategy";
 import { createResizeStrategy } from "./resizeStrategy";
 import { createSelectStrategy } from "./selectStrategy";
+import { createPaintStrategy } from "./paintStrategy";
 
 export function createPointerInterpreter() {
   return new PointerInterpreter([
+    createPaintStrategy(),
     createResizeStrategy(),
     createMoveStrategy(),
     createSelectStrategy(),
@@ -27,4 +29,5 @@ export type {
   PointerInteractionContext,
   PointerInteractionSession,
   PointerInteractionStrategy,
+  PointerMode,
 } from "./types";

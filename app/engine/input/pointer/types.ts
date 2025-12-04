@@ -1,6 +1,8 @@
 import { GameAction, RuntimeGameState, RuntimeThing, Vector } from "../../types";
 import { PointerInputEvent } from "../../input";
 
+export type PointerMode = "pointer" | "paint";
+
 export type PointerInteractionContext = {
   dispatch: (action: GameAction) => void;
   beginEditing: (ids: string[]) => void;
@@ -13,6 +15,13 @@ export type PointerInteractionContext = {
   getWorldPoint: (clientX: number, clientY: number) => Vector | null;
   capturePointer: (pointerId: number) => void;
   releasePointer: (pointerId: number) => void;
+  pointerMode: PointerMode;
+  paintColor: string;
+  paintAt: (
+    thing: RuntimeThing,
+    worldPoint: Vector,
+    previousWorldPoint?: Vector | null
+  ) => void;
 };
 
 export type PointerInteractionSession = {
