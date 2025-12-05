@@ -3,8 +3,8 @@ import path from "node:path";
 import {
   BlueprintData,
   GameFile,
+  PersistedThing,
   PhysicsType,
-  RawThing,
   Shape,
 } from "@/engine/types";
 
@@ -30,6 +30,7 @@ function createDefaultGameFile(id: number): GameFile {
     camera: { x: 0, y: 0 },
     screen: { width: 800, height: 600 },
     backgroundColor: DEFAULT_BACKGROUND_COLOR,
+    isGravityEnabled: false,
     image: null,
   };
 }
@@ -225,7 +226,7 @@ function isPhysicsType(value: unknown): value is PhysicsType {
   return value === "dynamic" || value === "static" || value === "ambient";
 }
 
-function isThing(value: unknown): value is RawThing {
+function isThing(value: unknown): value is PersistedThing {
   if (typeof value !== "object" || value === null) {
     return false;
   }
@@ -242,10 +243,8 @@ function isThing(value: unknown): value is RawThing {
     return false;
   }
 
-  const numericOptionalKeys: (keyof Pick<RawThing, "width" | "height">)[] = [
-    "width",
-    "height",
-  ];
+  const numericOptionalKeys: (keyof Pick<PersistedThing, "width" | "height">)[] =
+    ["width", "height"];
   const hasValidOptionalNumbers = numericOptionalKeys.every(
     (key) => record[key] === undefined || typeof record[key] === "number"
   );
@@ -305,6 +304,7 @@ export function isGameFile(value: unknown): value is GameFile {
     record.image === undefined ||
     record.image === null ||
     typeof record.image === "string";
+  const hasGravitySetting = typeof record.isGravityEnabled === "boolean";
   return (
     hasValidId &&
     hasCamera &&
@@ -312,6 +312,7 @@ export function isGameFile(value: unknown): value is GameFile {
     hasThings &&
     hasBlueprints &&
     hasBackgroundColor &&
-    hasValidImage
+    hasValidImage &&
+    hasGravitySetting
   );
 }

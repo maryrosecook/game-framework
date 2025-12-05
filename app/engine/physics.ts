@@ -10,6 +10,10 @@ import {
 } from "./types";
 
 const EPSILON = 0.0001;
+const GRAVITY_ACCELERATION = 0.1;
+const GROUND_NORMAL_THRESHOLD = 0.7;
+const GROUND_VELOCITY_EPSILON = 0.0001;
+const DOWN_VECTOR: Vector = { x: 0, y: 1 };
 
 export function physicsStep(
   gameState: RuntimeGameState,
@@ -19,21 +23,32 @@ export function physicsStep(
 ) {
   game.collidingThingIds.clear();
 
-  for (const thing of gameState.things) {
+  const isGravityEnabled = game.gameState.isGravityEnabled;
+  const preCollisionVelocities = new Map<string, Vector>();
+  const things = [...gameState.things];
+
+  for (const thing of things) {
+    thing.isGrounded = false;
     if (suspendedThingIds.has(thing.id)) continue;
+
+    let nextVelocity: Vector = { x: thing.velocityX, y: thing.velocityY };
+
+    if (isGravityEnabled && thing.physicsType === "dynamic") {
+      nextVelocity = {
+        ...nextVelocity,
+        y: nextVelocity.y + GRAVITY_ACCELERATION,
+      };
+    }
+
     const blueprint = getBlueprintForThing(thing, blueprintLookup);
     if (blueprint?.getAdjustedVelocity) {
-      const adjusted = blueprint.getAdjustedVelocity(
-        thing,
-        { x: thing.velocityX, y: thing.velocityY },
-        game
-      );
-      thing.velocityX = adjusted.x;
-      thing.velocityY = adjusted.y;
+      nextVelocity = blueprint.getAdjustedVelocity(thing, nextVelocity, game);
     }
-  }
 
-  const things = [...gameState.things];
+    thing.velocityX = nextVelocity.x;
+    thing.velocityY = nextVelocity.y;
+    preCollisionVelocities.set(thing.id, { ...nextVelocity });
+  }
 
   for (const thing of things) {
     if (suspendedThingIds.has(thing.id)) continue;
@@ -55,7 +70,9 @@ export function physicsStep(
         blueprintLookup,
         gameState,
         game.collidingThingIds,
-        game
+        game,
+        preCollisionVelocities,
+        isGravityEnabled
       );
     }
   }
@@ -67,7 +84,9 @@ function resolveCollision(
   blueprintLookup: Map<string, Blueprint>,
   gameState: RuntimeGameState,
   collidingThingIds: CollisionMap,
-  game: GameContext
+  game: GameContext,
+  preCollisionVelocities: Map<string, Vector>,
+  gravityEnabled: boolean
 ) {
   const stillExistsA = gameState.things.includes(a);
   const stillExistsB = gameState.things.includes(b);
@@ -100,6 +119,9 @@ function resolveCollision(
     mtv.overlap + EPSILON
   );
 
+  const normalForA = normalize(separationVector);
+  const normalForB = { x: -normalForA.x, y: -normalForA.y };
+
   if (!canMoveA && !canMoveB) {
     notifyCollision(a, b, blueprintLookup, game);
     return;
@@ -120,6 +142,24 @@ function resolveCollision(
     b.x -= separationVector.x;
     b.y -= separationVector.y;
     dampenVelocity(b, mtv.axis);
+  }
+
+  if (canMoveA) {
+    updateGroundedState(
+      a,
+      normalForA,
+      preCollisionVelocities.get(a.id),
+      gravityEnabled
+    );
+  }
+
+  if (canMoveB) {
+    updateGroundedState(
+      b,
+      normalForB,
+      preCollisionVelocities.get(b.id),
+      gravityEnabled
+    );
   }
 
   notifyCollision(a, b, blueprintLookup, game);
@@ -254,8 +294,10 @@ function computeSeparationVector(
   const centroidA = computeCentroid(pointsA);
   const centroidB = computeCentroid(pointsB);
   const direction =
-    Math.sign((centroidB.x - centroidA.x) * axis.x + (centroidB.y - centroidA.y) * axis.y) ||
-    1;
+    Math.sign(
+      (centroidB.x - centroidA.x) * axis.x +
+        (centroidB.y - centroidA.y) * axis.y
+    ) || 1;
   const separationDirection = direction > 0 ? -1 : 1;
   return {
     x: axis.x * overlap * separationDirection,
@@ -287,5 +329,25 @@ function recordCollision(
   }
   if (!existingForSecond.includes(first.id)) {
     existingForSecond.push(first.id);
+  }
+}
+
+function updateGroundedState(
+  thing: RuntimeThing,
+  contactNormal: Vector,
+  preCollisionVelocity: Vector | undefined,
+  gravityEnabled: boolean
+) {
+  if (!gravityEnabled) return;
+  if (thing.physicsType !== "dynamic") return;
+
+  const alignmentWithDown =
+    contactNormal.x * DOWN_VECTOR.x + contactNormal.y * DOWN_VECTOR.y;
+
+  if (alignmentWithDown <= -GROUND_NORMAL_THRESHOLD) {
+    const verticalVelocity = preCollisionVelocity?.y ?? 0;
+    if (verticalVelocity >= -GROUND_VELOCITY_EPSILON) {
+      thing.isGrounded = true;
+    }
   }
 }

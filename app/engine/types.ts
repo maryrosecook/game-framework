@@ -110,11 +110,14 @@ export type RawThing<TData = unknown> = {
   angle: number;
   velocityX: number;
   velocityY: number;
+  isGrounded: boolean;
   physicsType?: PhysicsType;
   shape?: Shape;
   blueprintName: string;
   data?: TData;
 };
+
+export type PersistedThing = Omit<RawThing, "isGrounded" | "data">;
 
 export type RuntimeThing<TData = unknown> = RawThing<TData> &
   Required<
@@ -125,7 +128,7 @@ export type RuntimeThing<TData = unknown> = RawThing<TData> &
         "name" | "physicsType" | "image" | "z" | "color"
       >
     >
-  > & { color: string };
+  > & { color: string; isGrounded: boolean };
 
 export type RuntimeGameState = {
   things: RuntimeThing[];
@@ -133,6 +136,7 @@ export type RuntimeGameState = {
   camera: Vector;
   screen: { width: number; height: number };
   backgroundColor: string;
+  isGravityEnabled: boolean;
   isPaused: boolean;
   selectedThingId: string | null;
   selectedThingIds: string[];
@@ -143,9 +147,10 @@ export type RawGameState = Omit<RuntimeGameState, "things"> & {
   image?: string | null;
 };
 
-export type PersistedGameState = Omit<RawGameState, "blueprints"> & {
+export type PersistedGameState = Omit<RawGameState, "blueprints" | "things"> & {
   id: number;
   blueprints: BlueprintData[];
+  things: PersistedThing[];
 };
 
 export type CameraController = {
@@ -199,6 +204,7 @@ export type GameAction =
   | { type: "renameBlueprint"; previousName: string; nextName: string }
   | { type: "setCameraPosition"; x: number; y: number }
   | { type: "setScreenSize"; width: number; height: number }
+  | { type: "setGravityEnabled"; isGravityEnabled: boolean }
   | { type: "setPaused"; isPaused: boolean }
   | { type: "setSelectedThingId"; thingId: string | null }
   | { type: "setSelectedThingIds"; thingIds: string[] }
@@ -206,12 +212,13 @@ export type GameAction =
 
 export type GameFile = {
   id: number;
-  things: RawThing[];
+  things: PersistedThing[];
   blueprints: BlueprintData[];
   camera: Vector;
   screen: { width: number; height: number };
   backgroundColor?: string;
   clearColor?: string;
+  isGravityEnabled: boolean;
   image?: string | null;
 };
 
@@ -223,6 +230,7 @@ export type SubscriptionPath =
   | ["blueprints", string]
   | ["camera"]
   | ["screen"]
+  | ["isGravityEnabled"]
   | ["backgroundColor"]
   | ["isPaused"]
   | ["selectedThingId"]
