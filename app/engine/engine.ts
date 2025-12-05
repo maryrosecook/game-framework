@@ -134,9 +134,10 @@ export class GameEngine {
   private editableImageStore = new EditableImageStore();
   private pointerMode: PointerMode = "pointer";
   private paintColor = "#000000";
-  private paintHover:
-    | { thingId: string; pixel: { x: number; y: number } }
-    | null = null;
+  private paintHover: {
+    thingId: string;
+    pixel: { x: number; y: number };
+  } | null = null;
   private editingThingIds = new Set<string>();
   private cameraPauseReasons = new Set<CameraPauseReason>();
   private pointerInterpreter = createPointerInterpreter();
@@ -570,7 +571,10 @@ export class GameEngine {
     };
   }
 
-  private getWorldPointFromClient(clientX: number, clientY: number): Vector | null {
+  private getWorldPointFromClient(
+    clientX: number,
+    clientY: number
+  ): Vector | null {
     return getPointerWorldPointFromClient({
       canvas: this.canvas,
       clientX,
@@ -816,10 +820,7 @@ export class GameEngine {
     };
   }
 
-  private handleInput(
-    game: GameContext,
-    pendingRemovals: Set<string>
-  ) {
+  private handleInput(game: GameContext, pendingRemovals: Set<string>) {
     if (!this.inputManager) return;
     for (const thing of this.gameState.things) {
       if (this.editingThingIds.has(thing.id)) continue;
@@ -1394,8 +1395,8 @@ function persistedStateFromGameFile(game: GameFile): PersistedGameState {
     game.backgroundColor.trim().length > 0
       ? game.backgroundColor
       : typeof fallbackClear === "string" && fallbackClear.trim().length > 0
-        ? fallbackClear
-        : DEFAULT_BACKGROUND_COLOR;
+      ? fallbackClear
+      : DEFAULT_BACKGROUND_COLOR;
   return {
     id: game.id,
     things: game.things.map((thing) =>
@@ -1538,8 +1539,6 @@ function isBlueprintLike(value: unknown): value is Partial<Blueprint> {
   return !!value && typeof value === "object";
 }
 
-function isCameraUpdate(
-  value: unknown
-): value is CameraController["update"] {
+function isCameraUpdate(value: unknown): value is CameraController["update"] {
   return typeof value === "function";
 }
