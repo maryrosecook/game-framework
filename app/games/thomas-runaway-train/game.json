@@ -15,8 +15,8 @@
     },
     {
       "id": "37s2emmbt08r",
-      "x": 408.33203125,
-      "y": 433.76953125,
+      "x": 216.1484375,
+      "y": 411.85546875,
       "z": 5,
       "angle": 0,
       "velocityX": 0,
@@ -82,10 +82,10 @@
       "width": 200,
       "height": 200,
       "z": 5,
-      "color": "#66cc99",
+      "color": "#666666",
       "image": "engine-1764541780462.png",
       "shape": "rectangle",
-      "physicsType": "ambient"
+      "physicsType": "dynamic"
     },
     {
       "name": "tree",
@@ -115,6 +115,16 @@
       "shape": "rectangle",
       "physicsType": "ambient",
       "image": "blueprint-9-paint-1764829729135.png"
+    },
+    {
+      "name": "blueprint-10",
+      "width": 100,
+      "height": 100,
+      "z": 1,
+      "color": "#ff8c00",
+      "image": "blueprint-10-paint-1764861940415.png",
+      "shape": "rectangle",
+      "physicsType": "dynamic"
     }
   ],
   "camera": {
