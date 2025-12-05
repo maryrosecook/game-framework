@@ -51,8 +51,6 @@ import {
   PointerMode,
 } from "./input/pointer/types";
 import { createThingId } from "@/lib/id";
-import gameJson from "@/games/block/game.json";
-console.log(gameJson);
 
 export type LoadedGame = {
   game: GameFile;
