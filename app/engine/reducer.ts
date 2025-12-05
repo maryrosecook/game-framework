@@ -88,6 +88,11 @@ export function reduceState(
         ...state,
         screen: { width: action.width, height: action.height },
       };
+    case "setGravityEnabled":
+      return {
+        ...state,
+        isGravityEnabled: action.isGravityEnabled,
+      };
     case "setBackgroundColor":
       return {
         ...state,

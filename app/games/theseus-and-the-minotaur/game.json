@@ -948,5 +948,6 @@
     "height": 600
   },
   "backgroundColor": "#4d4d4d",
-  "image": "pixel-art-1764178801443-zpmoejnum-1764527193747.png"
+  "image": "pixel-art-1764178801443-zpmoejnum-1764527193747.png",
+  "isGravityEnabled": false
 }

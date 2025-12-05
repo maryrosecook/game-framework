@@ -4884,5 +4884,6 @@
     "height": 600
   },
   "backgroundColor": "#f8fafc",
-  "image": "pixel-art-1763930007201-oo2aqaocf-1764528858864.png"
+  "image": "pixel-art-1763930007201-oo2aqaocf-1764528858864.png",
+  "isGravityEnabled": false
 }
