@@ -1,0 +1,61 @@
+{
+  "id": 5,
+  "things": [
+    {
+      "id": "ghcmqo85hm88",
+      "x": -1.765625,
+      "y": 544.23828125,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "wall",
+      "width": 805.234375,
+      "height": 55.9765625,
+      "shape": "rectangle"
+    },
+    {
+      "id": "hobpmmimnv5f",
+      "x": 355.65234375,
+      "y": 382.61328125,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "player",
+      "width": 100,
+      "height": 100,
+      "shape": "rectangle"
+    }
+  ],
+  "blueprints": [
+    {
+      "name": "wall",
+      "width": 100,
+      "height": 100,
+      "z": 1,
+      "color": "#000000",
+      "shape": "rectangle",
+      "physicsType": "static"
+    },
+    {
+      "name": "player",
+      "width": 100,
+      "height": 100,
+      "z": 1,
+      "color": "#ff0000",
+      "shape": "rectangle",
+      "physicsType": "dynamic"
+    }
+  ],
+  "camera": {
+    "x": 0,
+    "y": 0
+  },
+  "screen": {
+    "width": 800,
+    "height": 600
+  },
+  "backgroundColor": "#f8fafc",
+  "image": null
+}
