@@ -144,6 +144,7 @@ export type RawGameState = Omit<RuntimeGameState, "things"> & {
 };
 
 export type PersistedGameState = Omit<RawGameState, "blueprints"> & {
+  id: number;
   blueprints: BlueprintData[];
 };
 
@@ -204,6 +205,7 @@ export type GameAction =
   | { type: "setBackgroundColor"; color: string };
 
 export type GameFile = {
+  id: number;
   things: RawThing[];
   blueprints: BlueprintData[];
   camera: Vector;
