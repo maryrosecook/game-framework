@@ -16,16 +16,23 @@ const DEFAULT_BACKGROUND_COLOR = "#f8fafc";
 const GAME_NAME_PATTERN = /[^a-z0-9]+/g;
 
 export type EditorSettings = { currentGameDirectory: string };
-export type GameSummary = { directory: string; image: string | null };
-
-const DEFAULT_GAME_FILE: GameFile = {
-  things: [],
-  blueprints: [],
-  camera: { x: 0, y: 0 },
-  screen: { width: 800, height: 600 },
-  backgroundColor: DEFAULT_BACKGROUND_COLOR,
-  image: null,
+export type GameSummary = {
+  id: number;
+  directory: string;
+  image: string | null;
 };
+
+function createDefaultGameFile(id: number): GameFile {
+  return {
+    id,
+    things: [],
+    blueprints: [],
+    camera: { x: 0, y: 0 },
+    screen: { width: 800, height: 600 },
+    backgroundColor: DEFAULT_BACKGROUND_COLOR,
+    image: null,
+  };
+}
 
 const DEFAULT_CAMERA_TEMPLATE = `import { RuntimeGameState } from "@/engine/types";
 
@@ -62,17 +69,19 @@ export async function listGames(): Promise<GameSummary[]> {
     const gameFilePath = getGameFilePath(entry.name);
     const hasGameFile = await fileExists(gameFilePath);
     if (hasGameFile) {
-      let image: string | null = null;
       try {
         const game = await readGameFile(entry.name);
-        image = game.image ?? null;
+        const image = game.image ?? null;
+        candidates.push({ id: game.id, directory: entry.name, image });
       } catch (error) {
         console.warn("Failed to read game file for listing", error);
       }
-      candidates.push({ directory: entry.name, image });
     }
   }
-  return candidates.sort((a, b) => a.directory.localeCompare(b.directory));
+  return candidates.sort((a, b) => {
+    if (a.id !== b.id) return a.id - b.id;
+    return a.directory.localeCompare(b.directory);
+  });
 }
 
 export async function readEditorSettings(): Promise<EditorSettings> {
@@ -118,9 +127,10 @@ export async function createGameDirectory(name: string) {
     throw new GameAlreadyExistsError(slug);
   }
 
+  const id = await getNextGameId();
   await fs.mkdir(directoryPath, { recursive: true });
   await fs.mkdir(path.join(directoryPath, "blueprints"), { recursive: true });
-  await writeGameFile(slug, DEFAULT_GAME_FILE);
+  await writeGameFile(slug, createDefaultGameFile(id));
 
   const cameraPath = path.join(directoryPath, "camera.ts");
   await fs
@@ -133,6 +143,12 @@ export async function createGameDirectory(name: string) {
 
   await writeEditorSettings({ currentGameDirectory: slug });
   return { gameDirectory: slug };
+}
+
+async function getNextGameId() {
+  const games = await listGames();
+  const maxId = games.reduce((max, game) => Math.max(max, game.id), -1);
+  return maxId + 1;
 }
 
 function getGameDirectoryPath(name: string) {
@@ -271,6 +287,7 @@ export function isGameFile(value: unknown): value is GameFile {
     return false;
   }
   const record = value as Record<string, unknown>;
+  const hasValidId = typeof record.id === "number";
   const hasCamera = isVector(record.camera);
   const hasScreen = isScreen(record.screen);
   const hasThings =
@@ -289,6 +306,7 @@ export function isGameFile(value: unknown): value is GameFile {
     record.image === null ||
     typeof record.image === "string";
   return (
+    hasValidId &&
     hasCamera &&
     hasScreen &&
     hasThings &&

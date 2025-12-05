@@ -98,6 +98,7 @@ function cloneDefaultRawGameState(): RawGameState {
 function cloneDefaultPersistedState(): PersistedGameState {
   const base = cloneDefaultRawGameState();
   return {
+    id: -1,
     ...base,
     blueprints: [],
     image: null,
@@ -1396,6 +1397,7 @@ function persistedStateFromGameFile(game: GameFile): PersistedGameState {
         ? fallbackClear
         : DEFAULT_BACKGROUND_COLOR;
   return {
+    id: game.id,
     things: game.things.map((thing) =>
       stripThingData(normalizeThingFromFile({ ...thing }))
     ),
@@ -1516,6 +1518,7 @@ function resolveCameraModule(
 
 function serializeGame(state: PersistedGameState): GameFile {
   return {
+    id: state.id,
     things: state.things.map((thing) => stripThingData({ ...thing })),
     blueprints: state.blueprints.map((bp) => ({ ...bp })),
     camera: state.camera,
