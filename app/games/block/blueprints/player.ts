@@ -5,11 +5,15 @@ export default function createBlueprint2(data: BlueprintData) {
     ...data,
     input: (thing: RuntimeThing, _state: RuntimeGameState, keys: KeyState) => {
       const speed = 6;
-      if (keys.arrowLeft === keys.arrowRight) {
-        thing.velocityX = 0;
-        return;
+      thing.velocityX = 0;
+
+      if (keys.arrowLeft !== keys.arrowRight) {
+        thing.velocityX = keys.arrowLeft ? -speed : speed;
       }
-      thing.velocityX = keys.arrowLeft ? -speed : speed;
+
+      if (keys.arrowUp && thing.isGrounded) {
+        thing.velocityY = -5;
+      }
     },
     update: (thing: RuntimeThing, _state: RuntimeGameState, _things: RuntimeThing[]) => {
       return thing;

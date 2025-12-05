@@ -14,6 +14,7 @@ const GRAVITY_ACCELERATION = 0.1;
 const GROUND_NORMAL_THRESHOLD = 0.7;
 const GROUND_VELOCITY_EPSILON = 0.0001;
 const DOWN_VECTOR: Vector = { x: 0, y: 1 };
+const simulatedThingIds = new Set<string>();
 
 export function physicsStep(
   gameState: RuntimeGameState,
@@ -25,10 +26,15 @@ export function physicsStep(
 
   const isGravityEnabled = game.gameState.isGravityEnabled;
   const preCollisionVelocities = new Map<string, Vector>();
+  const wasGroundedMap = new Map<string, boolean>();
+  const hasSimulatedBeforeMap = new Map<string, boolean>();
   const things = [...gameState.things];
 
   for (const thing of things) {
+    wasGroundedMap.set(thing.id, thing.isGrounded);
+    hasSimulatedBeforeMap.set(thing.id, simulatedThingIds.has(thing.id));
     thing.isGrounded = false;
+    simulatedThingIds.add(thing.id);
     if (suspendedThingIds.has(thing.id)) continue;
 
     let nextVelocity: Vector = { x: thing.velocityX, y: thing.velocityY };
@@ -72,7 +78,9 @@ export function physicsStep(
         game.collidingThingIds,
         game,
         preCollisionVelocities,
-        isGravityEnabled
+        isGravityEnabled,
+        hasSimulatedBeforeMap,
+        wasGroundedMap
       );
     }
   }
@@ -86,7 +94,9 @@ function resolveCollision(
   collidingThingIds: CollisionMap,
   game: GameContext,
   preCollisionVelocities: Map<string, Vector>,
-  gravityEnabled: boolean
+  gravityEnabled: boolean,
+  hasSimulatedBeforeMap: Map<string, boolean>,
+  wasGroundedMap: Map<string, boolean>
 ) {
   const stillExistsA = gameState.things.includes(a);
   const stillExistsB = gameState.things.includes(b);
@@ -149,7 +159,9 @@ function resolveCollision(
       a,
       normalForA,
       preCollisionVelocities.get(a.id),
-      gravityEnabled
+      gravityEnabled,
+      hasSimulatedBeforeMap.get(a.id) ?? false,
+      wasGroundedMap.get(a.id) ?? false
     );
   }
 
@@ -158,7 +170,9 @@ function resolveCollision(
       b,
       normalForB,
       preCollisionVelocities.get(b.id),
-      gravityEnabled
+      gravityEnabled,
+      hasSimulatedBeforeMap.get(b.id) ?? false,
+      wasGroundedMap.get(b.id) ?? false
     );
   }
 
@@ -336,7 +350,9 @@ function updateGroundedState(
   thing: RuntimeThing,
   contactNormal: Vector,
   preCollisionVelocity: Vector | undefined,
-  gravityEnabled: boolean
+  gravityEnabled: boolean,
+  hasSimulatedBefore: boolean,
+  wasGroundedPreviously: boolean
 ) {
   if (!gravityEnabled) return;
   if (thing.physicsType !== "dynamic") return;
@@ -346,7 +362,14 @@ function updateGroundedState(
 
   if (alignmentWithDown <= -GROUND_NORMAL_THRESHOLD) {
     const verticalVelocity = preCollisionVelocity?.y ?? 0;
-    if (verticalVelocity >= -GROUND_VELOCITY_EPSILON) {
+    const isLanding = verticalVelocity > GROUND_VELOCITY_EPSILON;
+    const isInitialGrounding =
+      !hasSimulatedBefore &&
+      Math.abs(verticalVelocity) <= GROUND_VELOCITY_EPSILON;
+    const isPersistingGroundContact =
+      wasGroundedPreviously && verticalVelocity >= -GROUND_VELOCITY_EPSILON;
+
+    if (isLanding || isInitialGrounding || isPersistingGroundContact) {
       thing.isGrounded = true;
     }
   }
