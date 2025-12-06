@@ -133,7 +133,12 @@ export class GameEngine {
   private thingHashes = new Map<string, string>();
   private blueprintImages = new Map<string, CanvasImageSource>();
   private blueprintImageLoadVersion = 0;
-  private editableImageStore = new EditableImageStore();
+  private imagePersistListeners = new Set<
+    (payload: { src: string; fileName: string }) => void
+  >();
+  private editableImageStore = new EditableImageStore((record) =>
+    this.notifyImagePersistListeners(record)
+  );
   private pointerMode: PointerMode = "pointer";
   private paintColor = "#000000";
   private paintHover: {
@@ -237,6 +242,7 @@ export class GameEngine {
     this.blueprintImages.clear();
     this.blueprintImageLoadVersion = 0;
     this.editableImageStore.reset();
+    this.imagePersistListeners.clear();
     this.resetCameraPauses();
     this.editingThingIds.clear();
     this.pointerInterpreter.reset();
@@ -321,6 +327,15 @@ export class GameEngine {
       this.listeners.delete(listener);
     };
   };
+
+  subscribeImageUpdates(
+    listener: (payload: { src: string; fileName: string }) => void
+  ) {
+    this.imagePersistListeners.add(listener);
+    return () => {
+      this.imagePersistListeners.delete(listener);
+    };
+  }
 
   getGameDirectory() {
     return this.gameDirectory;
@@ -407,12 +422,10 @@ export class GameEngine {
       payload.game.blueprints,
       this.gameDirectory
     );
-    const things = payload.game.things.map((thing) =>
-      ({
-        ...stripThingData(normalizeThingFromFile(thing)),
-        isGrounded: false,
-      })
-    );
+    const things = payload.game.things.map((thing) => ({
+      ...stripThingData(normalizeThingFromFile(thing)),
+      isGrounded: false,
+    }));
 
     this.rawGameState = {
       things,
@@ -810,6 +823,16 @@ export class GameEngine {
 
   private markImageDirty(record: EditableImageRecord) {
     this.editableImageStore.markDirty(record);
+  }
+
+  private notifyImagePersistListeners(record: EditableImageRecord) {
+    if (this.imagePersistListeners.size === 0) {
+      return;
+    }
+    const payload = { src: record.src, fileName: record.fileName };
+    for (const listener of this.imagePersistListeners) {
+      listener(payload);
+    }
   }
 
   private buildPaintOverlay(): PaintOverlay | undefined {
@@ -1506,7 +1529,11 @@ function stripThingData<TData>(
   thing: PersistedThing | RawThing<TData>
 ): PersistedThing {
   const withDefaults = { isGrounded: false, data: undefined, ...thing };
-  const { data: _ignored, isGrounded: _ignoredGrounded, ...rest } = withDefaults;
+  const {
+    data: _ignored,
+    isGrounded: _ignoredGrounded,
+    ...rest
+  } = withDefaults;
   return { ...rest };
 }
 

@@ -12,11 +12,13 @@ export function EditPanel({
   subscribe,
   onRename,
   gameDirectory,
+  imageVersions,
 }: {
   blueprintName: string;
   subscribe: GameSubscribe;
   onRename: (next: string) => void;
   gameDirectory: string;
+  imageVersions: Record<string, number>;
 }) {
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
   const [blueprint, dispatchGame] = subscribe<Blueprint | undefined>([
@@ -50,6 +52,9 @@ export function EditPanel({
           blueprints={blueprints ?? []}
           dispatch={dispatchGame}
           gameDirectory={gameDirectory}
+          imageVersion={
+            blueprint.image ? imageVersions[blueprint.image] : undefined
+          }
           onRename={onRename}
         />
       ) : (
