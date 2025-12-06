@@ -38,3 +38,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+app/games/*/blueprint-manifest.ts
+app/games/blueprint-manifest-index.ts
