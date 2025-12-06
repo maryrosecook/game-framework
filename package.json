@@ -2,8 +2,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "tsx scripts/watch-blueprints.ts & next dev",
+    "watch:blueprints": "tsx scripts/watch-blueprints.ts",
+    "manifest:blueprints": "tsx scripts/watch-blueprints.ts --once",
+    "build": "npm run manifest:blueprints && next build",
     "start": "next start",
     "test": "vitest",
     "lint": "eslint . --ext .ts,.tsx --fix"
@@ -29,13 +31,15 @@
     "@testing-library/react": "14.3.1",
     "@types/node": "20.10.4",
     "@types/react": "19.1.1",
-    "@vitejs/plugin-react": "^4.2.1",
-    "eslint": "^8.57.1",
-    "eslint-plugin-react-hooks": "^4.6.2",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "chokidar": "3.5.3",
+    "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.18",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "jsdom": "^23.0.1",
+    "tsx": "^4.21.0",
     "typescript": "5.3.3",
     "vitest": "1.0.4"
   }

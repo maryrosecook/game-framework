@@ -11,6 +11,7 @@ import {
 import { GameEngine, GameEngineDependencies } from "./engine";
 import { GameAction, SubscriptionPath } from "./types";
 import { createGameEngineDependencies } from "@/lib/gameApiClient";
+import { getBlueprintManifestVersion } from "@/games/blueprint-manifest-index";
 
 export type GameSubscribe = <T = unknown>(
   path: SubscriptionPath
@@ -30,6 +31,7 @@ export function useGame(
   }
 
   const engine = engineRef.current!;
+  const manifestVersion = getBlueprintManifestVersion(gameDirectory);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -39,6 +41,34 @@ export function useGame(
       engine.destroy();
     };
   }, [canvasRef, engine, gameDirectory]);
+
+  useEffect(() => {
+    void engine.hotReloadBlueprints(manifestVersion);
+  }, [engine, manifestVersion]);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ game: string; version: string }>)[
+        "detail"
+      ];
+      if (detail?.game === gameDirectory) {
+        void engine.hotReloadBlueprints(detail.version);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("blueprint-manifest-updated", handler as EventListener);
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener(
+          "blueprint-manifest-updated",
+          handler as EventListener
+        );
+      }
+    };
+  }, [engine, gameDirectory]);
 
   const dispatch = useCallback(
     (action: GameAction) => {

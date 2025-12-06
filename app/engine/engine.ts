@@ -31,8 +31,6 @@ import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
 import { loadImages } from "./imageLoader";
 import {
-  createBlankImageRecord,
-  createRecordFromSource,
   DEFAULT_IMAGE_SIZE,
   EditableImageRecord,
   extractFileName,
@@ -78,6 +76,20 @@ export type GameEngineDependencies = {
   dataSource: GameEngineDataSource;
   sideEffects?: GameEngineSideEffects;
   timeWitnessDrive?: TimeWitnessDrive;
+};
+
+type BlueprintJsModule = Record<string, unknown>;
+type BlueprintJsModuleMap = Record<string, BlueprintJsModule>;
+
+// a module of modules
+type BlueprintJsModuleManifestJsModule = {
+  blueprints: BlueprintJsModuleMap;
+  manifestVersion?: string;
+};
+
+type BlueprintJsModuleManifest = {
+  modules: BlueprintJsModuleMap;
+  version: string | null;
 };
 
 const DEFAULT_BACKGROUND_COLOR = "#f8fafc";
@@ -141,6 +153,7 @@ export class GameEngine {
   private editingThingIds = new Set<string>();
   private cameraPauseReasons = new Set<CameraPauseReason>();
   private pointerInterpreter = createPointerInterpreter();
+  private blueprintManifestVersion: string | null = null;
 
   constructor(private readonly dependencies: GameEngineDependencies) {}
 
@@ -196,6 +209,39 @@ export class GameEngine {
     return this.blueprintLookup.get(name);
   }
 
+  async hotReloadBlueprints(manifestVersion?: string | null) {
+    if (!this.gameDirectory) {
+      return;
+    }
+
+    const requestedVersion = manifestVersion ?? null;
+    if (
+      requestedVersion !== null &&
+      requestedVersion === this.blueprintManifestVersion
+    ) {
+      return;
+    }
+
+    const { blueprints, manifestVersion: detectedVersion } =
+      await this.loadBlueprintsWithManifestVersion(
+        this.persistedGameState.blueprints,
+        this.gameDirectory
+      );
+
+    const nextVersion = requestedVersion ?? detectedVersion ?? null;
+    if (nextVersion !== null && nextVersion === this.blueprintManifestVersion) {
+      return;
+    }
+
+    this.rawGameState = { ...this.rawGameState, blueprints };
+    await this.syncBlueprintImages(this.rawGameState.blueprints);
+    this.rebuildBlueprintLookup();
+    this.updateRuntimeState();
+    this.refreshThingHashes();
+    this.blueprintManifestVersion = nextVersion;
+    this.notify();
+  }
+
   setPointerMode(mode: PointerMode) {
     this.pointerMode = mode;
   }
@@ -238,6 +284,7 @@ export class GameEngine {
     this.resetCameraPauses();
     this.editingThingIds.clear();
     this.pointerInterpreter.reset();
+    this.blueprintManifestVersion = null;
     this.isPersistedDirty = false;
     this.gameDirectory = "";
     this.listeners.clear();
@@ -399,10 +446,11 @@ export class GameEngine {
     this.persistedGameState = persistedStateFromGameFile(payload.game);
     this.isPersistedDirty = false;
     this.cameraModule = await this.loadCamera(this.gameDirectory);
-    const blueprints = await this.loadBlueprints(
-      payload.game.blueprints,
-      this.gameDirectory
-    );
+    const { blueprints, manifestVersion: blueprintManifestVersion } =
+      await this.loadBlueprintsWithManifestVersion(
+        payload.game.blueprints,
+        this.gameDirectory
+      );
     const things = payload.game.things.map((thing) =>
       stripThingData(normalizeThingFromFile(thing))
     );
@@ -422,23 +470,74 @@ export class GameEngine {
     this.rebuildBlueprintLookup();
     this.updateRuntimeState();
     this.refreshThingHashes();
+    this.blueprintManifestVersion = blueprintManifestVersion;
   }
 
-  private async loadBlueprints(
+  private async loadBlueprintsWithManifestVersion(
     blueprintData: BlueprintData[],
     directory: string
-  ) {
-    const resolved: Blueprint[] = [];
+  ): Promise<{ blueprints: Blueprint[]; manifestVersion: string | null }> {
+    const manifest = await this.loadBlueprintJsModuleManifest(directory);
+    const blueprints = await this.importBlueprints(
+      blueprintData,
+      directory,
+      manifest?.modules ?? null
+    );
+    return { blueprints, manifestVersion: manifest?.version ?? null };
+  }
+
+  private async importBlueprints(
+    blueprintData: BlueprintData[],
+    directory: string,
+    manifestModules: BlueprintJsModuleMap | null
+  ): Promise<Blueprint[]> {
+    const blueprints: Blueprint[] = [];
     for (const data of blueprintData) {
       const slug = blueprintSlug(data.name);
-      const blueprintModule = await import(
-        /* webpackMode: "lazy" */ `@/games/${directory}/blueprints/${slug}.ts`
-      );
-      const blueprint = resolveBlueprintModule(blueprintModule, data);
+      const blueprintJsModule =
+        manifestModules?.[slug] ??
+        (await this.importBlueprintJsModule(directory, slug));
+      const blueprint = resolveBlueprintModule(blueprintJsModule, data);
       const normalized = normalizeBlueprintData(blueprint);
-      resolved.push(normalized);
+      blueprints.push(normalized);
     }
-    return resolved;
+    return blueprints;
+  }
+
+  private async importBlueprintJsModule(
+    directory: string,
+    slug: string
+  ): Promise<BlueprintJsModule> {
+    const moduleExports: BlueprintJsModule = await import(
+      /* webpackMode: "lazy" */ `@/games/${directory}/blueprints/${slug}.ts`
+    );
+    return moduleExports;
+  }
+
+  private async loadBlueprintJsModuleManifest(
+    directory: string
+  ): Promise<BlueprintJsModuleManifest | null> {
+    try {
+      const manifestModule: BlueprintJsModuleManifestJsModule = await import(
+        /* webpackMode: "eager" */ `@/games/${directory}/blueprint-manifest`
+      );
+
+      if (isBlueprintManifestModule(manifestModule)) {
+        return {
+          modules: manifestModule.blueprints,
+          version: manifestModule.manifestVersion ?? null,
+        } satisfies BlueprintJsModuleManifest;
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(
+          `Blueprint manifest not available for "${directory}", falling back to dynamic imports.`,
+          error
+        );
+      }
+    }
+
+    return null;
   }
 
   private async loadCamera(directory: string) {
@@ -1479,8 +1578,31 @@ function stripThingData<TData>(thing: RawThing<TData>): RawThing<undefined> {
   return { ...rest };
 }
 
+function isBlueprintManifestModule(
+  value: unknown
+): value is BlueprintJsModuleManifestJsModule {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const manifest = (value as { blueprints?: unknown }).blueprints;
+
+  if (!manifest || typeof manifest !== "object") {
+    return false;
+  }
+
+  return Object.values(manifest as Record<string, unknown>).every((module) =>
+    isBlueprintJsModule(module)
+  );
+}
+
+function isBlueprintJsModule(value: unknown): value is BlueprintJsModule {
+  const factory = (value as { default?: unknown })?.default;
+  return typeof factory === "function";
+}
+
 function resolveBlueprintModule(
-  moduleExports: Record<string, unknown>,
+  moduleExports: BlueprintJsModule,
   data: BlueprintData
 ): Blueprint {
   const factory = moduleExports.default;
