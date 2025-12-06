@@ -5,7 +5,8 @@ import {
   GameAction,
   SetBlueprintPropertyAction,
 } from "@/engine/types";
-import { ColorGrid } from "@/components/ColorGrid";
+import { getColorOptions } from "@/components/ColorGrid";
+import { ColorSelect } from "@/components/ColorSelect";
 import { SelectField } from "@/components/SelectField";
 import { ArrangeButton } from "@/components/ArrangeButton";
 import { getBlueprintImageUrl } from "@/lib/images";
@@ -34,6 +35,7 @@ export function BlueprintTab({
 
   const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);
   const zBounds = getZBounds(blueprints, blueprint.z);
+  const colorOptions = getColorOptions();
 
   const handleUpdate = <K extends keyof BlueprintData>(
     property: K,
@@ -205,9 +207,11 @@ export function BlueprintTab({
           ]}
           onChange={(value) => handleUpdate("physicsType", value)}
         />
-        <ColorGrid
-          selected={blueprint.color}
-          onSelect={(color) => handleUpdate("color", color)}
+        <ColorSelect
+          label="Color"
+          value={blueprint.color}
+          options={colorOptions}
+          onChange={(value) => handleUpdate("color", value)}
         />
       </div>
       <button
