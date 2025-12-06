@@ -137,5 +137,6 @@
     "height": 600
   },
   "backgroundColor": "#99d6ff",
-  "image": null
+  "image": null,
+  "isGravityEnabled": false
 }

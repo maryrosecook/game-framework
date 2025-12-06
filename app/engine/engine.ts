@@ -15,6 +15,7 @@ import {
   RuntimeThing,
   SubscriptionPath,
   RawThing,
+  PersistedThing,
   SpawnRequest,
   UpdateResult,
   Vector,
@@ -101,6 +102,7 @@ function cloneDefaultRawGameState(): RawGameState {
     camera: { x: 0, y: 0 },
     screen: { width: 800, height: 600 },
     backgroundColor: DEFAULT_BACKGROUND_COLOR,
+    isGravityEnabled: false,
     isPaused: false,
     selectedThingId: null,
     selectedThingIds: [],
@@ -345,6 +347,8 @@ export class GameEngine {
         return this.gameState.camera;
       case "screen":
         return this.gameState.screen;
+      case "isGravityEnabled":
+        return this.gameState.isGravityEnabled;
       case "backgroundColor":
         return this.gameState.backgroundColor;
       case "isPaused":
@@ -452,7 +456,10 @@ export class GameEngine {
         this.gameDirectory
       );
     const things = payload.game.things.map((thing) =>
-      stripThingData(normalizeThingFromFile(thing))
+      ({
+        ...stripThingData(normalizeThingFromFile(thing)),
+        isGrounded: false,
+      })
     );
 
     this.rawGameState = {
@@ -461,6 +468,7 @@ export class GameEngine {
       camera: payload.game.camera,
       screen: payload.game.screen,
       backgroundColor: this.persistedGameState.backgroundColor,
+      isGravityEnabled: this.persistedGameState.isGravityEnabled,
       isPaused: false,
       selectedThingId: null,
       selectedThingIds: [],
@@ -1367,6 +1375,18 @@ export class GameEngine {
         };
         return true;
       }
+      case "setGravityEnabled": {
+        if (
+          this.persistedGameState.isGravityEnabled === action.isGravityEnabled
+        ) {
+          return false;
+        }
+        this.persistedGameState = {
+          ...this.persistedGameState,
+          isGravityEnabled: action.isGravityEnabled,
+        };
+        return true;
+      }
       default:
         return false;
     }
@@ -1374,7 +1394,7 @@ export class GameEngine {
 
   private updatePersistedThing(
     thingId: string,
-    updater: (thing: RawThing) => RawThing
+    updater: (thing: PersistedThing) => PersistedThing
   ): boolean {
     const index = this.persistedGameState.things.findIndex(
       (candidate) => candidate.id === thingId
@@ -1384,7 +1404,11 @@ export class GameEngine {
     }
     const nextThings = [...this.persistedGameState.things];
     const updated = updater({ ...nextThings[index] });
-    nextThings[index] = stripThingData(updated);
+    nextThings[index] = stripThingData({
+      ...updated,
+      isGrounded: false,
+      data: undefined,
+    });
     this.persistedGameState = {
       ...this.persistedGameState,
       things: nextThings,
@@ -1505,6 +1529,7 @@ function persistedStateFromGameFile(game: GameFile): PersistedGameState {
     camera: { ...game.camera },
     screen: { ...game.screen },
     backgroundColor,
+    isGravityEnabled: !!game.isGravityEnabled,
     image: game.image ?? null,
     isPaused: false,
     selectedThingId: null,
@@ -1537,6 +1562,7 @@ function hashThing(thing: RuntimeThing) {
     thing.angle,
     thing.velocityX,
     thing.velocityY,
+    thing.isGrounded,
     thing.physicsType,
     thing.shape,
     thing.blueprintName,
@@ -1555,6 +1581,7 @@ function runtimeThingToThing(thing: RuntimeThing): RawThing {
     angle: thing.angle,
     velocityX: thing.velocityX,
     velocityY: thing.velocityY,
+    isGrounded: thing.isGrounded,
     blueprintName: thing.blueprintName,
     shape: thing.shape,
     data: thing.data,
@@ -1562,7 +1589,7 @@ function runtimeThingToThing(thing: RuntimeThing): RawThing {
 }
 
 function normalizeThingFromFile(
-  thing: RawThing & { image?: unknown }
+  thing: PersistedThing & { image?: unknown }
 ): RawThing {
   // Drop any per-thing image overrides; images belong to blueprints.
   const { image: _ignored, ...rest } = thing;
@@ -1570,11 +1597,15 @@ function normalizeThingFromFile(
     ...rest,
     velocityX: rest.velocityX ?? 0,
     velocityY: rest.velocityY ?? 0,
+    isGrounded: false,
   };
 }
 
-function stripThingData<TData>(thing: RawThing<TData>): RawThing<undefined> {
-  const { data: _ignored, ...rest } = thing;
+function stripThingData<TData>(
+  thing: PersistedThing | RawThing<TData>
+): PersistedThing {
+  const withDefaults = { isGrounded: false, data: undefined, ...thing };
+  const { data: _ignored, isGrounded: _ignoredGrounded, ...rest } = withDefaults;
   return { ...rest };
 }
 
@@ -1642,11 +1673,12 @@ function resolveCameraModule(
 function serializeGame(state: PersistedGameState): GameFile {
   return {
     id: state.id,
-    things: state.things.map((thing) => stripThingData({ ...thing })),
+    things: state.things.map((thing) => ({ ...thing })),
     blueprints: state.blueprints.map((bp) => ({ ...bp })),
     camera: state.camera,
     screen: state.screen,
     backgroundColor: state.backgroundColor,
+    isGravityEnabled: state.isGravityEnabled,
     image: state.image ?? null,
   };
 }
