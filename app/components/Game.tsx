@@ -31,6 +31,9 @@ export function Game({ gameDirectory }: GameProps) {
   const [paintColor, setPaintColor] = useState<string>(
     palette[0] ?? "#000000"
   );
+  const [imageVersions, setImageVersions] = useState<Record<string, number>>(
+    {}
+  );
 
   useEffect(() => {
     if (!blueprints || blueprints.length === 0) {
@@ -54,6 +57,19 @@ export function Game({ gameDirectory }: GameProps) {
       setActiveBlueprintName(target.blueprintName);
     }
   }, [selectedThingId, things]);
+
+  useEffect(() => {
+    setImageVersions({});
+  }, [gameDirectory]);
+
+  useEffect(() => {
+    return engine.subscribeImageUpdates(({ fileName }) => {
+      setImageVersions((previous) => ({
+        ...previous,
+        [fileName]: (previous[fileName] ?? 0) + 1,
+      }));
+    });
+  }, [engine]);
 
   useKeyboardShortcuts({ engine, selectedThingIds });
 
@@ -99,6 +115,7 @@ export function Game({ gameDirectory }: GameProps) {
           subscribe={subscribe}
           onRename={setActiveBlueprintName}
           gameDirectory={gameDirectory}
+          imageVersions={imageVersions}
         />
       ) : null}
       <div className="pointer-events-auto absolute bottom-0 left-0 right-0 flex justify-center px-6 pb-4">
@@ -112,6 +129,7 @@ export function Game({ gameDirectory }: GameProps) {
           onChangePointerMode={handlePointerModeChange}
           paintColor={paintColor}
           onChangePaintColor={handlePaintColorChange}
+          imageVersions={imageVersions}
         />
       </div>
     </div>
