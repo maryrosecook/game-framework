@@ -1,6 +1,7 @@
 export function getBlueprintImageUrl(
   gameDirectory: string | undefined,
-  imageName: string | undefined
+  imageName: string | undefined,
+  version?: number
 ): string | null {
   if (!gameDirectory || !imageName) {
     return null;
@@ -9,9 +10,14 @@ export function getBlueprintImageUrl(
   if (!trimmed || trimmed.includes("/") || trimmed.includes("\\")) {
     return null;
   }
-  return `/api/images/${encodeURIComponent(
+  const base = `/api/images/${encodeURIComponent(
     gameDirectory
   )}/${encodeURIComponent(trimmed)}`;
+  const cacheBuster =
+    typeof version === "number" && Number.isFinite(version) && version > 0
+      ? `?v=${version}`
+      : "";
+  return `${base}${cacheBuster}`;
 }
 
 export function getGameImageUrl(

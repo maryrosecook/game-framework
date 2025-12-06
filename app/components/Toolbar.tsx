@@ -22,6 +22,7 @@ type ToolbarProps = {
   onChangePointerMode: (mode: PointerMode) => void;
   paintColor: string;
   onChangePaintColor: (color: string) => void;
+  imageVersions: Record<string, number>;
 };
 
 export function Toolbar({
@@ -34,6 +35,7 @@ export function Toolbar({
   onChangePointerMode,
   paintColor,
   onChangePaintColor,
+  imageVersions,
 }: ToolbarProps) {
   const [showPalette, setShowPalette] = useState(false);
   const colorOptions = getColorOptions();
@@ -99,6 +101,9 @@ export function Toolbar({
             selected={selectedBlueprintName === blueprint.name}
             onSelect={() => onSelectBlueprint(blueprint.name)}
             gameDirectory={gameDirectory}
+            imageVersion={
+              blueprint.image ? imageVersions[blueprint.image] : undefined
+            }
           />
         ))}
       </div>
@@ -121,13 +126,19 @@ function BlueprintChip({
   selected,
   onSelect,
   gameDirectory,
+  imageVersion,
 }: {
   blueprint: Blueprint;
   selected: boolean;
   onSelect: () => void;
   gameDirectory: string;
+  imageVersion?: number;
 }) {
-  const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);
+  const imageUrl = getBlueprintImageUrl(
+    gameDirectory,
+    blueprint.image,
+    imageVersion
+  );
   const fallbackLabel = blueprint.name.slice(0, 3).toUpperCase();
   return (
     <button

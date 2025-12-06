@@ -7,6 +7,10 @@ export type EditableImageRecord = {
 };
 
 export class EditableImageStore {
+  constructor(
+    private readonly onPersist?: (record: EditableImageRecord) => void
+  ) {}
+
   private records = new Map<string, EditableImageRecord>();
   private dirtySources = new Set<string>();
   private persistHandle: number | null = null;
@@ -69,7 +73,14 @@ export class EditableImageStore {
     for (const src of sources) {
       const record = this.records.get(src);
       if (!record) continue;
-      await persistEditableImage(record);
+      const persisted = await persistEditableImage(record);
+      if (persisted) {
+        try {
+          this.onPersist?.(record);
+        } catch (error) {
+          console.warn("Image persist listener failed", error);
+        }
+      }
     }
   }
 }

@@ -21,6 +21,7 @@ type BlueprintTabProps = {
   gameDirectory: string;
   dispatch: (action: GameAction) => void;
   onRename: (value: string) => void;
+  imageVersion?: number;
 };
 
 export function BlueprintTab({
@@ -29,11 +30,16 @@ export function BlueprintTab({
   gameDirectory,
   dispatch,
   onRename,
+  imageVersion,
 }: BlueprintTabProps) {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const imageUrl = getBlueprintImageUrl(gameDirectory, blueprint.image);
+  const imageUrl = getBlueprintImageUrl(
+    gameDirectory,
+    blueprint.image,
+    imageVersion
+  );
   const zBounds = getZBounds(blueprints, blueprint.z);
   const colorOptions = getColorOptions();
 
