@@ -8,7 +8,7 @@ export function TabButton({ label, isActive, onSelect }: TabButtonProps) {
   return (
     <button
       type="button"
-      className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide transition ${
+      className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide transition cursor-pointer ${
         isActive
           ? "bg-white text-slate-900 shadow-sm"
           : "text-slate-500 hover:text-slate-700"
