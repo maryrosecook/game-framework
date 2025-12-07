@@ -1,3 +1,12 @@
-- See `architecture.md` for the canonical project goals, tech stack, and structural expectations. Please adhere to those goals and that structure when proposing or making changes.
+## Overview
+
+- This project implements a game framework, and contains a collection of games built with the framework.
+  - See `docs/game-framework.md` for information about how to edit the game framework.
+  - See `docs/game-making.md` for information about how to implement a game.
+
+## Coding guidelines
+
+- Enforce strict, explicit types across engine and UI. Do not rely on `any`,
+  `as` casts, or other unsafe coercions.
 - Ensure all changes have no lints or TypeScript errors.
 - Check TS errors with `npx tsc`

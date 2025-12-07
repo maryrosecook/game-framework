@@ -1,4 +1,6 @@
-Architecture Overview
+# Game framework
+
+## Overview
 
 - A desktop-first 2D game editor and runner where games are created,
   edited, and played in-browser with a full-screen Canvas. Editing uses React;
@@ -10,7 +12,7 @@ Architecture Overview
 - When you are asked to edit a game (e.g. adding game behavior), look in
   editorSettings.json to infer which game you should edit
 
-Technology Stack
+## Technology Stack
 
 - TypeScript with strict typing; avoid casts and any escape hatches (`as`,
   `unknown` tricks) to preserve type safety end to end.
@@ -18,7 +20,7 @@ Technology Stack
   read/write.
 - Canvas 2D rendering for all games; targeting desktop workflows.
 
-Directory Layout (high level)
+## Directory Layout
 
 - `data/editorSettings.json` stores editor preferences such as the current game
   directory.
@@ -33,7 +35,13 @@ Directory Layout (high level)
 - `app/api/` Next.js API routes that load and save game data and blueprints.
 - `app/lib/`, `public/`, `styles/` supporting utilities, assets, and styling.
 
-Game Engine and Runtime Flow
+## Data modelling
+
+- Game objects are things, and inherit from a blueprint.
+- Blueprints specify image, shape, color, physics type and behavior.
+- Things override x, y, width, height, angle of their blueprint.
+
+## Game Engine and Runtime Flow
 
 - Pure TypeScript engine driven by `requestAnimationFrame` (max frame rate, no
   delta time yet) with a single reducer managing a global state tree.
@@ -47,7 +55,7 @@ Game Engine and Runtime Flow
   hook, diffing against the prior state and emitting dispatches so subscribers
   stay in sync.
 
-Game State and Persistence
+## Game State and Persistence
 
 - Two state copies: `gameState` (live for rendering/logic, updated by game logic
   AND game editor edits) and `persistedGameState` (updated only by game editor
@@ -56,7 +64,7 @@ Game State and Persistence
 - Core shape: `{ things: Thing[]; blueprints: Blueprint[]; camera: {x,y};
 screen: {width,height}; isPaused: boolean; selectedThingId: string | null }`.
 
-React Editor and UI Model
+## React Editor and UI Model
 
 - Full-window layout with Canvas dominating the view; the game screen bounds are
   drawn inside the canvas. Play/pause control sits alongside a bottom blueprint
@@ -73,7 +81,7 @@ React Editor and UI Model
 - Boot: top-level component creates a canvas ref and starts the engine via a
   concise `useGame` hook call.
 
-Reducer and Hook Strategy
+## Reducer and Hook Strategy
 
 - `useGame` starts the loop and returns `isPaused` plus a `subscribe` API for
   targeted state slices (things, blueprints, camera, screen, pause state,
@@ -81,9 +89,3 @@ Reducer and Hook Strategy
 - The reducer handles actions for thing and blueprint mutation, camera/screen
   changes, pause toggling, and selection. Engine and React UI share this reducer
   so UI edits and in-game mutations stay consistent.
-
-Type System Discipline
-
-- Enforce strict, explicit types across engine and UI. Do not rely on `any`,
-  `as` casts, or other unsafe coercions; design functions and data structures so
-  type correctness is guaranteed without escapes.

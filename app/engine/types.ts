@@ -58,6 +58,7 @@ export type BlueprintData<TData = unknown> = {
 };
 
 export type BlueprintModule<TData = unknown> = Partial<{
+  // All called every tick
   update: (thing: RuntimeThing<TData>, game: GameContext) => UpdateResult;
   render: (
     thing: RuntimeThing<TData>,
@@ -65,6 +66,7 @@ export type BlueprintModule<TData = unknown> = Partial<{
     ctx: CanvasRenderingContext2D
   ) => void;
   input: (
+    // respond to input
     thing: RuntimeThing<TData>,
     game: GameContext,
     keyState: KeyState
@@ -75,6 +77,7 @@ export type BlueprintModule<TData = unknown> = Partial<{
     game: GameContext
   ) => void;
   getAdjustedVelocity: (
+    // Adjust velocity in a custom way rather than using the physics default
     thing: RuntimeThing<TData>,
     proposedVelocity: Vector,
     game: GameContext
