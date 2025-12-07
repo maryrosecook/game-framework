@@ -5,7 +5,7 @@ import { BlueprintTab } from "@/components/BlueprintTab";
 import { SettingsTab } from "@/components/SettingsTab";
 import { TabButton } from "@/components/TabButton";
 
-type PanelTab = "blueprint" | "settings";
+type PanelTab = "blueprint" | "game";
 
 export function EditPanel({
   blueprintName,
@@ -40,9 +40,9 @@ export function EditPanel({
           onSelect={() => setActiveTab("blueprint")}
         />
         <TabButton
-          label="Settings"
-          isActive={activeTab === "settings"}
-          onSelect={() => setActiveTab("settings")}
+          label="Game"
+          isActive={activeTab === "game"}
+          onSelect={() => setActiveTab("game")}
         />
       </div>
 
@@ -58,9 +58,7 @@ export function EditPanel({
           onRename={onRename}
         />
       ) : (
-        <SettingsTab
-          subscribe={subscribe}
-        />
+        <SettingsTab subscribe={subscribe} />
       )}
     </div>
   );
