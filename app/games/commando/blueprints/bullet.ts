@@ -12,11 +12,15 @@ const ENEMY_BLUEPRINT = "enemy";
 const BULLET_BLUEPRINT = "bullet";
 const WALL_BLUEPRINT = "wall";
 
-export default function createBlueprint3(data: BlueprintData) {
+type BulletData = {
+  shooterId?: string;
+};
+
+export default function createBlueprint3(data: BlueprintData<BulletData>) {
   return {
     ...data,
     input: (
-      thing: RuntimeThing,
+      thing: RuntimeThing<BulletData>,
       _game: GameContext,
       _keys: KeyState
     ) => {
@@ -24,13 +28,14 @@ export default function createBlueprint3(data: BlueprintData) {
     },
     update: () => {},
     collision: (
-      thing: RuntimeThing,
+      thing: RuntimeThing<BulletData>,
       other: RuntimeThing,
       game: GameContext
     ) => {
       if (isBullet(other)) {
         return;
       }
+      const shooter = getShooter(thing, game.gameState.things);
       const direction = normalizeVector({
         x: thing.velocityX,
         y: thing.velocityY,
@@ -41,6 +46,7 @@ export default function createBlueprint3(data: BlueprintData) {
           things: game.gameState.things,
           wall: other,
           bulletDirection: direction,
+          subject: shooter,
         })
       ) {
         return;
@@ -69,22 +75,36 @@ function isWall(thing: RuntimeThing) {
   return thing.blueprintName === WALL_BLUEPRINT;
 }
 
+function getShooter(
+  thing: RuntimeThing<BulletData>,
+  things: ReadonlyArray<RuntimeThing>
+) {
+  const shooterId = thing.data?.shooterId;
+  if (!shooterId) {
+    return undefined;
+  }
+  return things.find((candidate) => candidate.id === shooterId);
+}
+
 export function canBulletPassWall({
   things,
   wall,
   bulletDirection,
+  subject,
   player,
 }: {
-  things: ReadonlyArray<RuntimeThing>;
+  things?: ReadonlyArray<RuntimeThing>;
   wall: RuntimeThing;
   bulletDirection: Vector;
+  subject?: RuntimeThing;
   player?: RuntimeThing;
 }) {
-  const playerThing =
+  const referenceThing =
+    subject ??
     player ??
-    things.find((candidate) => candidate.blueprintName === PLAYER_BLUEPRINT);
+    things?.find((candidate) => candidate.blueprintName === PLAYER_BLUEPRINT);
 
-  if (!playerThing) {
+  if (!referenceThing) {
     return false;
   }
 
@@ -93,7 +113,7 @@ export function canBulletPassWall({
     return false;
   }
 
-  const frontPoint = getFrontPoint(playerThing);
+  const frontPoint = getFrontPoint(referenceThing);
   const nearestPoint = clampPointToThing(frontPoint, wall);
   const distanceToWall = Math.hypot(
     frontPoint.x - nearestPoint.x,
@@ -103,11 +123,11 @@ export function canBulletPassWall({
     return false;
   }
 
-  const facing = angleToVector(playerThing.angle);
-  const playerCenter = getThingCenter(playerThing);
+  const facing = angleToVector(referenceThing.angle);
+  const referenceCenter = getThingCenter(referenceThing);
   const toWall = {
-    x: nearestPoint.x - playerCenter.x,
-    y: nearestPoint.y - playerCenter.y,
+    x: nearestPoint.x - referenceCenter.x,
+    y: nearestPoint.y - referenceCenter.y,
   };
   const toWallDirection =
     toWall.x === 0 && toWall.y === 0 ? facing : normalizeVector(toWall);
@@ -153,7 +173,10 @@ function getFrontPoint(player: RuntimeThing) {
   };
 }
 
-function clampPointToThing(point: { x: number; y: number }, thing: RuntimeThing) {
+function clampPointToThing(
+  point: { x: number; y: number },
+  thing: RuntimeThing
+) {
   const clampedX = clamp(point.x, thing.x, thing.x + thing.width);
   const clampedY = clamp(point.y, thing.y, thing.y + thing.height);
   return { x: clampedX, y: clampedY };

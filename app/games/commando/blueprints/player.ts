@@ -101,6 +101,7 @@ function spawnBullet(
       velocityX: direction.x * BULLET_SPEED,
       velocityY: direction.y * BULLET_SPEED,
       angle: thing.angle,
+      data: { shooterId: thing.id },
     },
   });
   lastFireTimes.set(thing.id, now);
