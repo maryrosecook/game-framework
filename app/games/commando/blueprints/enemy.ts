@@ -47,7 +47,11 @@ export default function createBlueprint4(data: BlueprintData) {
         allThings: things,
         firingDirection,
       });
-      if (!isAimedAtPlayer || !hasClearShot || now - lastFired < FIRE_INTERVAL_MS) {
+      if (
+        !isAimedAtPlayer ||
+        !hasClearShot ||
+        now - lastFired < FIRE_INTERVAL_MS
+      ) {
         return;
       }
 
@@ -71,6 +75,7 @@ export default function createBlueprint4(data: BlueprintData) {
           velocityX: firingDirection.x * BULLET_SPEED,
           velocityY: firingDirection.y * BULLET_SPEED,
           angle: thing.angle,
+          data: { shooterId: thing.id },
         },
       });
       if (spawned) {
@@ -81,7 +86,9 @@ export default function createBlueprint4(data: BlueprintData) {
 }
 
 function findPlayer(things: ReadonlyArray<RuntimeThing>) {
-  return things.find((candidate) => candidate.blueprintName === PLAYER_BLUEPRINT);
+  return things.find(
+    (candidate) => candidate.blueprintName === PLAYER_BLUEPRINT
+  );
 }
 
 function getThingCenter(thing: RuntimeThing) {
@@ -148,10 +155,9 @@ function hasLineOfSight({
     if (candidate.blueprintName === WALL_BLUEPRINT) {
       return (
         !canBulletPassWall({
-          things: allThings,
           wall: candidate,
           bulletDirection: firingDirection,
-          player: target,
+          subject: source,
         }) && lineIntersectsRect(start, end, getBounds(candidate))
       );
     }
@@ -230,7 +236,9 @@ function direction(
   to: { x: number; y: number },
   point: { x: number; y: number }
 ) {
-  return (to.x - from.x) * (point.y - from.y) - (to.y - from.y) * (point.x - from.x);
+  return (
+    (to.x - from.x) * (point.y - from.y) - (to.y - from.y) * (point.x - from.x)
+  );
 }
 
 function onSegment(
