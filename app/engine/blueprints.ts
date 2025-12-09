@@ -124,7 +124,6 @@ export function createThingFromBlueprint<TData = unknown>(
     blueprintName: thing.blueprintName ?? blueprint.name,
     width,
     height,
-    shape: thing.shape ?? blueprint.shape,
     data,
   };
 }

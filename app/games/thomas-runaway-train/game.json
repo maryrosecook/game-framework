@@ -11,8 +11,7 @@
       "velocityY": 0,
       "blueprintName": "obstacle-spawner",
       "width": 1,
-      "height": 1,
-      "shape": "rectangle"
+      "height": 1
     },
     {
       "id": "37s2emmbt08r",
@@ -24,8 +23,7 @@
       "velocityY": 0,
       "blueprintName": "engine",
       "width": 300,
-      "height": 300,
-      "shape": "rectangle"
+      "height": 300
     }
   ],
   "blueprints": [

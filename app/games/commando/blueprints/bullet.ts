@@ -1,12 +1,14 @@
 import {
   BlueprintData,
+  Blueprint,
   GameContext,
   RuntimeThing,
   KeyState,
   Vector,
 } from "@/engine/types";
+import { getClosestPointsBetweenThings } from "@/engine/physics";
 
-const WALL_PROXIMITY_THRESHOLD = 5;
+const WALL_PROXIMITY_THRESHOLD = 20;
 const PLAYER_BLUEPRINT = "player";
 const ENEMY_BLUEPRINT = "enemy";
 const BULLET_BLUEPRINT = "bullet";
@@ -47,6 +49,7 @@ export default function createBlueprint3(data: BlueprintData<BulletData>) {
           wall: other,
           bulletDirection: direction,
           subject: shooter,
+          blueprints: game.gameState.blueprints,
         })
       ) {
         return;
@@ -92,12 +95,14 @@ export function canBulletPassWall({
   bulletDirection,
   subject,
   player,
+  blueprints,
 }: {
   things?: ReadonlyArray<RuntimeThing>;
   wall: RuntimeThing;
   bulletDirection: Vector;
   subject?: RuntimeThing;
   player?: RuntimeThing;
+  blueprints?: Blueprint[];
 }) {
   const referenceThing =
     subject ??
@@ -113,21 +118,23 @@ export function canBulletPassWall({
     return false;
   }
 
-  const frontPoint = getFrontPoint(referenceThing);
-  const nearestPoint = clampPointToThing(frontPoint, wall);
-  const distanceToWall = Math.hypot(
-    frontPoint.x - nearestPoint.x,
-    frontPoint.y - nearestPoint.y
+  const blueprintLookup = new Map(
+    (blueprints ?? []).map((bp) => [bp.name, bp])
   );
+  const nearest = getClosestPointsBetweenThings(
+    referenceThing,
+    wall,
+    blueprintLookup
+  );
+  const distanceToWall = nearest.distance;
   if (distanceToWall > WALL_PROXIMITY_THRESHOLD) {
     return false;
   }
 
   const facing = angleToVector(referenceThing.angle);
-  const referenceCenter = getThingCenter(referenceThing);
   const toWall = {
-    x: nearestPoint.x - referenceCenter.x,
-    y: nearestPoint.y - referenceCenter.y,
+    x: nearest.pointOnB.x - nearest.pointOnA.x,
+    y: nearest.pointOnB.y - nearest.pointOnA.y,
   };
   const toWallDirection =
     toWall.x === 0 && toWall.y === 0 ? facing : normalizeVector(toWall);
@@ -136,10 +143,6 @@ export function canBulletPassWall({
   }
 
   return dot(facing, direction) > 0;
-}
-
-function getThingCenter(thing: RuntimeThing) {
-  return { x: thing.x + thing.width / 2, y: thing.y + thing.height / 2 };
 }
 
 function angleToVector(angle: number) {
@@ -157,31 +160,4 @@ function normalizeVector(vector: { x: number; y: number }) {
 
 function dot(a: { x: number; y: number }, b: { x: number; y: number }) {
   return a.x * b.x + a.y * b.y;
-}
-
-function getFrontPoint(player: RuntimeThing) {
-  const center = getThingCenter(player);
-  const radians = (player.angle * Math.PI) / 180;
-  const offset = { x: 0, y: -player.height / 2 };
-  const rotated = {
-    x: offset.x * Math.cos(radians) - offset.y * Math.sin(radians),
-    y: offset.x * Math.sin(radians) + offset.y * Math.cos(radians),
-  };
-  return {
-    x: center.x + rotated.x,
-    y: center.y + rotated.y,
-  };
-}
-
-function clampPointToThing(
-  point: { x: number; y: number },
-  thing: RuntimeThing
-) {
-  const clampedX = clamp(point.x, thing.x, thing.x + thing.width);
-  const clampedY = clamp(point.y, thing.y, thing.y + thing.height);
-  return { x: clampedX, y: clampedY };
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
 }

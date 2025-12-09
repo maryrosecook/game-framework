@@ -200,6 +200,7 @@ export function BlueprintTab({
           options={[
             { label: "Rectangle", value: "rectangle" },
             { label: "Triangle", value: "triangle" },
+            { label: "Circle", value: "circle" },
           ]}
           onChange={(value) => handleUpdate("shape", value)}
         />
@@ -263,7 +264,7 @@ function buildBlueprintPropertyAction(
         value,
       };
     case "shape":
-      if (value !== "rectangle" && value !== "triangle") {
+      if (value !== "rectangle" && value !== "triangle" && value !== "circle") {
         throw new Error("Shape must be a valid option.");
       }
       return {

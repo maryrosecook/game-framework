@@ -11,8 +11,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 805.234375,
-      "height": 55.9765625,
-      "shape": "rectangle"
+      "height": 55.9765625
     },
     {
       "id": "hobpmmimnv5f",
@@ -24,8 +23,7 @@
       "velocityY": 0,
       "blueprintName": "player",
       "width": 74.54677500000003,
-      "height": 71.97110312499998,
-      "shape": "rectangle"
+      "height": 71.97110312499998
     },
     {
       "id": "dgrdjua7dfus",
@@ -37,8 +35,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 89.16485595703125,
-      "height": 82.0421142578125,
-      "shape": "rectangle"
+      "height": 82.0421142578125
     },
     {
       "id": "exmp4duw3ipf",
@@ -50,8 +47,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 86.296875,
-      "height": 89.59375,
-      "shape": "rectangle"
+      "height": 89.59375
     },
     {
       "id": "1afafkp5o6nn",
@@ -63,8 +59,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 86.296875,
-      "height": 89.59375,
-      "shape": "rectangle"
+      "height": 89.59375
     },
     {
       "id": "foen8is24pki",
@@ -76,8 +71,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 86.296875,
-      "height": 89.59375,
-      "shape": "rectangle"
+      "height": 89.59375
     },
     {
       "id": "y995dq2x2zt9",
@@ -89,8 +83,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 86.296875,
-      "height": 89.59375,
-      "shape": "rectangle"
+      "height": 89.59375
     },
     {
       "id": "nzhlt4fruatn",
@@ -102,8 +95,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 880.02734375,
-      "height": 172.421875,
-      "shape": "rectangle"
+      "height": 172.421875
     },
     {
       "id": "a8ybrxp5ooku",
@@ -115,8 +107,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-3",
       "width": 46.41796875,
-      "height": 45.89463125000003,
-      "shape": "rectangle"
+      "height": 45.89463125000003
     },
     {
       "id": "vdbxv7hvf5ug",
@@ -128,8 +119,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 1011.47705078125,
-      "height": 156.66757202148438,
-      "shape": "rectangle"
+      "height": 156.66757202148438
     },
     {
       "id": "t2vkqqwqwn9n",
@@ -141,8 +131,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 1437.13671875,
-      "height": 191.95703125,
-      "shape": "rectangle"
+      "height": 191.95703125
     },
     {
       "id": "cwzs9c9h25av",
@@ -154,8 +143,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 79.20854187011719,
-      "height": 389.53619384765625,
-      "shape": "rectangle"
+      "height": 389.53619384765625
     },
     {
       "id": "xagl4qyyvit3",
@@ -167,8 +155,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 70.6829833984375,
-      "height": 389.8153076171875,
-      "shape": "rectangle"
+      "height": 389.8153076171875
     },
     {
       "id": "gzvv9z7rdk1j",
@@ -180,8 +167,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 491.5243225097656,
-      "height": 84.638427734375,
-      "shape": "rectangle"
+      "height": 84.638427734375
     },
     {
       "id": "qv67x5pphuwz",
@@ -193,8 +179,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 482.9409484863281,
-      "height": 82.419677734375,
-      "shape": "rectangle"
+      "height": 82.419677734375
     },
     {
       "id": "2xl6i2mcslj3",
@@ -206,8 +191,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 98.322998046875,
-      "height": 304.2708740234375,
-      "shape": "rectangle"
+      "height": 304.2708740234375
     },
     {
       "id": "pmtmvz2w6g5s",
@@ -219,8 +203,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 154.145751953125,
-      "height": 77.6978759765625,
-      "shape": "rectangle"
+      "height": 77.6978759765625
     },
     {
       "id": "4sbynzi2vlh2",
@@ -232,8 +215,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 306.609375,
-      "height": 82.6927490234375,
-      "shape": "rectangle"
+      "height": 82.6927490234375
     },
     {
       "id": "t6yokz41pzrt",
@@ -245,8 +227,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-5",
       "width": 109.3955078125,
-      "height": 67.20829091796875,
-      "shape": "rectangle"
+      "height": 67.20829091796875
     },
     {
       "id": "9oexv9fw8beo",
@@ -258,8 +239,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-6",
       "width": 109.6083984375,
-      "height": 54.254464941406255,
-      "shape": "rectangle"
+      "height": 54.254464941406255
     },
     {
       "id": "v5glhh0y5386",
@@ -271,8 +251,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 29.099609375,
-      "height": 42.833984375,
-      "shape": "rectangle"
+      "height": 42.833984375
     },
     {
       "id": "6q01jg05ohs3",
@@ -284,8 +263,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 85.236328125,
-      "height": 88.1865234375,
-      "shape": "rectangle"
+      "height": 88.1865234375
     },
     {
       "id": "xparnb999acz",
@@ -297,8 +275,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 46.5791015625,
-      "height": 62.9462890625,
-      "shape": "rectangle"
+      "height": 62.9462890625
     },
     {
       "id": "rlhvojpicl1k",
@@ -310,8 +287,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 27.2578125,
-      "height": 48.869140625,
-      "shape": "rectangle"
+      "height": 48.869140625
     },
     {
       "id": "bqqx1w4jwvg2",
@@ -323,8 +299,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-6",
       "width": 91.3115234375,
-      "height": 88.8408203125,
-      "shape": "rectangle"
+      "height": 88.8408203125
     },
     {
       "id": "2yp14g0xwcd3",
@@ -336,8 +311,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 395.591796875,
-      "height": 13.5380859375,
-      "shape": "rectangle"
+      "height": 13.5380859375
     },
     {
       "id": "5y2kdsx8ho4y",
@@ -349,8 +323,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 112.3125,
-      "height": 179.8271484375,
-      "shape": "rectangle"
+      "height": 179.8271484375
     },
     {
       "id": "4d1k4kfc0v2x",
@@ -362,8 +335,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 88.4892578125,
-      "height": 88.5625,
-      "shape": "rectangle"
+      "height": 88.5625
     },
     {
       "id": "f9s6zao6heg2",
@@ -375,8 +347,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 88.4892578125,
-      "height": 88.5625,
-      "shape": "rectangle"
+      "height": 88.5625
     },
     {
       "id": "239omg23d0lh",
@@ -388,8 +359,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 88.4892578125,
-      "height": 88.5625,
-      "shape": "rectangle"
+      "height": 88.5625
     },
     {
       "id": "u4oau3gxa6fd",
@@ -401,8 +371,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 88.4892578125,
-      "height": 88.5625,
-      "shape": "rectangle"
+      "height": 88.5625
     },
     {
       "id": "yrwhgzu9hbud",
@@ -414,8 +383,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 86.296875,
-      "height": 89.59375,
-      "shape": "rectangle"
+      "height": 89.59375
     },
     {
       "id": "5w5ejnklh6ju",
@@ -427,8 +395,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-6",
       "width": 109.6083984375,
-      "height": 54.254464941406255,
-      "shape": "rectangle"
+      "height": 54.254464941406255
     },
     {
       "id": "ldsaqj1oe9kj",
@@ -440,8 +407,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 29.099609375,
-      "height": 42.833984375,
-      "shape": "rectangle"
+      "height": 42.833984375
     },
     {
       "id": "dvvwvx9gv9f6",
@@ -453,8 +419,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 88.4892578125,
-      "height": 88.5625,
-      "shape": "rectangle"
+      "height": 88.5625
     },
     {
       "id": "o71vn4bw4tv6",
@@ -466,8 +431,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 112.3125,
-      "height": 179.8271484375,
-      "shape": "rectangle"
+      "height": 179.8271484375
     },
     {
       "id": "lqv9ded97qdq",
@@ -479,8 +443,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 370.984375,
-      "height": 67.48828125,
-      "shape": "rectangle"
+      "height": 67.48828125
     },
     {
       "id": "9k6akt9g78iz",
@@ -492,8 +455,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 723.0087890625,
-      "height": 53.4970703125,
-      "shape": "rectangle"
+      "height": 53.4970703125
     },
     {
       "id": "zqjmy5s829vb",
@@ -505,8 +467,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 831.7490234375,
-      "height": 52.96484375,
-      "shape": "rectangle"
+      "height": 52.96484375
     },
     {
       "id": "r6pfj7eof482",
@@ -518,8 +479,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 86.296875,
-      "height": 89.59375,
-      "shape": "rectangle"
+      "height": 89.59375
     },
     {
       "id": "fkl5u2rwvl1b",
@@ -531,8 +491,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 831.7490234375,
-      "height": 52.96484375,
-      "shape": "rectangle"
+      "height": 52.96484375
     },
     {
       "id": "nt0xfxr3hpdf",
@@ -544,8 +503,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 831.7490234375,
-      "height": 52.96484375,
-      "shape": "rectangle"
+      "height": 52.96484375
     },
     {
       "id": "glxdud6miviq",
@@ -557,8 +515,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-3",
       "width": 46.41796875,
-      "height": 45.89463125000003,
-      "shape": "rectangle"
+      "height": 45.89463125000003
     },
     {
       "id": "lvu8fgiyau1p",
@@ -570,8 +527,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-3",
       "width": 46.41796875,
-      "height": 45.89463125000003,
-      "shape": "rectangle"
+      "height": 45.89463125000003
     },
     {
       "id": "x2tklmhm0ox2",
@@ -583,8 +539,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 88.4892578125,
-      "height": 88.5625,
-      "shape": "rectangle"
+      "height": 88.5625
     },
     {
       "id": "g3x2c2ut936h",
@@ -596,8 +551,7 @@
       "velocityY": 0,
       "blueprintName": "blueprint-4",
       "width": 88.4892578125,
-      "height": 88.5625,
-      "shape": "rectangle"
+      "height": 88.5625
     },
     {
       "id": "0qp26w92eot6",
@@ -609,8 +563,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 89.16485595703125,
-      "height": 82.0421142578125,
-      "shape": "rectangle"
+      "height": 82.0421142578125
     },
     {
       "id": "de0zgu05ke0d",
@@ -622,8 +575,7 @@
       "velocityY": 0,
       "blueprintName": "wall",
       "width": 89.16485595703125,
-      "height": 82.0421142578125,
-      "shape": "rectangle"
+      "height": 82.0421142578125
     }
   ],
   "blueprints": [

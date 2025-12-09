@@ -1589,7 +1589,6 @@ function hashThing(thing: RuntimeThing) {
     thing.velocityY,
     thing.isGrounded,
     thing.physicsType,
-    thing.shape,
     thing.blueprintName,
     JSON.stringify(thing.data),
   ].join("|");
@@ -1608,7 +1607,6 @@ function runtimeThingToThing(thing: RuntimeThing): RawThing {
     velocityY: thing.velocityY,
     isGrounded: thing.isGrounded,
     blueprintName: thing.blueprintName,
-    shape: thing.shape,
     data: thing.data,
   };
 }
@@ -1629,7 +1627,10 @@ function normalizeThingFromFile(
 function stripThingData<TData>(
   thing: PersistedThing | RawThing<TData>
 ): PersistedThing {
-  const withDefaults = { isGrounded: false, data: undefined, ...thing };
+  const withDefaults: PersistedThing & {
+    data?: TData;
+    isGrounded?: boolean;
+  } = { isGrounded: false, data: undefined, ...thing };
   const {
     data: _ignored,
     isGrounded: _ignoredGrounded,
