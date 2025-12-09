@@ -309,8 +309,8 @@
       "velocityY": 0,
       "physicsType": "dynamic",
       "blueprintName": "player",
-      "width": 52.87109375,
-      "height": 79.43359375,
+      "width": 31.310546875,
+      "height": 45.962890625,
       "color": "#99d6ff"
     },
     {
@@ -329,6 +329,18 @@
       "id": "0rfeqw177dmy",
       "x": 190.595703125,
       "y": 731.3527343749961,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "wall",
+      "width": 177.46484375,
+      "height": 17.2734375
+    },
+    {
+      "id": "3pj6asttdym7",
+      "x": 429.220703125,
+      "y": 560.8449218749961,
       "z": 1,
       "angle": 0,
       "velocityX": 0,
