@@ -18,6 +18,7 @@
 
 - Blueprint shape is defined by `type BlueprintData` in `app/engine/types.ts`.
 - Thing shape is defined by `type RawThing` in `app/engine/types.ts`.
+- Things can have custom data at `data`. The type of this data is defined in the thing's blueprint's `dataSchema` in its [blueprint-name].ts file.
 
 ## Data storage
 
