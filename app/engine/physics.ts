@@ -16,6 +16,20 @@ const GROUND_VELOCITY_EPSILON = 0.0001;
 const DOWN_VECTOR: Vector = { x: 0, y: 1 };
 const simulatedThingIds = new Set<string>();
 
+type PolygonCollisionShape = {
+  kind: "polygon";
+  points: Vector[];
+  center: Vector;
+};
+
+type CircleCollisionShape = {
+  kind: "circle";
+  center: Vector;
+  radius: number;
+};
+
+type CollisionShape = PolygonCollisionShape | CircleCollisionShape;
+
 export function physicsStep(
   gameState: RuntimeGameState,
   blueprintLookup: Map<string, Blueprint>,
@@ -104,9 +118,9 @@ function resolveCollision(
     return;
   }
 
-  const polygonA = getPolygonForThing(a, blueprintLookup);
-  const polygonB = getPolygonForThing(b, blueprintLookup);
-  const mtv = getMinimumTranslationVector(polygonA, polygonB);
+  const shapeA = getCollisionShapeForThing(a, blueprintLookup);
+  const shapeB = getCollisionShapeForThing(b, blueprintLookup);
+  const mtv = getMinimumTranslationVector(shapeA, shapeB);
 
   if (!mtv) {
     return;
@@ -123,8 +137,8 @@ function resolveCollision(
   const canMoveB = b.physicsType === "dynamic";
 
   const separationVector = computeSeparationVector(
-    polygonA,
-    polygonB,
+    shapeA,
+    shapeB,
     mtv.axis,
     mtv.overlap + EPSILON
   );
@@ -179,6 +193,26 @@ function resolveCollision(
   notifyCollision(a, b, blueprintLookup, game);
 }
 
+export function getClosestPointsBetweenThings(
+  first: RuntimeThing,
+  second: RuntimeThing,
+  blueprintLookup: Map<string, Blueprint>
+): { pointOnA: Vector; pointOnB: Vector; distance: number } {
+  const shapeA = getCollisionShapeForThing(first, blueprintLookup);
+  const shapeB = getCollisionShapeForThing(second, blueprintLookup);
+  const mtv = getMinimumTranslationVector(shapeA, shapeB);
+
+  if (mtv) {
+    return {
+      pointOnA: getShapeCenter(shapeA),
+      pointOnB: getShapeCenter(shapeB),
+      distance: 0,
+    };
+  }
+
+  return getClosestPointsBetweenShapes(shapeA, shapeB);
+}
+
 function notifyCollision(
   a: RuntimeThing,
   b: RuntimeThing,
@@ -191,11 +225,21 @@ function notifyCollision(
   blueprintB?.collision?.(b, a, game);
 }
 
-function getPolygonForThing(
+function getCollisionShapeForThing(
   thing: RuntimeThing,
   blueprintLookup: Map<string, Blueprint>
-) {
+): CollisionShape {
   const shape = getShapeForThing(thing, blueprintLookup);
+
+  if (shape === "circle") {
+    const radius = thing.width / 2;
+    const center = {
+      x: thing.x + thing.width / 2,
+      y: thing.y + thing.height / 2,
+    };
+    return { kind: "circle", center, radius };
+  }
+
   const halfWidth = thing.width / 2;
   const halfHeight = thing.height / 2;
 
@@ -216,22 +260,20 @@ function getPolygonForThing(
   const angle = (thing.angle * Math.PI) / 180;
   const sin = Math.sin(angle);
   const cos = Math.cos(angle);
-  const centerX = thing.x + halfWidth;
-  const centerY = thing.y + halfHeight;
+  const center = { x: thing.x + halfWidth, y: thing.y + halfHeight };
 
-  return localPoints.map((point) => ({
-    x: centerX + point.x * cos - point.y * sin,
-    y: centerY + point.x * sin + point.y * cos,
+  const points = localPoints.map((point) => ({
+    x: center.x + point.x * cos - point.y * sin,
+    y: center.y + point.x * sin + point.y * cos,
   }));
+
+  return { kind: "polygon", points, center: computeCentroid(points) };
 }
 
 function getShapeForThing(
   thing: RuntimeThing,
   blueprintLookup: Map<string, Blueprint>
 ): Shape {
-  if (thing.shape) {
-    return thing.shape;
-  }
   const blueprint = getBlueprintForThing(thing, blueprintLookup);
   return blueprint?.shape ?? "rectangle";
 }
@@ -242,6 +284,10 @@ function getAxes(points: Vector[]) {
     const current = points[i];
     const next = points[(i + 1) % points.length];
     const edge = { x: next.x - current.x, y: next.y - current.y };
+    const lengthSquared = edge.x * edge.x + edge.y * edge.y;
+    if (lengthSquared <= EPSILON) {
+      continue;
+    }
     const normal = normalize({ x: -edge.y, y: edge.x });
     axes.push(normal);
   }
@@ -264,14 +310,34 @@ function project(points: Vector[], axis: Vector) {
   return { min, max };
 }
 
-function getMinimumTranslationVector(pointsA: Vector[], pointsB: Vector[]) {
-  const axes = [...getAxes(pointsA), ...getAxes(pointsB)];
+function projectShape(shape: CollisionShape, axis: Vector) {
+  if (shape.kind === "circle") {
+    const projection = shape.center.x * axis.x + shape.center.y * axis.y;
+    return { min: projection - shape.radius, max: projection + shape.radius };
+  }
+  return project(shape.points, axis);
+}
+
+function getMinimumTranslationVector(
+  shapeA: CollisionShape,
+  shapeB: CollisionShape
+) {
+  if (shapeA.kind === "circle" && shapeB.kind === "circle") {
+    return getCircleCircleMinimumTranslationVector(shapeA, shapeB);
+  }
+
+  const axes = getAxesForShapes(shapeA, shapeB);
+
+  if (axes.length === 0) {
+    return null;
+  }
+
   let smallestAxis: Vector | null = null;
   let smallestOverlap = Infinity;
 
   for (const axis of axes) {
-    const projectionA = project(pointsA, axis);
-    const projectionB = project(pointsB, axis);
+    const projectionA = projectShape(shapeA, axis);
+    const projectionB = projectShape(shapeB, axis);
     const overlap =
       Math.min(projectionA.max, projectionB.max) -
       Math.max(projectionA.min, projectionB.min);
@@ -291,6 +357,281 @@ function getMinimumTranslationVector(pointsA: Vector[], pointsB: Vector[]) {
   return { axis: normalize(smallestAxis), overlap: smallestOverlap };
 }
 
+function getAxesForShapes(
+  shapeA: CollisionShape,
+  shapeB: CollisionShape
+): Vector[] {
+  const axes: Vector[] = [];
+
+  if (shapeA.kind === "polygon") {
+    axes.push(...getAxes(shapeA.points));
+  }
+  if (shapeB.kind === "polygon") {
+    axes.push(...getAxes(shapeB.points));
+  }
+
+  if (shapeA.kind === "circle" && shapeB.kind === "polygon") {
+    const axis = getCircleToPolygonAxis(shapeA, shapeB);
+    if (axis) {
+      axes.push(axis);
+    }
+  } else if (shapeB.kind === "circle" && shapeA.kind === "polygon") {
+    const axis = getCircleToPolygonAxis(shapeB, shapeA);
+    if (axis) {
+      axes.push(axis);
+    }
+  }
+
+  return axes;
+}
+
+function getCircleCircleMinimumTranslationVector(
+  circleA: CircleCollisionShape,
+  circleB: CircleCollisionShape
+) {
+  const offset = {
+    x: circleB.center.x - circleA.center.x,
+    y: circleB.center.y - circleA.center.y,
+  };
+  const distance = Math.hypot(offset.x, offset.y);
+  const radiusSum = circleA.radius + circleB.radius;
+
+  if (distance >= radiusSum) {
+    return null;
+  }
+
+  if (distance <= EPSILON) {
+    return { axis: { x: 1, y: 0 }, overlap: radiusSum };
+  }
+
+  return { axis: { x: offset.x / distance, y: offset.y / distance }, overlap: radiusSum - distance };
+}
+
+function getCircleToPolygonAxis(
+  circle: CircleCollisionShape,
+  polygon: PolygonCollisionShape
+): Vector | null {
+  const closestPoint = getClosestPointOnPolygon(polygon.points, circle.center);
+  const direction = {
+    x: closestPoint.x - circle.center.x,
+    y: closestPoint.y - circle.center.y,
+  };
+  const distanceSquared = direction.x * direction.x + direction.y * direction.y;
+
+  if (distanceSquared <= EPSILON) {
+    const fallback = {
+      x: polygon.center.x - circle.center.x,
+      y: polygon.center.y - circle.center.y,
+    };
+    const fallbackLengthSquared =
+      fallback.x * fallback.x + fallback.y * fallback.y;
+    if (fallbackLengthSquared <= EPSILON) {
+      return { x: 1, y: 0 };
+    }
+    return normalize(fallback);
+  }
+
+  return normalize(direction);
+}
+
+function getClosestPointOnPolygon(points: Vector[], point: Vector): Vector {
+  let closestPoint = points[0];
+  let smallestDistanceSquared = Infinity;
+
+  for (let i = 0; i < points.length; i += 1) {
+    const start = points[i];
+    const end = points[(i + 1) % points.length];
+    const candidate = getClosestPointOnSegment(point, start, end);
+    const distanceSquared = getDistanceSquared(candidate, point);
+    if (distanceSquared < smallestDistanceSquared) {
+      smallestDistanceSquared = distanceSquared;
+      closestPoint = candidate;
+    }
+  }
+
+  return closestPoint;
+}
+
+function getClosestPointOnSegment(point: Vector, start: Vector, end: Vector) {
+  const segment = { x: end.x - start.x, y: end.y - start.y };
+  const segmentLengthSquared =
+    segment.x * segment.x + segment.y * segment.y || 1;
+
+  const t = Math.max(
+    0,
+    Math.min(
+      1,
+      ((point.x - start.x) * segment.x + (point.y - start.y) * segment.y) /
+        segmentLengthSquared
+    )
+  );
+
+  return {
+    x: start.x + segment.x * t,
+    y: start.y + segment.y * t,
+  };
+}
+
+function getDistanceSquared(a: Vector, b: Vector) {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  return dx * dx + dy * dy;
+}
+
+function getClosestPointsBetweenShapes(
+  shapeA: CollisionShape,
+  shapeB: CollisionShape
+): { pointOnA: Vector; pointOnB: Vector; distance: number } {
+  if (shapeA.kind === "circle" && shapeB.kind === "circle") {
+    return getClosestPointsCircleCircle(shapeA, shapeB);
+  }
+
+  if (shapeA.kind === "circle" && shapeB.kind === "polygon") {
+    return getClosestPointsCirclePolygon(shapeA, shapeB);
+  }
+
+  if (shapeA.kind === "polygon" && shapeB.kind === "circle") {
+    const swapped = getClosestPointsCirclePolygon(shapeB, shapeA);
+    return {
+      pointOnA: swapped.pointOnB,
+      pointOnB: swapped.pointOnA,
+      distance: swapped.distance,
+    };
+  }
+
+  if (shapeA.kind === "polygon" && shapeB.kind === "polygon") {
+    return getClosestPointsPolygonPolygon(shapeA, shapeB);
+  }
+
+  return {
+    pointOnA: getShapeCenter(shapeA),
+    pointOnB: getShapeCenter(shapeB),
+    distance: 0,
+  };
+}
+
+function getClosestPointsCircleCircle(
+  circleA: CircleCollisionShape,
+  circleB: CircleCollisionShape
+) {
+  const offset = {
+    x: circleB.center.x - circleA.center.x,
+    y: circleB.center.y - circleA.center.y,
+  };
+  const distance = Math.hypot(offset.x, offset.y);
+  const radiusSum = circleA.radius + circleB.radius;
+
+  if (distance === 0) {
+    return {
+      pointOnA: { x: circleA.center.x + circleA.radius, y: circleA.center.y },
+      pointOnB: { x: circleB.center.x - circleB.radius, y: circleB.center.y },
+      distance: 0,
+    };
+  }
+
+  const direction = { x: offset.x / distance, y: offset.y / distance };
+  const surfaceDistance = Math.max(distance - radiusSum, 0);
+
+  return {
+    pointOnA: {
+      x: circleA.center.x + direction.x * circleA.radius,
+      y: circleA.center.y + direction.y * circleA.radius,
+    },
+    pointOnB: {
+      x: circleB.center.x - direction.x * circleB.radius,
+      y: circleB.center.y - direction.y * circleB.radius,
+    },
+    distance: surfaceDistance,
+  };
+}
+
+function getClosestPointsCirclePolygon(
+  circle: CircleCollisionShape,
+  polygon: PolygonCollisionShape
+) {
+  if (isPointInsidePolygon(circle.center, polygon.points)) {
+    return {
+      pointOnA: circle.center,
+      pointOnB: polygon.center,
+      distance: 0,
+    };
+  }
+
+  const closestOnPolygon = getClosestPointOnPolygon(polygon.points, circle.center);
+  const toPolygon = {
+    x: closestOnPolygon.x - circle.center.x,
+    y: closestOnPolygon.y - circle.center.y,
+  };
+  const distanceToPolygon = Math.hypot(toPolygon.x, toPolygon.y);
+  const direction =
+    distanceToPolygon === 0
+      ? { x: 1, y: 0 }
+      : { x: toPolygon.x / distanceToPolygon, y: toPolygon.y / distanceToPolygon };
+  const pointOnCircle = {
+    x: circle.center.x + direction.x * circle.radius,
+    y: circle.center.y + direction.y * circle.radius,
+  };
+  const gap = Math.max(distanceToPolygon - circle.radius, 0);
+
+  return {
+    pointOnA: pointOnCircle,
+    pointOnB: closestOnPolygon,
+    distance: gap,
+  };
+}
+
+function getClosestPointsPolygonPolygon(
+  polygonA: PolygonCollisionShape,
+  polygonB: PolygonCollisionShape
+) {
+  let bestDistanceSquared = Infinity;
+  let bestPointA = polygonA.points[0];
+  let bestPointB = polygonB.points[0];
+
+  for (const point of polygonA.points) {
+    const candidateOnB = getClosestPointOnPolygon(polygonB.points, point);
+    const distanceSquared = getDistanceSquared(point, candidateOnB);
+    if (distanceSquared < bestDistanceSquared) {
+      bestDistanceSquared = distanceSquared;
+      bestPointA = point;
+      bestPointB = candidateOnB;
+    }
+  }
+
+  for (const point of polygonB.points) {
+    const candidateOnA = getClosestPointOnPolygon(polygonA.points, point);
+    const distanceSquared = getDistanceSquared(point, candidateOnA);
+    if (distanceSquared < bestDistanceSquared) {
+      bestDistanceSquared = distanceSquared;
+      bestPointA = candidateOnA;
+      bestPointB = point;
+    }
+  }
+
+  return {
+    pointOnA: bestPointA,
+    pointOnB: bestPointB,
+    distance: Math.sqrt(bestDistanceSquared),
+  };
+}
+
+function isPointInsidePolygon(point: Vector, polygon: Vector[]) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i, i += 1) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+    const intersects =
+      yi > point.y !== yj > point.y &&
+      point.x < ((xj - xi) * (point.y - yi)) / (yj - yi + Number.EPSILON) + xi;
+    if (intersects) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
 function computeCentroid(points: Vector[]) {
   const sum = points.reduce(
     (acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }),
@@ -299,20 +640,21 @@ function computeCentroid(points: Vector[]) {
   return { x: sum.x / points.length, y: sum.y / points.length };
 }
 
+function getShapeCenter(shape: CollisionShape): Vector {
+  return shape.center;
+}
+
 function computeSeparationVector(
-  pointsA: Vector[],
-  pointsB: Vector[],
+  shapeA: CollisionShape,
+  shapeB: CollisionShape,
   axis: Vector,
   overlap: number
 ): Vector {
-  const centroidA = computeCentroid(pointsA);
-  const centroidB = computeCentroid(pointsB);
-  const direction =
-    Math.sign(
-      (centroidB.x - centroidA.x) * axis.x +
-        (centroidB.y - centroidA.y) * axis.y
-    ) || 1;
-  const separationDirection = direction > 0 ? -1 : 1;
+  const centerA = getShapeCenter(shapeA);
+  const centerB = getShapeCenter(shapeB);
+  const alignment =
+    (centerB.x - centerA.x) * axis.x + (centerB.y - centerA.y) * axis.y;
+  const separationDirection = alignment > 0 ? -1 : 1;
   return {
     x: axis.x * overlap * separationDirection,
     y: axis.y * overlap * separationDirection,

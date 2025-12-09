@@ -87,7 +87,7 @@ function renderThing(
 
   const blueprint = getBlueprintForThing(thing, blueprintLookup);
   const renderer = blueprint?.render;
-  const shape = thing.shape ?? blueprint?.shape ?? "rectangle";
+  const shape = blueprint?.shape ?? "rectangle";
   const image = getImageForThing ? getImageForThing(thing, blueprint) : null;
   const imageReady = isImageReady(image);
 
@@ -101,6 +101,8 @@ function renderThing(
     ctx.fillStyle = thing.color || blueprint?.color || "#888";
     if (shape === "triangle") {
       drawTriangle(ctx, thing.width, thing.height);
+    } else if (shape === "circle") {
+      drawCircle(ctx, thing.width);
     } else {
       ctx.fillRect(0, 0, thing.width, thing.height);
     }
@@ -226,6 +228,14 @@ function drawTriangle(
   ctx.moveTo(0, height);
   ctx.lineTo(width / 2, 0);
   ctx.lineTo(width, height);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawCircle(ctx: CanvasRenderingContext2D, diameter: number) {
+  const radius = diameter / 2;
+  ctx.beginPath();
+  ctx.arc(radius, radius, radius, 0, Math.PI * 2);
   ctx.closePath();
   ctx.fill();
 }

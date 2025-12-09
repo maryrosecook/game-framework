@@ -219,7 +219,7 @@ function isScreen(value: unknown): value is { width: number; height: number } {
 }
 
 function isShape(value: unknown): value is Shape {
-  return value === "rectangle" || value === "triangle";
+  return value === "rectangle" || value === "triangle" || value === "circle";
 }
 
 function isPhysicsType(value: unknown): value is PhysicsType {
@@ -258,7 +258,7 @@ function isThing(value: unknown): value is PersistedThing {
   if (record.color !== undefined && typeof record.color !== "string") {
     return false;
   }
-  if (record.shape !== undefined && !isShape(record.shape)) {
+  if (record.shape !== undefined) {
     return false;
   }
   return true;

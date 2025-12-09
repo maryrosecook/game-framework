@@ -22,7 +22,7 @@ export type KeyState = {
 
 export type Vector = { x: number; y: number };
 
-export type Shape = "rectangle" | "triangle";
+export type Shape = "rectangle" | "triangle" | "circle";
 export type PhysicsType = "static" | "dynamic" | "ambient";
 
 export type SpawnRequest = {
@@ -115,7 +115,6 @@ export type RawThing<TData = unknown> = {
   velocityY: number;
   isGrounded: boolean;
   physicsType?: PhysicsType;
-  shape?: Shape;
   blueprintName: string;
   data?: TData;
 };
@@ -128,7 +127,7 @@ export type RuntimeThing<TData = unknown> = RawThing<TData> &
       RawThing,
       keyof Omit<
         BlueprintData,
-        "name" | "physicsType" | "image" | "z" | "color"
+        "name" | "physicsType" | "image" | "z" | "color" | "shape"
       >
     >
   > & { color: string; isGrounded: boolean };
