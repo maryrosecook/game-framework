@@ -9,6 +9,7 @@ export type KeyState = {
   arrowRight: boolean;
   arrowUp: boolean;
   arrowDown: boolean;
+  digit1: boolean;
   digit0: boolean;
   digit9: boolean;
   space: boolean;
