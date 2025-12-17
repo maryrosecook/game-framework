@@ -45,6 +45,10 @@ export function degreesToRadians(degrees: number): number {
   return (degrees * Math.PI) / 180;
 }
 
+export function radiansToDegrees(radians: number): number {
+  return (radians * 180) / Math.PI;
+}
+
 export function yawPitchToForward(yawDegrees: number, pitchDegrees: number): Vector3 {
   const yaw = degreesToRadians(yawDegrees);
   const pitch = degreesToRadians(pitchDegrees);
@@ -53,6 +57,43 @@ export function yawPitchToForward(yawDegrees: number, pitchDegrees: number): Vec
     x: Math.sin(yaw) * cosPitch,
     y: Math.sin(pitch),
     z: Math.cos(yaw) * cosPitch,
+  };
+}
+
+export function rotateAroundAxis(
+  vector: Vector3,
+  axis: Vector3,
+  angleRadians: number
+): Vector3 {
+  if (angleRadians === 0) {
+    return vector;
+  }
+  const axisLength = length3(axis);
+  if (axisLength === 0) {
+    return vector;
+  }
+  const normalizedAxis = {
+    x: axis.x / axisLength,
+    y: axis.y / axisLength,
+    z: axis.z / axisLength,
+  };
+  const cosTheta = Math.cos(angleRadians);
+  const sinTheta = Math.sin(angleRadians);
+  const dot = dot3(normalizedAxis, vector);
+  const cross = cross3(normalizedAxis, vector);
+  return {
+    x:
+      vector.x * cosTheta +
+      cross.x * sinTheta +
+      normalizedAxis.x * dot * (1 - cosTheta),
+    y:
+      vector.y * cosTheta +
+      cross.y * sinTheta +
+      normalizedAxis.y * dot * (1 - cosTheta),
+    z:
+      vector.z * cosTheta +
+      cross.z * sinTheta +
+      normalizedAxis.z * dot * (1 - cosTheta),
   };
 }
 

@@ -18,12 +18,16 @@ import {
   CameraBasis,
   Vector3,
   add3,
+  cross3,
   createCameraBasis,
   dot3,
+  degreesToRadians,
+  length3,
   normalize3,
+  radiansToDegrees,
+  rotateAroundAxis,
   scale3,
   subtract3,
-  yawPitchToForward,
 } from "./math";
 import { PlayerData, TargetData } from "./types";
 
@@ -88,8 +92,6 @@ function ensurePlayerData(thing: RuntimeThing<PlayerData>): PlayerData {
   }
   const position = thing.data.position ?? DEFAULT_PLAYER_DATA.position;
   const forward = normalize3(thing.data.forward ?? DEFAULT_PLAYER_DATA.forward);
-  const yaw = thing.data.yaw ?? DEFAULT_PLAYER_DATA.yaw;
-  const pitch = thing.data.pitch ?? DEFAULT_PLAYER_DATA.pitch;
   const lastTickMs = thing.data.lastTickMs ?? Date.now();
   const lastShotMs = thing.data.lastShotMs ?? null;
   const hasSpawnedTargets =
@@ -103,14 +105,21 @@ function ensurePlayerData(thing: RuntimeThing<PlayerData>): PlayerData {
           up: thing.data.basisUp,
         }
       : null;
-  const basis = createCameraBasis(forward, priorBasis ?? undefined);
+  const basis = priorBasis
+    ? orthonormalizeBasis({
+        forward,
+        right: priorBasis.right,
+        up: priorBasis.up,
+      })
+    : createCameraBasis(forward);
+  const orientation = forwardToYawPitch(basis.forward);
   const normalized: PlayerData = {
     position,
-    forward,
+    forward: basis.forward,
     basisRight: basis.right,
     basisUp: basis.up,
-    yaw,
-    pitch,
+    yaw: orientation.yaw,
+    pitch: orientation.pitch,
     lastTickMs,
     lastShotMs,
     hasSpawnedTargets,
@@ -127,16 +136,112 @@ function updateOrientation(
 ) {
   const horizontalInput = Number(keys.arrowRight) - Number(keys.arrowLeft);
   const verticalInput = Number(keys.arrowUp) - Number(keys.arrowDown);
-  player.yaw += horizontalInput * ROTATION_SPEED_DEG_PER_SECOND * deltaSeconds;
-  player.pitch += verticalInput * ROTATION_SPEED_DEG_PER_SECOND * deltaSeconds;
-  player.forward = normalize3(yawPitchToForward(player.yaw, player.pitch));
-  const basis = createCameraBasis(player.forward, {
-    forward: player.forward,
-    right: player.basisRight,
-    up: player.basisUp,
+  if (horizontalInput === 0 && verticalInput === 0) {
+    return;
+  }
+
+  const yawDeltaRadians = degreesToRadians(
+    horizontalInput * ROTATION_SPEED_DEG_PER_SECOND * deltaSeconds
+  );
+  const pitchDeltaRadians = degreesToRadians(
+    verticalInput * ROTATION_SPEED_DEG_PER_SECOND * deltaSeconds
+  );
+
+  const rotatedBasis = rotatePlayerBasis(
+    {
+      forward: player.forward,
+      right: player.basisRight,
+      up: player.basisUp,
+    },
+    yawDeltaRadians,
+    pitchDeltaRadians
+  );
+
+  player.forward = rotatedBasis.forward;
+  player.basisRight = rotatedBasis.right;
+  player.basisUp = rotatedBasis.up;
+
+  const orientation = forwardToYawPitch(player.forward);
+  player.yaw = orientation.yaw;
+  player.pitch = orientation.pitch;
+}
+
+function orthonormalizeBasis(basis: {
+  forward: Vector3;
+  right: Vector3;
+  up: Vector3;
+}) {
+  const normalizedForward = normalize3(basis.forward);
+
+  let normalizedRight = normalize3(basis.right);
+  if (length3(normalizedRight) === 0) {
+    normalizedRight = DEFAULT_PLAYER_DATA.basisRight;
+  }
+
+  let normalizedUp = normalize3(basis.up);
+  if (length3(normalizedUp) === 0) {
+    normalizedUp = DEFAULT_PLAYER_DATA.basisUp;
+  }
+
+  const computedUp = cross3(normalizedForward, normalizedRight);
+  const safeUp =
+    length3(computedUp) === 0 ? normalizedUp : normalize3(computedUp);
+
+  const recomputedRight = cross3(safeUp, normalizedForward);
+  const safeRight =
+    length3(recomputedRight) === 0
+      ? normalize3(normalizedRight)
+      : normalize3(recomputedRight);
+
+  const finalUp = cross3(normalizedForward, safeRight);
+
+  return {
+    forward: normalizedForward,
+    right: safeRight,
+    up: length3(finalUp) === 0 ? safeUp : normalize3(finalUp),
+  };
+}
+
+function rotatePlayerBasis(
+  basis: { forward: Vector3; right: Vector3; up: Vector3 },
+  yawDeltaRadians: number,
+  pitchDeltaRadians: number
+) {
+  const yawAppliedForward =
+    yawDeltaRadians !== 0
+      ? rotateAroundAxis(basis.forward, basis.up, yawDeltaRadians)
+      : basis.forward;
+  const yawAppliedRight =
+    yawDeltaRadians !== 0
+      ? rotateAroundAxis(basis.right, basis.up, yawDeltaRadians)
+      : basis.right;
+  const yawAppliedUp = basis.up;
+
+  const pitchAppliedForward =
+    pitchDeltaRadians !== 0
+      ? rotateAroundAxis(yawAppliedForward, yawAppliedRight, pitchDeltaRadians)
+      : yawAppliedForward;
+  const pitchAppliedUp =
+    pitchDeltaRadians !== 0
+      ? rotateAroundAxis(yawAppliedUp, yawAppliedRight, pitchDeltaRadians)
+      : yawAppliedUp;
+
+  return orthonormalizeBasis({
+    forward: pitchAppliedForward,
+    right: yawAppliedRight,
+    up: pitchAppliedUp,
   });
-  player.basisRight = basis.right;
-  player.basisUp = basis.up;
+}
+
+function forwardToYawPitch(forward: Vector3) {
+  const normalizedForward = normalize3(forward);
+  const yawRadians = Math.atan2(normalizedForward.x, normalizedForward.z);
+  const clampedY = Math.max(-1, Math.min(1, normalizedForward.y));
+  const pitchRadians = Math.asin(clampedY);
+  return {
+    yaw: radiansToDegrees(yawRadians),
+    pitch: radiansToDegrees(pitchRadians),
+  };
 }
 
 function spawnTargetsIfNeeded(game: GameContext, playerData: PlayerData) {
