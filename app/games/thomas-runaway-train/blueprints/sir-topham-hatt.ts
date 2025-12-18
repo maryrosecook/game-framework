@@ -1,6 +1,5 @@
 import { BlueprintData, GameContext, RuntimeThing } from "@/engine/types";
 import { advanceApproach } from "../obstacleApproach";
-import { renderImage } from "@/engine/engine";
 
 export default function createSirTophamHatt(data: BlueprintData) {
   const baseSize = { width: data.width, height: data.height };

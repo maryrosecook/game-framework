@@ -1,5 +1,4 @@
 import { defineBlueprint } from "@/engine/blueprints";
-import { renderImage } from "@/engine/engine";
 import {
   BlueprintData,
   BlueprintThing,
