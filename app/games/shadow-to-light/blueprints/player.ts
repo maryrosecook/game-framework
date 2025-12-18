@@ -1,4 +1,10 @@
-import { BlueprintData, GameContext, RuntimeThing, KeyState, Vector } from "@/engine/types";
+import {
+  BlueprintData,
+  GameContext,
+  RuntimeThing,
+  KeyState,
+  Vector,
+} from "@/engine/types";
 
 const PLAYER_SPEED = 3;
 const BOAT_SPEED = 3;
@@ -58,8 +64,7 @@ export default function createBlueprint3(data: BlueprintData) {
         thing.velocityY = 0;
       } else {
         const lastBoatId = controllingBoatIds.get(thing.id);
-        const lastBoat =
-          (lastBoatId && lookup.get(lastBoatId)) || boat || null;
+        const lastBoat = (lastBoatId && lookup.get(lastBoatId)) || boat || null;
         if (lastBoat) {
           lastBoat.velocityX = 0;
           lastBoat.velocityY = 0;
@@ -96,8 +101,7 @@ export default function createBlueprint3(data: BlueprintData) {
       }
 
       const targetBoatId = controllingBoatIds.get(thing.id);
-      const targetBoat =
-        (targetBoatId && lookup.get(targetBoatId)) || null;
+      const targetBoat = (targetBoatId && lookup.get(targetBoatId)) || null;
 
       if (!targetBoat) {
         boatDriveDirections.delete(thing.id);
@@ -114,14 +118,6 @@ export default function createBlueprint3(data: BlueprintData) {
       thing.velocityX = targetBoat.velocityX;
       thing.velocityY = targetBoat.velocityY;
       stickPlayerToBoat(thing, targetBoat);
-    },
-    render: (
-      thing: RuntimeThing,
-      _game: GameContext,
-      ctx: CanvasRenderingContext2D
-    ) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
     },
   };
 }

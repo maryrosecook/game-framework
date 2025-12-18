@@ -31,7 +31,6 @@ import {
 } from "./math";
 import { PlayerData, TargetData } from "./types";
 
-const PLAYER_BLUEPRINT = "player";
 const TARGET_BLUEPRINT = "target";
 const DEFAULT_PLAYER_DATA: PlayerData = {
   position: { x: 0, y: 0, z: 0 },
@@ -304,15 +303,17 @@ function findHitTarget(
     const targetData = target.data;
     if (!targetData) continue;
     const toTarget = subtract3(targetData.position, playerData.position);
+    const distanceToTarget = length3(toTarget);
     const cameraSpace = toCameraSpace(toTarget, basis);
-    if (cameraSpace.z <= NEAR_CLIP) {
+    if (cameraSpace.z <= NEAR_CLIP || distanceToTarget === 0) {
       continue;
     }
 
-    const scale = focalLength / cameraSpace.z;
-    const projectedSize = TARGET_WORLD_SIZE * scale;
-    const projectedX = screenCenter.x + cameraSpace.x * scale;
-    const projectedY = screenCenter.y - cameraSpace.y * scale;
+    const sizeScale = focalLength / distanceToTarget;
+    const projectedSize = TARGET_WORLD_SIZE * sizeScale;
+    const positionScale = focalLength / cameraSpace.z;
+    const projectedX = screenCenter.x + cameraSpace.x * positionScale;
+    const projectedY = screenCenter.y - cameraSpace.y * positionScale;
 
     const withinHorizontal =
       Math.abs(projectedX - screenCenter.x) <= projectedSize / 2;

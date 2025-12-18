@@ -1,7 +1,8 @@
 import { BlueprintData, GameContext, RuntimeThing } from "@/engine/types";
+import { renderImage } from "@/engine/engine";
 import { FOV_DEGREES, NEAR_CLIP, TARGET_WORLD_SIZE } from "./constants";
 import { getPlayerBasis } from "./player";
-import { Vector3, dot3, subtract3 } from "./math";
+import { Vector3, dot3, length3, subtract3 } from "./math";
 import { PlayerData, TargetData } from "./types";
 
 export default function createTargetBlueprint(data: BlueprintData<TargetData>) {
@@ -24,7 +25,8 @@ export default function createTargetBlueprint(data: BlueprintData<TargetData>) {
       const basis = getPlayerBasis(player.data);
       const toTarget = subtract3(targetData.position, player.data.position);
       const cameraSpace = toCameraSpace(toTarget, basis);
-      if (cameraSpace.z <= NEAR_CLIP) {
+      const distanceToTarget = length3(toTarget);
+      if (cameraSpace.z <= NEAR_CLIP || distanceToTarget === 0) {
         return;
       }
 
@@ -32,29 +34,41 @@ export default function createTargetBlueprint(data: BlueprintData<TargetData>) {
       const canvas = ctx.canvas;
       const focalLength =
         (0.5 * screen.height) / Math.tan((FOV_DEGREES * Math.PI) / 360);
-      const scale = focalLength / cameraSpace.z;
-      const projectedSize = TARGET_WORLD_SIZE * scale;
+      const sizeScale = focalLength / distanceToTarget;
+      const projectedSize = TARGET_WORLD_SIZE * sizeScale;
       const offsetX = (canvas.width - screen.width) / 2;
       const offsetY = (canvas.height - screen.height) / 2;
-      const centerX = offsetX + screen.width / 2 + cameraSpace.x * scale;
-      const centerY = offsetY + screen.height / 2 - cameraSpace.y * scale;
+      const projectedX = (cameraSpace.x / cameraSpace.z) * focalLength;
+      const projectedY = (cameraSpace.y / cameraSpace.z) * focalLength;
+      const centerX = offsetX + screen.width / 2 + projectedX;
+      const centerY = offsetY + screen.height / 2 - projectedY;
+      const image = game.getImageForThing(thing);
+      const imageReady = isImageReady(image);
 
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.fillStyle = "#8b8b8b";
-      ctx.fillRect(
-        centerX - projectedSize / 2,
-        centerY - projectedSize / 2,
-        projectedSize,
-        projectedSize
-      );
+      ctx.imageSmoothingEnabled = false;
+      ctx.translate(centerX - projectedSize / 2, centerY - projectedSize / 2);
+      if (imageReady && image) {
+        const renderThing: RuntimeThing<TargetData> = {
+          ...thing,
+          width: projectedSize,
+          height: projectedSize,
+        };
+        renderImage(game.getImageForThing, ctx, renderThing);
+      } else {
+        ctx.fillStyle = thing.color;
+        ctx.fillRect(0, 0, projectedSize, projectedSize);
+      }
       ctx.restore();
     },
   };
 }
 
 function ensureTargetData(target: RuntimeThing<TargetData>): TargetData {
-  const fallback = target.data ?? { position: { x: target.x, y: target.y, z: 0 } };
+  const fallback = target.data ?? {
+    position: { x: target.x, y: target.y, z: 0 },
+  };
   target.data = fallback;
   return fallback;
 }
@@ -68,4 +82,34 @@ function toCameraSpace(
     y: dot3(worldVector, basis.up),
     z: dot3(worldVector, basis.forward),
   };
+}
+
+function isImageReady(
+  image: CanvasImageSource | null
+): image is CanvasImageSource {
+  if (!image) {
+    return false;
+  }
+  if (
+    typeof HTMLImageElement !== "undefined" &&
+    image instanceof HTMLImageElement
+  ) {
+    return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
+  }
+  if (typeof ImageBitmap !== "undefined" && image instanceof ImageBitmap) {
+    return image.width > 0 && image.height > 0;
+  }
+  if (
+    typeof HTMLCanvasElement !== "undefined" &&
+    image instanceof HTMLCanvasElement
+  ) {
+    return image.width > 0 && image.height > 0;
+  }
+  if (
+    typeof OffscreenCanvas !== "undefined" &&
+    image instanceof OffscreenCanvas
+  ) {
+    return image.width > 0 && image.height > 0;
+  }
+  return true;
 }

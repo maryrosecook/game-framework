@@ -5,6 +5,7 @@ import {
   RuntimeThing,
 } from "@/engine/types";
 import { TRACK_LANES, TrackLane, getLaneOffset } from "../obstacleApproach";
+import { renderImage } from "@/engine/engine";
 
 const laneByThingId = new Map<string, TrackLane>();
 const lastSwitchTime = new Map<string, number>();
@@ -45,14 +46,6 @@ export default function createEngine(data: BlueprintData) {
       const lane = laneByThingId.get(thing.id) ?? "center";
       laneByThingId.set(thing.id, lane);
       positionEngine(thing, game, lane, baseSize, baseZ);
-    },
-    render: (
-      thing: RuntimeThing,
-      _game: GameContext,
-      ctx: CanvasRenderingContext2D
-    ) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
     },
   };
 }

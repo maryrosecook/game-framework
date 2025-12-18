@@ -24,6 +24,7 @@ import { blueprintSlug } from "@/lib/blueprints";
 import { reduceState } from "./reducer";
 import {
   createThingFromBlueprint,
+  defineBlueprint,
   getBlueprintForThing,
   normalizeBlueprintData,
   sanitizeThingData,
@@ -998,14 +999,18 @@ export class GameEngine {
     pendingSpawns: RuntimeThing[],
     pendingRemovals: Set<string>
   ): GameContext {
+    const self = this;
     const spawn = (request: SpawnRequest) =>
       this.spawnFromRequest(request, pendingSpawns);
     const destroy = (target: RuntimeThing | string) => {
       const id = typeof target === "string" ? target : target.id;
       pendingRemovals.add(id);
     };
+    const getImageForThing = (thing: RuntimeThing) => {
+      const blueprint = getBlueprintForThing(thing, self.blueprintLookup);
+      return self.getImageForThing(thing, blueprint);
+    };
 
-    const self = this;
     return {
       get gameState() {
         return self.gameState;
@@ -1013,6 +1018,7 @@ export class GameEngine {
       collidingThingIds,
       spawn,
       destroy,
+      getImageForThing,
     };
   }
 
@@ -1725,4 +1731,15 @@ function isBlueprintLike(value: unknown): value is Partial<Blueprint> {
 
 function isCameraUpdate(value: unknown): value is CameraController["update"] {
   return typeof value === "function";
+}
+
+export function renderImage(
+  getImageForThing: (thing: RuntimeThing) => CanvasImageSource | null,
+  ctx: CanvasRenderingContext2D,
+  thing: RuntimeThing
+) {
+  const image = getImageForThing ? getImageForThing(thing) : null;
+  if (image) {
+    ctx.drawImage(image, 0, 0, thing.width, thing.height);
+  }
 }

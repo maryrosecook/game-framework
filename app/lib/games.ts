@@ -243,8 +243,10 @@ function isThing(value: unknown): value is PersistedThing {
     return false;
   }
 
-  const numericOptionalKeys: (keyof Pick<PersistedThing, "width" | "height">)[] =
-    ["width", "height"];
+  const numericOptionalKeys: (keyof Pick<
+    PersistedThing,
+    "width" | "height"
+  >)[] = ["width", "height"];
   const hasValidOptionalNumbers = numericOptionalKeys.every(
     (key) => record[key] === undefined || typeof record[key] === "number"
   );

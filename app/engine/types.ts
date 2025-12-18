@@ -45,6 +45,7 @@ export type GameContext = {
   collidingThingIds: CollisionMap;
   spawn: (request: SpawnRequest) => RuntimeThing | null;
   destroy: (target: RuntimeThing | string) => void;
+  getImageForThing: (thing: RuntimeThing) => CanvasImageSource | null;
 };
 
 export type BlueprintData<TData = unknown> = {

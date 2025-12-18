@@ -760,6 +760,18 @@
       "blueprintName": "theseus",
       "width": 50,
       "height": 50
+    },
+    {
+      "id": "9i1eholbmug2",
+      "x": 216.34940713864341,
+      "y": 475.2674161607372,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-3",
+      "width": 50,
+      "height": 50
     }
   ],
   "blueprints": [
@@ -879,6 +891,6 @@
     "height": 600
   },
   "backgroundColor": "#4d4d4d",
-  "image": "pixel-art-1764178801443-zpmoejnum-1764527193747.png",
-  "isGravityEnabled": false
+  "isGravityEnabled": false,
+  "image": "pixel-art-1764178801443-zpmoejnum-1764527193747.png"
 }

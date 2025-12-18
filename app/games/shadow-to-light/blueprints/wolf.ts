@@ -1,4 +1,9 @@
-import { BlueprintData, GameContext, RuntimeThing, KeyState } from "@/engine/types";
+import {
+  BlueprintData,
+  GameContext,
+  RuntimeThing,
+  KeyState,
+} from "@/engine/types";
 
 const WOLF_SPEED = 3;
 const BULLET_SPEED = 6;
@@ -47,17 +52,6 @@ export default function createBlueprint22(data: BlueprintData) {
       if (keys.keyE) {
         spawnBullet(thing, game, movementDirection);
       }
-    },
-    update: (thing: RuntimeThing, _game: GameContext) => {
-      return thing;
-    },
-    render: (
-      thing: RuntimeThing,
-      _game: GameContext,
-      ctx: CanvasRenderingContext2D
-    ) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
     },
   };
 }

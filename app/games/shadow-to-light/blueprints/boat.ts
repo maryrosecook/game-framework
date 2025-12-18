@@ -46,14 +46,6 @@ export default function createBlueprint19(data: BlueprintData) {
 
       return touchesWater ? proposedVelocity : { x: 0, y: 0 };
     },
-    render: (
-      thing: RuntimeThing,
-      _game: GameContext,
-      ctx: CanvasRenderingContext2D
-    ) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
-    },
   };
 }
 

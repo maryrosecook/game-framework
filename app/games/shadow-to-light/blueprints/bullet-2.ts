@@ -1,4 +1,9 @@
-import { BlueprintData, GameContext, RuntimeThing, KeyState } from "@/engine/types";
+import {
+  BlueprintData,
+  GameContext,
+  RuntimeThing,
+  KeyState,
+} from "@/engine/types";
 
 export default function createBlueprint24(data: BlueprintData) {
   const TARGET_BLUEPRINT = "shadow-minion";
@@ -22,10 +27,6 @@ export default function createBlueprint24(data: BlueprintData) {
 
       game.destroy(other);
       game.destroy(thing);
-    },
-    render: (thing: RuntimeThing, _game: GameContext, ctx: CanvasRenderingContext2D) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
     },
   };
 }

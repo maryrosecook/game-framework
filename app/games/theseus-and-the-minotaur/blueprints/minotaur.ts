@@ -1,5 +1,10 @@
 import { defineBlueprint } from "@/engine/blueprints";
-import { BlueprintData, GameContext, RuntimeThing, Vector } from "@/engine/types";
+import {
+  BlueprintData,
+  GameContext,
+  RuntimeThing,
+  Vector,
+} from "@/engine/types";
 import { z } from "zod";
 import {
   NavGrid,
@@ -22,9 +27,7 @@ const CHASE_SPEED = 3.6;
 const WAYPOINT_REACHED_DISTANCE = 6;
 
 const MinotaurDataSchema = z.object({
-  path: z
-    .array(z.object({ x: z.number(), y: z.number() }))
-    .default([]),
+  path: z.array(z.object({ x: z.number(), y: z.number() })).default([]),
   target: z.object({ x: z.number(), y: z.number() }).nullable().default(null),
   mode: z.enum(["roam", "chase"]).default("roam"),
   lastPlanTimestamp: z.number().default(0),
@@ -118,14 +121,6 @@ const MinotaurBlueprintDefinition = defineBlueprint({
         return;
       }
       game.destroy(other);
-    },
-    render: (
-      thing: RuntimeThing,
-      _game: GameContext,
-      ctx: CanvasRenderingContext2D
-    ) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
     },
   }),
 });

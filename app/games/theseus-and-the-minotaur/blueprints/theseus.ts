@@ -1,4 +1,5 @@
 import { defineBlueprint } from "@/engine/blueprints";
+import { renderImage } from "@/engine/engine";
 import {
   BlueprintData,
   BlueprintThing,
@@ -32,15 +33,6 @@ const TheseusBlueprintDefinition = defineBlueprint({
       const normalized = { x: horizontal / magnitude, y: vertical / magnitude };
       thing.velocityX = normalized.x * MOVE_SPEED;
       thing.velocityY = normalized.y * MOVE_SPEED;
-    },
-    update: (_thing: RuntimeThing, _game: GameContext) => undefined,
-    render: (
-      thing: RuntimeThing,
-      _game: GameContext,
-      ctx: CanvasRenderingContext2D
-    ) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
     },
   }),
 });

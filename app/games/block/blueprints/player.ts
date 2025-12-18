@@ -1,9 +1,15 @@
-import { BlueprintData, RuntimeGameState, RuntimeThing, KeyState } from "@/engine/types";
+import {
+  BlueprintData,
+  GameContext,
+  RuntimeThing,
+  KeyState,
+} from "@/engine/types";
+import { renderImage } from "@/engine/engine";
 
 export default function createBlueprint2(data: BlueprintData) {
   return {
     ...data,
-    input: (thing: RuntimeThing, _state: RuntimeGameState, keys: KeyState) => {
+    input: (thing: RuntimeThing, _game: GameContext, keys: KeyState) => {
       const speed = 6;
       thing.velocityX = 0;
 
@@ -14,13 +20,6 @@ export default function createBlueprint2(data: BlueprintData) {
       if (keys.arrowUp && thing.isGrounded) {
         thing.velocityY = -5;
       }
-    },
-    update: (thing: RuntimeThing, _state: RuntimeGameState, _things: RuntimeThing[]) => {
-      return thing;
-    },
-    render: (thing: RuntimeThing, _state: RuntimeGameState, ctx: CanvasRenderingContext2D) => {
-      ctx.fillStyle = thing.color;
-      ctx.fillRect(0, 0, thing.width, thing.height);
     },
   };
 }

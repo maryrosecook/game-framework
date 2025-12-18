@@ -93,10 +93,10 @@ function renderThing(
 
   ctx.imageSmoothingEnabled = false;
 
-  if (imageReady && image) {
-    ctx.drawImage(image, 0, 0, thing.width, thing.height);
-  } else if (renderer) {
+  if (renderer) {
     renderer(thing, game, ctx);
+  } else if (imageReady && image) {
+    ctx.drawImage(image, 0, 0, thing.width, thing.height);
   } else {
     ctx.fillStyle = thing.color || blueprint?.color || "#888";
     if (shape === "triangle") {
@@ -195,11 +195,7 @@ function isImageReady(
     typeof HTMLImageElement !== "undefined" &&
     image instanceof HTMLImageElement
   ) {
-    return (
-      image.complete &&
-      image.naturalWidth > 0 &&
-      image.naturalHeight > 0
-    );
+    return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
   }
   if (typeof ImageBitmap !== "undefined" && image instanceof ImageBitmap) {
     return image.width > 0 && image.height > 0;
