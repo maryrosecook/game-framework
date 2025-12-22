@@ -17,7 +17,6 @@ import {
   RawThing,
   PersistedThing,
   SpawnRequest,
-  UpdateResult,
   Vector,
 } from "./types";
 import { blueprintSlug } from "@/lib/blueprints";
@@ -612,7 +611,7 @@ export class GameEngine {
       this.editingThingIds
     );
     this.handleInput(gameContext, pendingRemovals);
-    this.handleUpdates(gameContext, pendingSpawns, pendingRemovals);
+    this.handleUpdates(gameContext, pendingRemovals);
     this.applyPendingChanges(pendingSpawns, pendingRemovals);
     this.updateCameraPosition();
     this.syncMutableThings();
@@ -965,7 +964,6 @@ export class GameEngine {
 
   private handleUpdates(
     game: GameContext,
-    pendingSpawns: RuntimeThing[],
     pendingRemovals: Set<string>
   ) {
     const thingsView = Object.freeze([...this.gameState.things]);
@@ -974,8 +972,7 @@ export class GameEngine {
       if (this.editingThingIds.has(thing.id)) continue;
       if (pendingRemovals.has(thing.id)) continue;
       const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
-      const updateResult = blueprint?.update?.(thing, game);
-      this.collectUpdateCommands(updateResult, pendingSpawns, pendingRemovals);
+      blueprint?.update?.(thing, game);
     }
   }
 
@@ -1034,31 +1031,6 @@ export class GameEngine {
     const camera = { x: nextCamera.x, y: nextCamera.y };
     this.gameState = { ...this.gameState, camera };
     this.rawGameState = { ...this.rawGameState, camera };
-  }
-
-  private collectUpdateCommands(
-    result: UpdateResult | undefined,
-    pendingSpawns: RuntimeThing[],
-    pendingRemovals: Set<string>
-  ) {
-    if (!result) {
-      return;
-    }
-    const commands = Array.isArray(result) ? result : [result];
-    for (const command of commands) {
-      switch (command.type) {
-        case "spawn": {
-          this.spawnFromRequest(command.request, pendingSpawns);
-          break;
-        }
-        case "destroy": {
-          pendingRemovals.add(command.id);
-          break;
-        }
-        default:
-          break;
-      }
-    }
   }
 
   private spawnFromRequest(

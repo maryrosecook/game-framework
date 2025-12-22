@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   } catch {
     try {
       await fs.mkdir(blueprintDir, { recursive: true });
-      await fs.writeFile(filePath, blueprintTemplate(blueprintName));
+      await fs.writeFile(filePath, blueprintTemplate());
       return NextResponse.json({ ok: true, existed: false });
     } catch (error) {
       console.warn("Blueprint create failed", error);
@@ -51,12 +51,11 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const { gameDirectory, previousName, nextName } =
-    (await request.json()) as {
-      gameDirectory: string;
-      previousName: string;
-      nextName: string;
-    };
+  const { gameDirectory, previousName, nextName } = (await request.json()) as {
+    gameDirectory: string;
+    previousName: string;
+    nextName: string;
+  };
 
   if (!gameDirectory || !previousName || !nextName) {
     return NextResponse.json(

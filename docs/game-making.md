@@ -26,6 +26,8 @@
 - You can implement a custom `data` schema, and input/update/collision/render
   functions.
 - If not overridden, input/update/collision are no-ops.
+- Handler functions return `void`; use `game.spawn`/`game.destroy` to add or
+  remove things during a frame.
 - If not overridden, render will render an image if set on the blueprint data,
   or a rectangle with the blueprint's color if not.
 

@@ -44,16 +44,17 @@
 ## Game Engine and Runtime Flow
 
 - Pure TypeScript engine driven by `requestAnimationFrame` (max frame rate, no
-  delta time yet) with a single reducer managing a global state tree.
+  delta time yet); UI/editor changes go through the reducer-backed raw state.
 - Startup: load `game.json`, dynamically import each referenced blueprint module
   from `app/games/[game-name]/blueprints`, instantiate blueprints, and set
   camera from the saved state.
 - Tick order (engine runs even when UI is idle): physics step first; then input
   handlers and blueprint `update` functions only when not paused; blueprint
   `render` always runs; rendering uses world coordinates translated by camera.
-- Mutations from engine dispatch through the same reducer that powers the React
-  hook, diffing against the prior state and emitting dispatches so subscribers
-  stay in sync.
+- Blueprint handlers mutate runtime things directly; spawns/destroys happen via
+  `game.spawn`/`game.destroy` and are applied at the end of the tick.
+- Runtime changes are synchronized back into the raw state so persistence and
+  subscribers stay in sync.
 
 ## Game State and Persistence
 

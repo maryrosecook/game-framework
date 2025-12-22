@@ -32,12 +32,6 @@ export type SpawnRequest = {
   overrides?: Partial<RawThing>;
 };
 
-export type UpdateCommand =
-  | { type: "spawn"; request: SpawnRequest }
-  | { type: "destroy"; id: string };
-
-export type UpdateResult = void | UpdateCommand | UpdateCommand[];
-
 export type CollisionMap = Map<string, string[]>;
 
 export type GameContext = {
@@ -61,7 +55,7 @@ export type BlueprintData<TData = unknown> = {
 
 export type BlueprintModule<TData = unknown> = Partial<{
   // All called every tick
-  update: (thing: RuntimeThing<TData>, game: GameContext) => UpdateResult;
+  update: (thing: RuntimeThing<TData>, game: GameContext) => void;
   render: (
     thing: RuntimeThing<TData>,
     game: GameContext,
