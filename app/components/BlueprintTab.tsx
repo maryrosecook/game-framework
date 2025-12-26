@@ -95,6 +95,12 @@ export function BlueprintTab({
   };
 
   const handleDeleteBlueprint = () => {
+    const confirmed = window.confirm(
+      "Delete this blueprint and all its items? This cannot be undone."
+    );
+    if (!confirmed) {
+      return;
+    }
     dispatch({
       type: "removeBlueprint",
       blueprintName: blueprint.name,
@@ -223,7 +229,7 @@ export function BlueprintTab({
       </div>
       <button
         type="button"
-        className="mt-4 self-start text-xs font-semibold text-red-600 underline decoration-red-500 decoration-2 underline-offset-2 hover:text-red-700"
+        className="mt-4 self-start text-xs text-red-600 underline decoration-red-500 decoration-2 underline-offset-2 hover:text-red-700"
         onClick={handleDeleteBlueprint}
       >
         Delete blueprint and items
