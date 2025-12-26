@@ -1,15 +1,20 @@
 import { createThingId } from "@/lib/id";
 import { z, type ZodType, type ZodTypeAny } from "zod";
 import {
+  ActionDefinition,
   Blueprint,
   BlueprintData,
   BlueprintDefinition,
   BlueprintKind,
   BlueprintModule,
+  GameContext,
   RawThing,
   RuntimeThing,
+  TriggerHandler,
+  TriggerName,
   Vector,
 } from "./types";
+import { actions as globalActions } from "./actions";
 
 type DataContext = { blueprintName: string; source: "blueprint" | "thing" };
 
@@ -214,6 +219,77 @@ export function isBlueprintDefinition(
     typeof value.isThing === "function"
   );
 }
+
+function doesActionSupportTrigger<T extends TriggerName>(
+  action: ActionDefinition,
+  trigger: T
+): action is ActionDefinition<T> {
+  return action.allowedTriggers.includes(trigger);
+}
+
+function getBehaviorActionsForTrigger(
+  blueprint: Blueprint | undefined,
+  trigger: TriggerName
+): string[] {
+  return blueprint?.behaviors?.[trigger] ?? [];
+}
+
+function collectBlueprintHandlers<T extends TriggerName>(
+  trigger: T,
+  blueprint: Blueprint | undefined,
+  blueprintHandler: TriggerHandler<T> | undefined
+): Array<{ name: string; fn: TriggerHandler<T> }> {
+  const handlers: Array<{ name: string; fn: TriggerHandler<T> }> = [];
+
+  if (blueprintHandler) {
+    handlers.push({ name: "blueprint", fn: blueprintHandler });
+  }
+
+  for (const actionName of getBehaviorActionsForTrigger(blueprint, trigger)) {
+    const action = globalActions[actionName];
+    if (!action) {
+      console.warn(`Action "${actionName}" not found for trigger "${trigger}".`);
+      continue;
+    }
+    if (!doesActionSupportTrigger(action, trigger)) {
+      console.warn(
+        `Action "${actionName}" cannot run on trigger "${trigger}".`
+      );
+      continue;
+    }
+    handlers.push({ name: actionName, fn: action.code });
+  }
+
+  return handlers;
+}
+
+export function runBlueprintHandlers<T extends TriggerName>(
+  trigger: T,
+  blueprint: Blueprint | undefined,
+  blueprintHandler: TriggerHandler<T> | undefined,
+  invoke: (handler: TriggerHandler<T>) => void
+): boolean {
+  const handlers = collectBlueprintHandlers(trigger, blueprint, blueprintHandler);
+  if (handlers.length === 0) {
+    return false;
+  }
+
+  for (const handler of handlers) {
+    try {
+      invoke(handler.fn);
+    } catch (error) {
+      console.warn(
+        `Error running ${trigger} handler "${handler.name}" for blueprint "${
+          blueprint?.name ?? "unknown"
+        }"`,
+        error
+      );
+    }
+  }
+
+  return true;
+}
+
 
 function hasBlueprintDefinitionShape(value: unknown): value is {
   name: unknown;
