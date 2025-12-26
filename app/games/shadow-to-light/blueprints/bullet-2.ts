@@ -1,21 +1,10 @@
-import {
-  BlueprintData,
-  GameContext,
-  RuntimeThing,
-  KeyState,
-} from "@/engine/types";
+import { BlueprintData, GameContext, RuntimeThing } from "@/engine/types";
 
 export default function createBlueprint24(data: BlueprintData) {
   const TARGET_BLUEPRINT = "shadow-minion";
 
   return {
     ...data,
-    input: (thing: RuntimeThing, _game: GameContext, _keys: KeyState) => {
-      return thing;
-    },
-    update: (thing: RuntimeThing, _game: GameContext) => {
-      return thing;
-    },
     collision: (
       thing: RuntimeThing,
       other: RuntimeThing,

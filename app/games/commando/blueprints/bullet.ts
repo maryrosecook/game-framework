@@ -21,14 +21,6 @@ type BulletData = {
 export default function createBlueprint3(data: BlueprintData<BulletData>) {
   return {
     ...data,
-    input: (
-      thing: RuntimeThing<BulletData>,
-      _game: GameContext,
-      _keys: KeyState
-    ) => {
-      return thing;
-    },
-    update: () => {},
     collision: (
       thing: RuntimeThing<BulletData>,
       other: RuntimeThing,

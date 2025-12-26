@@ -2,19 +2,12 @@ import {
   BlueprintData,
   GameContext,
   RuntimeThing,
-  KeyState,
   Vector,
 } from "@/engine/types";
 
 export default function createBlueprint19(data: BlueprintData) {
   return {
     ...data,
-    input: (thing: RuntimeThing, _game: GameContext, _keys: KeyState) => {
-      return thing;
-    },
-    update: (thing: RuntimeThing, _game: GameContext) => {
-      return thing;
-    },
     getAdjustedVelocity: (
       thing: RuntimeThing,
       proposedVelocity: Vector,
