@@ -23,17 +23,15 @@ import { blueprintSlug } from "@/lib/blueprints";
 import { reduceState } from "./reducer";
 import {
   createThingFromBlueprint,
-  defineBlueprint,
   getBlueprintForThing,
   normalizeBlueprintData,
+  runBlueprintHandlers,
   sanitizeThingData,
 } from "./blueprints";
 import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
 import { loadImages } from "./imageLoader";
 import {
-  createBlankImageRecord,
-  createRecordFromSource,
   DEFAULT_IMAGE_SIZE,
   EditableImageRecord,
   extractFileName,
@@ -163,6 +161,7 @@ export class GameEngine {
   private cameraPauseReasons = new Set<CameraPauseReason>();
   private pointerInterpreter = createPointerInterpreter();
   private blueprintManifestVersion: string | null = null;
+  private createdThingIds = new Set<string>();
 
   constructor(private readonly dependencies: GameEngineDependencies) {}
 
@@ -294,6 +293,7 @@ export class GameEngine {
     this.resetCameraPauses();
     this.editingThingIds.clear();
     this.pointerInterpreter.reset();
+    this.createdThingIds.clear();
     this.blueprintManifestVersion = null;
     this.isPersistedDirty = false;
     this.gameDirectory = "";
@@ -464,6 +464,7 @@ export class GameEngine {
   private async loadGame(gameDirectory: string) {
     const payload = await this.dependencies.dataSource.loadGame(gameDirectory);
     this.gameDirectory = payload.gameDirectory;
+    this.createdThingIds.clear();
     this.persistedGameState = persistedStateFromGameFile(payload.game);
     this.isPersistedDirty = false;
     this.cameraModule = await this.loadCamera(this.gameDirectory);
@@ -604,15 +605,18 @@ export class GameEngine {
       pendingRemovals
     );
 
+    this.runCreateHandlers(gameContext);
+
     physicsStep(
       this.gameState,
       this.blueprintLookup,
       gameContext,
       this.editingThingIds
     );
-    this.handleInput(gameContext, pendingRemovals);
-    this.handleUpdates(gameContext, pendingRemovals);
+    this.runInputHandlers(gameContext, pendingRemovals);
+    this.runUpdateHandlers(gameContext, pendingRemovals);
     this.applyPendingChanges(pendingSpawns, pendingRemovals);
+    this.runCreateHandlers(gameContext);
     this.updateCameraPosition();
     this.syncMutableThings();
 
@@ -952,27 +956,29 @@ export class GameEngine {
     };
   }
 
-  private handleInput(game: GameContext, pendingRemovals: Set<string>) {
+  private runInputHandlers(game: GameContext, pendingRemovals: Set<string>) {
     if (!this.inputManager) return;
+    const keyState = this.inputManager.keyState;
     for (const thing of this.gameState.things) {
       if (this.editingThingIds.has(thing.id)) continue;
       if (pendingRemovals.has(thing.id)) continue;
       const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
-      blueprint?.input?.(thing, game, this.inputManager.keyState);
+      runBlueprintHandlers("input", blueprint, blueprint?.input, (handler) =>
+        handler(thing, game, keyState)
+      );
     }
   }
 
-  private handleUpdates(
-    game: GameContext,
-    pendingRemovals: Set<string>
-  ) {
+  private runUpdateHandlers(game: GameContext, pendingRemovals: Set<string>) {
     const thingsView = Object.freeze([...this.gameState.things]);
 
     for (const thing of thingsView) {
       if (this.editingThingIds.has(thing.id)) continue;
       if (pendingRemovals.has(thing.id)) continue;
       const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
-      blueprint?.update?.(thing, game);
+      runBlueprintHandlers("update", blueprint, blueprint?.update, (handler) =>
+        handler(thing, game)
+      );
     }
   }
 
@@ -1017,6 +1023,19 @@ export class GameEngine {
       destroy,
       getImageForThing,
     };
+  }
+
+  private runCreateHandlers(game: GameContext) {
+    for (const thing of this.gameState.things) {
+      if (this.createdThingIds.has(thing.id)) {
+        continue;
+      }
+      const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
+      runBlueprintHandlers("create", blueprint, blueprint?.create, (handler) =>
+        handler(thing, game)
+      );
+      this.createdThingIds.add(thing.id);
+    }
   }
 
   private updateCameraPosition() {
@@ -1552,6 +1571,7 @@ function blueprintToBlueprintData(
     image: entry.image,
     shape: entry.shape,
     physicsType: entry.physicsType,
+    behaviors: entry.behaviors,
   };
 }
 

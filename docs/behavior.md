@@ -10,11 +10,10 @@
 
 ## Triggers
 
-- `initialize`
+- `create`
 - `input`
 - `update`
 - `collision`
-- `render`
 
 ## Actions
 
@@ -33,14 +32,14 @@
 - `game.json` (per game) adds a `behaviors` object on each blueprint.
 - Keys are trigger names; values are ordered arrays of action names.
 - Execution order per trigger:
-  1. Legacy handler in the blueprint module (if present) runs first. If a legacy handler exists, normalize it to a single-element array so it runs before actions.
+  1. Blueprint handler in the module (if present) runs first.
   2. Then run the `behaviors[trigger]` action list in order.
 - Each action call is wrapped in `try/catch` to keep the game running even if an action throws.
 
 ## UI (from action-definition.png)
 
 - Blueprint panel gets an “Actions” tab.
-- Shows trigger sections (input, update, collision, render, initialize).
+- Shows trigger sections (create, input, update, collision).
 - “Add Action” opens a select of available global actions (no custom creation).
 - When selecting, enforce trigger compatibility based on `allowedTriggers`.
 - Actions listed per trigger can be reordered/removed.

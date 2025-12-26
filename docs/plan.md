@@ -16,7 +16,7 @@
 
 ## Triggers
 
-- input, update, collision, render, initialize
+- create, input, update, collision
 
 ## Actions
 
@@ -32,7 +32,7 @@
   - Each action declares `allowedTriggers: TriggerName[]`.
   - Default on creation: only the trigger it was added to is in `allowedTriggers`; author can later widen the list.
 - Blueprint binding trigger -> actions
-  - Existing handler slots (`input`, `update`, `collision`, `render`, etc.) accept as before.
+  - Existing handler slots (`create`, `input`, `update`, `collision`, `render`, etc.) accept as before.
   - In `game.json`, each blueprint has a `behaviors` object whose keys are trigger names and whose values are arrays of ordered action names.
   - Engine should enforce compatibility: when wiring `behaviors`, only attach actions whose `allowedTriggers` include that trigger.
 - Action execution

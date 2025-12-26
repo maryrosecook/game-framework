@@ -21,6 +21,46 @@ export type KeyState = {
   keyE: boolean;
 };
 
+export type TriggerName = "create" | "input" | "update" | "collision";
+
+export type CreateHandler<TData = unknown> = (
+  thing: RuntimeThing<TData>,
+  game: GameContext
+) => void;
+
+export type InputHandler<TData = unknown> = (
+  thing: RuntimeThing<TData>,
+  game: GameContext,
+  keyState: KeyState
+) => void;
+
+export type UpdateHandler<TData = unknown> = (
+  thing: RuntimeThing<TData>,
+  game: GameContext
+) => void;
+
+export type CollisionHandler<TData = unknown> = (
+  thing: RuntimeThing<TData>,
+  otherThing: RuntimeThing,
+  game: GameContext
+) => void;
+
+export type RenderHandler<TData = unknown> = (
+  thing: RuntimeThing<TData>,
+  game: GameContext,
+  ctx: CanvasRenderingContext2D
+) => void;
+
+export type BlueprintHandlerMap<TData = unknown> = {
+  create: CreateHandler<TData>;
+  input: InputHandler<TData>;
+  update: UpdateHandler<TData>;
+  collision: CollisionHandler<TData>;
+  render: RenderHandler<TData>;
+};
+
+export type BlueprintBehaviors = Partial<Record<TriggerName, string[]>>;
+
 export type Vector = { x: number; y: number };
 
 export type Shape = "rectangle" | "triangle" | "circle";
@@ -51,34 +91,19 @@ export type BlueprintData<TData = unknown> = {
   image?: string;
   shape: Shape;
   physicsType: PhysicsType;
+  behaviors?: BlueprintBehaviors;
 };
 
-export type BlueprintModule<TData = unknown> = Partial<{
-  // All called every tick
-  update: (thing: RuntimeThing<TData>, game: GameContext) => void;
-  render: (
-    thing: RuntimeThing<TData>,
-    game: GameContext,
-    ctx: CanvasRenderingContext2D
-  ) => void;
-  input: (
-    // respond to input
-    thing: RuntimeThing<TData>,
-    game: GameContext,
-    keyState: KeyState
-  ) => void;
-  collision: (
-    thing: RuntimeThing<TData>,
-    otherThing: RuntimeThing,
-    game: GameContext
-  ) => void;
-  getAdjustedVelocity: (
+export type BlueprintModule<TData = unknown> = Partial<
+  BlueprintHandlerMap<TData>
+> & {
+  getAdjustedVelocity?: (
     // Adjust velocity in a custom way rather than using the physics default
     thing: RuntimeThing<TData>,
     proposedVelocity: Vector,
     game: GameContext
   ) => Vector;
-}>;
+};
 
 export type Blueprint<TData = unknown> = BlueprintData<TData> &
   BlueprintModule<TData> & { dataSchema?: ZodType<TData> };
@@ -123,10 +148,21 @@ export type RuntimeThing<TData = unknown> = RawThing<TData> &
       RawThing,
       keyof Omit<
         BlueprintData,
-        "name" | "physicsType" | "image" | "z" | "color" | "shape"
+        "name" | "physicsType" | "image" | "z" | "color" | "shape" | "behaviors"
       >
     >
   > & { color: string; isGrounded: boolean };
+
+type TriggerHandlerMap = Omit<BlueprintHandlerMap, "render">;
+
+export type TriggerHandler<T extends TriggerName = TriggerName> =
+  TriggerHandlerMap[T];
+
+export type ActionDefinition<T extends TriggerName = TriggerName> = {
+  summary: string;
+  code: TriggerHandler<T>;
+  allowedTriggers: readonly T[];
+};
 
 export type RuntimeGameState = {
   things: RuntimeThing[];

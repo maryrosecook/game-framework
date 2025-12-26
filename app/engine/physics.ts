@@ -1,4 +1,4 @@
-import { getBlueprintForThing } from "./blueprints";
+import { getBlueprintForThing, runBlueprintHandlers } from "./blueprints";
 import {
   Blueprint,
   CollisionMap,
@@ -221,8 +221,18 @@ function notifyCollision(
 ) {
   const blueprintA = getBlueprintForThing(a, blueprintLookup);
   const blueprintB = getBlueprintForThing(b, blueprintLookup);
-  blueprintA?.collision?.(a, b, game);
-  blueprintB?.collision?.(b, a, game);
+  runBlueprintHandlers(
+    "collision",
+    blueprintA,
+    blueprintA?.collision,
+    (handler) => handler(a, b, game)
+  );
+  runBlueprintHandlers(
+    "collision",
+    blueprintB,
+    blueprintB?.collision,
+    (handler) => handler(b, a, game)
+  );
 }
 
 function getCollisionShapeForThing(
