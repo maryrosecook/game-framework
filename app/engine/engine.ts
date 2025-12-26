@@ -1667,9 +1667,6 @@ function resolveBlueprintModule(
   const factory = moduleExports.default;
 
   if (!isBlueprintFactory(factory)) {
-    console.warn(
-      `Blueprint module for "${data.name}" must default export a factory function.`
-    );
     return { ...data };
   }
 
