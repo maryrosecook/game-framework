@@ -35,24 +35,20 @@ export function getWorldPointFromClient({
   canvas,
   clientX,
   clientY,
-  screen,
   camera,
 }: {
   canvas: HTMLCanvasElement | null;
   clientX: number;
   clientY: number;
-  screen: { width: number; height: number };
   camera: Vector;
 }): Vector | null {
   if (!canvas) return null;
   const rect = canvas.getBoundingClientRect();
   const x = clientX - rect.left;
   const y = clientY - rect.top;
-  const offsetX = (rect.width - screen.width) / 2;
-  const offsetY = (rect.height - screen.height) / 2;
   return {
-    x: x - offsetX + camera.x,
-    y: y - offsetY + camera.y,
+    x: x + camera.x,
+    y: y + camera.y,
   };
 }
 

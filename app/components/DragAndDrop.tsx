@@ -31,7 +31,6 @@ export function DragAndDrop({
   children,
 }: DragAndDropProps) {
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
-  const [screen] = subscribe<RuntimeGameState["screen"]>(["screen"]);
   const [camera] = subscribe<RuntimeGameState["camera"]>(["camera"]);
 
   const importingRef = useRef(false);
@@ -56,7 +55,6 @@ export function DragAndDrop({
       event.preventDefault();
       const dropPoint = getWorldPointFromEvent({
         event,
-        screen,
         camera,
         canvasRef,
       });
@@ -77,7 +75,6 @@ export function DragAndDrop({
       }
       const dropPoint = getWorldPointFromEvent({
         event,
-        screen,
         camera,
         canvasRef,
       });

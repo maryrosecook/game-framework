@@ -143,10 +143,6 @@
     "x": 0,
     "y": 0
   },
-  "screen": {
-    "width": 800,
-    "height": 600
-  },
   "backgroundColor": "#f8fafc",
   "image": null,
   "isGravityEnabled": false

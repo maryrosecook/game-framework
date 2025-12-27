@@ -100,7 +100,7 @@ function cloneDefaultRawGameState(): RawGameState {
     things: [],
     blueprints: [],
     camera: { x: 0, y: 0 },
-    screen: { width: 800, height: 600 },
+    screen: { width: 0, height: 0 },
     backgroundColor: DEFAULT_BACKGROUND_COLOR,
     isGravityEnabled: false,
     isPaused: false,
@@ -111,9 +111,10 @@ function cloneDefaultRawGameState(): RawGameState {
 
 function cloneDefaultPersistedState(): PersistedGameState {
   const base = cloneDefaultRawGameState();
+  const { screen: _screen, ...rest } = base;
   return {
     id: -1,
-    ...base,
+    ...rest,
     blueprints: [],
     image: null,
     things: [],
@@ -138,7 +139,6 @@ export class GameEngine {
   private isPersistedDirty = false;
   private cameraModule: CameraController | null = null;
   private gameDirectory = "";
-  private viewportSize = { width: 0, height: 0 };
   private persistHandle: number | null = null;
   private ready = false;
   private blueprintLookup = new Map<string, Blueprint>();
@@ -468,6 +468,7 @@ export class GameEngine {
     this.persistedGameState = persistedStateFromGameFile(payload.game);
     this.isPersistedDirty = false;
     this.cameraModule = await this.loadCamera(this.gameDirectory);
+    const screen = this.getCurrentScreenSize();
     const { blueprints, manifestVersion: blueprintManifestVersion } =
       await this.loadBlueprintsWithManifestVersion(
         payload.game.blueprints,
@@ -482,7 +483,7 @@ export class GameEngine {
       things,
       blueprints,
       camera: payload.game.camera,
-      screen: payload.game.screen,
+      screen,
       backgroundColor: this.persistedGameState.backgroundColor,
       isGravityEnabled: this.persistedGameState.isGravityEnabled,
       isPaused: false,
@@ -621,7 +622,7 @@ export class GameEngine {
     this.syncMutableThings();
 
     renderGame(
-      { ctx: this.ctx, viewport: this.viewportSize },
+      { ctx: this.ctx },
       gameContext,
       this.blueprintLookup,
       (thing, blueprint) => this.getImageForThing(thing, blueprint),
@@ -705,7 +706,6 @@ export class GameEngine {
       canvas: this.canvas,
       clientX,
       clientY,
-      screen: this.gameState.screen,
       camera: this.gameState.camera,
     });
   }
@@ -1121,7 +1121,32 @@ export class GameEngine {
     this.canvas.width = rect.width * scale;
     this.canvas.height = rect.height * scale;
     this.ctx.setTransform(scale, 0, 0, scale, 0, 0);
-    this.viewportSize = { width: rect.width, height: rect.height };
+    this.updateScreenSize({ width: rect.width, height: rect.height });
+  }
+
+  private getCurrentScreenSize() {
+    const current = this.rawGameState.screen;
+    if (current.width > 0 && current.height > 0) {
+      return current;
+    }
+    if (!this.canvas) {
+      return current;
+    }
+    const rect = this.canvas.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  }
+
+  private updateScreenSize(nextScreen: { width: number; height: number }) {
+    const current = this.rawGameState.screen;
+    if (
+      current.width === nextScreen.width &&
+      current.height === nextScreen.height
+    ) {
+      return;
+    }
+    this.rawGameState = { ...this.rawGameState, screen: nextScreen };
+    this.gameState = { ...this.gameState, screen: nextScreen };
+    this.notify();
   }
 
   private rebuildBlueprintLookup() {
@@ -1380,13 +1405,6 @@ export class GameEngine {
         };
         return true;
       }
-      case "setScreenSize": {
-        this.persistedGameState = {
-          ...this.persistedGameState,
-          screen: { width: action.width, height: action.height },
-        };
-        return true;
-      }
       case "setBackgroundColor": {
         if (this.persistedGameState.backgroundColor === action.color) {
           return false;
@@ -1549,7 +1567,6 @@ function persistedStateFromGameFile(game: GameFile): PersistedGameState {
     ),
     blueprints: game.blueprints.map((blueprint) => ({ ...blueprint })),
     camera: { ...game.camera },
-    screen: { ...game.screen },
     backgroundColor,
     isGravityEnabled: !!game.isGravityEnabled,
     image: game.image ?? null,
@@ -1701,7 +1718,6 @@ function serializeGame(state: PersistedGameState): GameFile {
     things: state.things.map((thing) => ({ ...thing })),
     blueprints: state.blueprints.map((bp) => ({ ...bp })),
     camera: state.camera,
-    screen: state.screen,
     backgroundColor: state.backgroundColor,
     isGravityEnabled: state.isGravityEnabled,
     image: state.image ?? null,

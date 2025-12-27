@@ -64,12 +64,13 @@
   `app/games/[game-name]/game.json` (~100ms cadence).
 - Core shape: `{ things: Thing[]; blueprints: Blueprint[]; camera: {x,y};
 screen: {width,height}; isPaused: boolean; selectedThingId: string | null }`.
+  - `screen` is runtime-only and always mirrors the current window/canvas size.
+  - `game.json` does not persist `screen`.
 
 ## React Editor and UI Model
 
-- Full-window layout with Canvas dominating the view; the game screen bounds are
-  drawn inside the canvas. Play/pause control sits alongside a bottom blueprint
-  toolbar.
+- Full-window layout with Canvas dominating the view. Play/pause control sits
+  alongside a bottom blueprint toolbar.
 - Blueprint toolbar lists blueprints, supports creation, opens a side panel for
   properties, and allows dragging a blueprint onto the canvas to spawn a thing
   at the drop point.
@@ -87,6 +88,6 @@ screen: {width,height}; isPaused: boolean; selectedThingId: string | null }`.
 - `useGame` starts the loop and returns `isPaused` plus a `subscribe` API for
   targeted state slices (things, blueprints, camera, screen, pause state,
   selection) along with a single `dispatch(Action)` entry point.
-- The reducer handles actions for thing and blueprint mutation, camera/screen
-  changes, pause toggling, and selection. Engine and React UI share this reducer
-  so UI edits and in-game mutations stay consistent.
+- The reducer handles actions for thing and blueprint mutation, camera changes,
+  pause toggling, and selection. Engine and React UI share this reducer so UI
+  edits and in-game mutations stay consistent.
