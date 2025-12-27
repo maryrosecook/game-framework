@@ -11,7 +11,7 @@ export type PointerInteractionContext = {
   duplicateSelection: (
     selectedIds: string[],
     worldPoint: Vector
-  ) => PointerDragTarget[] | null;
+  ) => RuntimeThing[];
   getWorldPoint: (clientX: number, clientY: number) => Vector | null;
   capturePointer: (pointerId: number) => void;
   releasePointer: (pointerId: number) => void;

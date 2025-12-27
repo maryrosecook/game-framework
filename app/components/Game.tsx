@@ -6,7 +6,7 @@ import { EditPanel } from "@/components/EditPanel";
 import { GameCanvas } from "@/components/GameCanvas";
 import { DragAndDrop } from "@/components/DragAndDrop";
 import { useGame } from "@/engine/useGame";
-import { Blueprint, RawThing } from "@/engine/types";
+import { Blueprint, RawThing, Vector } from "@/engine/types";
 import { PointerMode } from "@/engine/input/pointer";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
@@ -98,6 +98,28 @@ export function Game({ gameDirectory }: GameProps) {
     engine.setPaintColor(color);
   };
 
+  const handleCloneSelection = () => {
+    if (selectedThingIds.length === 0) {
+      return;
+    }
+    const worldPoint = getSelectionWorldPoint(
+      selectedThingIds,
+      things ?? [],
+      selectedThingId
+    );
+    if (!worldPoint) {
+      return;
+    }
+    const duplicateIds = engine.duplicateThingsWithIds(
+      selectedThingIds,
+      worldPoint
+    );
+    if (duplicateIds.length === 0) {
+      return;
+    }
+    engine.dispatch({ type: "setSelectedThingIds", thingIds: duplicateIds });
+  };
+
   return (
     <div className="relative h-full min-h-screen w-full overflow-hidden bg-white text-slate-900">
       <DragAndDrop
@@ -116,6 +138,8 @@ export function Game({ gameDirectory }: GameProps) {
           onRename={setActiveBlueprintName}
           gameDirectory={gameDirectory}
           imageVersions={imageVersions}
+          onClone={handleCloneSelection}
+          canClone={selectedThingIds.length > 0}
         />
       ) : null}
       <div className="pointer-events-auto absolute bottom-0 left-0 right-0 flex justify-center px-6 pb-4">
@@ -134,4 +158,34 @@ export function Game({ gameDirectory }: GameProps) {
       </div>
     </div>
   );
+}
+
+function getSelectionWorldPoint(
+  selectedIds: string[],
+  things: RawThing[],
+  primaryId: string | null
+): Vector | null {
+  if (primaryId) {
+    const primary = things.find((thing) => thing.id === primaryId);
+    if (primary) {
+      return { x: primary.x, y: primary.y };
+    }
+  }
+  let totalX = 0;
+  let totalY = 0;
+  let count = 0;
+  const lookup = new Map(things.map((thing) => [thing.id, thing]));
+  for (const id of selectedIds) {
+    const thing = lookup.get(id);
+    if (!thing) {
+      continue;
+    }
+    totalX += thing.x;
+    totalY += thing.y;
+    count += 1;
+  }
+  if (count === 0) {
+    return null;
+  }
+  return { x: totalX / count, y: totalY / count };
 }

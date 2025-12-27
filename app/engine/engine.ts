@@ -43,13 +43,13 @@ import {
   findTopThingAtPoint,
   getWorldPointFromClient as getPointerWorldPointFromClient,
 } from "./input/pointer";
-import { buildDragTargetsFromSelection } from "./input/pointer/dragTargets";
 import {
-  PointerDragTarget,
   PointerInteractionContext,
   PointerMode,
 } from "./input/pointer/types";
 import { createThingId } from "@/lib/id";
+
+const DUPLICATE_WORLD_OFFSET = 20;
 
 export type LoadedGame = {
   game: GameFile;
@@ -264,6 +264,14 @@ export class GameEngine {
 
   getPaintColor() {
     return this.paintColor;
+  }
+
+  duplicateThingsWithIds(selectedIds: string[], worldPoint: Vector): string[] {
+    const duplicates = this.duplicateSelection(selectedIds, worldPoint);
+    if (duplicates.length === 0) {
+      return [];
+    }
+    return duplicates.map((duplicate) => duplicate.id);
   }
 
   destroy() {
@@ -721,48 +729,41 @@ export class GameEngine {
   private duplicateSelection(
     selectedIds: string[],
     worldPoint: Vector
-  ): PointerDragTarget[] | null {
-    const targets = buildDragTargetsFromSelection(
-      selectedIds,
-      worldPoint,
-      this.gameState.things
-    );
-    if (targets.length === 0) {
-      return null;
-    }
-    return this.duplicateDragTargets(targets);
-  }
-
-  private duplicateDragTargets(targets: PointerDragTarget[]) {
+  ): RuntimeThing[] {
     const thingLookup = new Map(
       this.gameState.things.map((thing) => [thing.id, thing])
     );
-    const duplicates: { thing: RuntimeThing; target: PointerDragTarget }[] = [];
+    const duplicates: RuntimeThing[] = [];
+    const duplicateWorldPoint = {
+      x: worldPoint.x + DUPLICATE_WORLD_OFFSET,
+      y: worldPoint.y + DUPLICATE_WORLD_OFFSET,
+    };
 
-    for (const target of targets) {
-      const original = thingLookup.get(target.thingId);
+    for (const id of selectedIds) {
+      const original = thingLookup.get(id);
       if (!original) continue;
+      const offsetX = worldPoint.x - original.x;
+      const offsetY = worldPoint.y - original.y;
       const clone: RuntimeThing = {
         ...original,
         id: createThingId(),
         velocityX: 0,
         velocityY: 0,
+        x: duplicateWorldPoint.x - offsetX,
+        y: duplicateWorldPoint.y - offsetY,
       };
-      duplicates.push({
-        thing: clone,
-        target: { ...target, thingId: clone.id },
-      });
+      duplicates.push(clone);
     }
 
     if (duplicates.length === 0) {
-      return null;
+      return [];
     }
 
     for (const duplicate of duplicates) {
-      this.dispatch({ type: "addThing", thing: duplicate.thing });
+      this.dispatch({ type: "addThing", thing: duplicate });
     }
 
-    return duplicates.map((entry) => entry.target);
+    return duplicates;
   }
 
   private paintAt(
