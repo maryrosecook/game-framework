@@ -1,5 +1,5 @@
 import { DragEvent, useState } from "react";
-import { Copy } from "lucide-react";
+import { Copy, Plus, Trash2 } from "lucide-react";
 import {
   Blueprint,
   BlueprintData,
@@ -22,6 +22,7 @@ type BlueprintTabProps = {
   imageVersion?: number;
   onClone: () => void;
   canClone: boolean;
+  onCreate: () => void;
 };
 
 export function BlueprintTab({
@@ -33,6 +34,7 @@ export function BlueprintTab({
   imageVersion,
   onClone,
   canClone,
+  onCreate,
 }: BlueprintTabProps) {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -98,7 +100,7 @@ export function BlueprintTab({
 
   const handleDeleteBlueprint = () => {
     const confirmed = window.confirm(
-      "Delete this blueprint and all its items? This cannot be undone."
+      "Delete this blueprint? This cannot be undone."
     );
     if (!confirmed) {
       return;
@@ -139,6 +141,33 @@ export function BlueprintTab({
             handleRename(event.target.value);
           }}
         />
+        <div className="mt-2 flex items-center gap-2">
+          <ArrangeButton
+            label="Create"
+            icon={<Plus className="size-4" />}
+            onClick={onCreate}
+            fullWidth={false}
+            className="gap-1 px-2 py-1 text-xs"
+            ariaLabel="Create a new thing in the center of the screen"
+          />
+          <ArrangeButton
+            label="Clone"
+            icon={<Copy className="size-4" />}
+            onClick={onClone}
+            disabled={!canClone}
+            fullWidth={false}
+            className="gap-1 px-2 py-1 text-xs"
+            ariaLabel="Clone selected items"
+          />
+          <ArrangeButton
+            label="Delete"
+            icon={<Trash2 className="size-4" />}
+            onClick={handleDeleteBlueprint}
+            fullWidth={false}
+            className="gap-1 px-2 py-1 text-xs border-red-200 text-red-600 hover:border-red-300 hover:bg-red-50"
+            ariaLabel="Delete"
+          />
+        </div>
       </header>
       <div className="space-y-3">
         <div>
@@ -230,24 +259,6 @@ export function BlueprintTab({
           options={colorOptions}
           onChange={(value) => handleUpdate("color", value)}
         />
-      </div>
-      <div className="mt-4 flex items-center gap-3 justify-between">
-        <ArrangeButton
-          label="Clone"
-          icon={<Copy className="size-4" />}
-          onClick={onClone}
-          disabled={!canClone}
-          fullWidth={false}
-          className="gap-1 px-2 py-1 text-xs"
-          ariaLabel="Clone selected items"
-        />
-        <button
-          type="button"
-          className="text-xs text-red-600 underline decoration-red-500 decoration-2 underline-offset-2 hover:text-red-700"
-          onClick={handleDeleteBlueprint}
-        >
-          Delete blueprint and items
-        </button>
       </div>
     </>
   );

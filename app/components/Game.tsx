@@ -6,11 +6,12 @@ import { EditPanel } from "@/components/EditPanel";
 import { GameCanvas } from "@/components/GameCanvas";
 import { DragAndDrop } from "@/components/DragAndDrop";
 import { useGame } from "@/engine/useGame";
-import { Blueprint, RawThing, Vector } from "@/engine/types";
+import { Blueprint, RawThing, RuntimeGameState, Vector } from "@/engine/types";
 import { PointerMode } from "@/engine/input/pointer";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
 import { getColorOptions } from "@/components/ColorGrid";
+import { createThingFromBlueprint } from "@/engine/blueprints";
 
 type GameProps = {
   gameDirectory: string;
@@ -21,6 +22,8 @@ export function Game({ gameDirectory }: GameProps) {
   const { subscribe, engine } = useGame(canvasRef, gameDirectory);
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
   const [things] = subscribe<RawThing[]>(["things"]);
+  const [camera] = subscribe<RuntimeGameState["camera"]>(["camera"]);
+  const [screen] = subscribe<RuntimeGameState["screen"]>(["screen"]);
   const [selectedThingId] = subscribe<string | null>(["selectedThingId"]);
   const [selectedThingIds] = subscribe<string[]>(["selectedThingIds"]);
   const [activeBlueprintName, setActiveBlueprintName] = useState<string | null>(
@@ -120,6 +123,25 @@ export function Game({ gameDirectory }: GameProps) {
     engine.dispatch({ type: "setSelectedThingIds", thingIds: duplicateIds });
   };
 
+  const handleCreateThing = () => {
+    if (!activeBlueprintName) {
+      return;
+    }
+    const blueprint = (blueprints ?? []).find(
+      (candidate) => candidate.name === activeBlueprintName
+    );
+    if (!blueprint) {
+      return;
+    }
+    const worldPoint = {
+      x: camera.x + screen.width / 2,
+      y: camera.y + screen.height / 2,
+    };
+    const thing = createThingFromBlueprint(blueprint, worldPoint);
+    engine.dispatch({ type: "addThing", thing });
+    engine.dispatch({ type: "setSelectedThingId", thingId: thing.id });
+  };
+
   return (
     <div className="relative h-full min-h-screen w-full overflow-hidden bg-white text-slate-900">
       <DragAndDrop
@@ -140,6 +162,7 @@ export function Game({ gameDirectory }: GameProps) {
           imageVersions={imageVersions}
           onClone={handleCloneSelection}
           canClone={selectedThingIds.length > 0}
+          onCreate={handleCreateThing}
         />
       ) : null}
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex justify-center px-6 pb-4">

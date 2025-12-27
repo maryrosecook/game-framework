@@ -15,6 +15,7 @@ export function EditPanel({
   imageVersions,
   onClone,
   canClone,
+  onCreate,
 }: {
   blueprintName: string;
   subscribe: GameSubscribe;
@@ -23,6 +24,7 @@ export function EditPanel({
   imageVersions: Record<string, number>;
   onClone: () => void;
   canClone: boolean;
+  onCreate: () => void;
 }) {
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
   const [blueprint, dispatchGame] = subscribe<Blueprint | undefined>([
@@ -62,6 +64,7 @@ export function EditPanel({
           onRename={onRename}
           onClone={onClone}
           canClone={canClone}
+          onCreate={onCreate}
         />
       ) : (
         <SettingsTab subscribe={subscribe} />
