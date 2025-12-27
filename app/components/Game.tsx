@@ -142,19 +142,21 @@ export function Game({ gameDirectory }: GameProps) {
           canClone={selectedThingIds.length > 0}
         />
       ) : null}
-      <div className="pointer-events-auto absolute bottom-0 left-0 right-0 flex justify-center px-6 pb-4">
-        <Toolbar
-          blueprints={blueprints ?? []}
-          selectedBlueprintName={activeBlueprintName}
-          onSelectBlueprint={handleSelectBlueprint}
-          onAddBlueprint={handleAddBlueprint}
-          gameDirectory={gameDirectory}
-          pointerMode={pointerMode}
-          onChangePointerMode={handlePointerModeChange}
-          paintColor={paintColor}
-          onChangePaintColor={handlePaintColorChange}
-          imageVersions={imageVersions}
-        />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex justify-center px-6 pb-4">
+        <div className="pointer-events-auto">
+          <Toolbar
+            blueprints={blueprints ?? []}
+            selectedBlueprintName={activeBlueprintName}
+            onSelectBlueprint={handleSelectBlueprint}
+            onAddBlueprint={handleAddBlueprint}
+            gameDirectory={gameDirectory}
+            pointerMode={pointerMode}
+            onChangePointerMode={handlePointerModeChange}
+            paintColor={paintColor}
+            onChangePaintColor={handlePaintColorChange}
+            imageVersions={imageVersions}
+          />
+        </div>
       </div>
     </div>
   );
