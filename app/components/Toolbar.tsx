@@ -1,14 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Blueprint } from "@/engine/types";
 import { Button } from "@/components/ui/button";
-import { MousePointer2, PenTool, Plus, RotateCw } from "lucide-react";
+import { Plus, RotateCw } from "lucide-react";
 import { getBlueprintImageUrl } from "@/lib/images";
-import { PointerMode } from "@/engine/input/pointer";
-import { getColorOptions } from "@/components/ColorGrid";
-import { ModeToggleButton } from "@/components/toolbar/ModeToggleButton";
-import { PaletteFlyover } from "@/components/toolbar/PaletteFlyover";
 
 const BLUEPRINT_MIME = "application/x-blueprint";
 
@@ -18,10 +13,6 @@ type ToolbarProps = {
   onSelectBlueprint: (name: string) => void;
   onAddBlueprint: () => void;
   gameDirectory: string;
-  pointerMode: PointerMode;
-  onChangePointerMode: (mode: PointerMode) => void;
-  paintColor: string;
-  onChangePaintColor: (color: string) => void;
   imageVersions: Record<string, number>;
 };
 
@@ -31,21 +22,8 @@ export function Toolbar({
   onSelectBlueprint,
   onAddBlueprint,
   gameDirectory,
-  pointerMode,
-  onChangePointerMode,
-  paintColor,
-  onChangePaintColor,
   imageVersions,
 }: ToolbarProps) {
-  const [showPalette, setShowPalette] = useState(false);
-  const colorOptions = getColorOptions();
-
-  useEffect(() => {
-    if (pointerMode !== "paint") {
-      setShowPalette(false);
-    }
-  }, [pointerMode]);
-
   return (
     <div className="inline-flex max-w-[800px] min-w-fit items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-lg">
       <div className="flex items-center gap-2 border-r border-slate-200 pr-3">
@@ -59,34 +37,6 @@ export function Toolbar({
         >
           <RotateCw className="size-4" />
         </Button>
-        <ModeToggleButton
-          icon={<MousePointer2 className="size-4" />}
-          label="Pointer tool"
-          active={pointerMode === "pointer"}
-          onClick={() => {
-            onChangePointerMode("pointer");
-          }}
-        />
-        <div className="relative">
-          <ModeToggleButton
-            icon={<PenTool className="size-4" />}
-            label="Paint tool (pen hyp and tool)"
-            active={pointerMode === "paint"}
-            onClick={() => {
-              onChangePointerMode("paint");
-              setShowPalette(true);
-            }}
-          />
-          <PaletteFlyover
-            open={pointerMode === "paint" && showPalette}
-            colors={colorOptions}
-            selected={paintColor}
-            onSelect={(color) => {
-              onChangePaintColor(color);
-              setShowPalette(true);
-            }}
-          />
-        </div>
       </div>
       <div className="flex flex-1 gap-2 overflow-x-auto py-1">
         {blueprints.map((blueprint) => (

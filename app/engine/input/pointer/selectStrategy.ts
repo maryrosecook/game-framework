@@ -4,9 +4,6 @@ import { nextSelectedIdsForClick } from "./selectionHelpers";
 export function createSelectStrategy(): PointerInteractionStrategy {
   return {
     canStart({ event, hit, state, context }) {
-      if (context.pointerMode !== "pointer") {
-        return null;
-      }
       if (hit) {
         const nextSelected = nextSelectedIdsForClick(
           state.selectedThingIds,
