@@ -13,12 +13,16 @@ export function EditPanel({
   onRename,
   gameDirectory,
   imageVersions,
+  onClone,
+  canClone,
 }: {
   blueprintName: string;
   subscribe: GameSubscribe;
   onRename: (next: string) => void;
   gameDirectory: string;
   imageVersions: Record<string, number>;
+  onClone: () => void;
+  canClone: boolean;
 }) {
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
   const [blueprint, dispatchGame] = subscribe<Blueprint | undefined>([
@@ -56,6 +60,8 @@ export function EditPanel({
             blueprint.image ? imageVersions[blueprint.image] : undefined
           }
           onRename={onRename}
+          onClone={onClone}
+          canClone={canClone}
         />
       ) : (
         <SettingsTab subscribe={subscribe} />

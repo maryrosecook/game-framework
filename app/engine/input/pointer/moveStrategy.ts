@@ -42,14 +42,20 @@ export function createMoveStrategy(): PointerInteractionStrategy {
       }
 
       if (event.altKey) {
-        const duplicateTargets = context.duplicateSelection(
+        const duplicateThings = context.duplicateSelection(
           nextSelected,
           worldPoint
         );
-        if (duplicateTargets && duplicateTargets.length > 0) {
-          const duplicateIds = duplicateTargets.map(
-            (target) => target.thingId
+        if (duplicateThings.length > 0) {
+          const duplicateIds = duplicateThings.map((thing) => thing.id);
+          const duplicateTargets = buildDragTargetsFromSelection(
+            duplicateIds,
+            worldPoint,
+            duplicateThings
           );
+          if (duplicateTargets.length === 0) {
+            return null;
+          }
           context.dispatch({
             type: "setSelectedThingIds",
             thingIds: duplicateIds,

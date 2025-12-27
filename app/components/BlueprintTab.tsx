@@ -1,4 +1,5 @@
 import { DragEvent, useState } from "react";
+import { Copy } from "lucide-react";
 import {
   Blueprint,
   BlueprintData,
@@ -10,10 +11,7 @@ import { ColorSelect } from "@/components/ColorSelect";
 import { SelectField } from "@/components/SelectField";
 import { ArrangeButton } from "@/components/ArrangeButton";
 import { getBlueprintImageUrl } from "@/lib/images";
-import {
-  getDroppedPngFile,
-  uploadBlueprintImage,
-} from "@/lib/imageUploads";
+import { getDroppedPngFile, uploadBlueprintImage } from "@/lib/imageUploads";
 
 type BlueprintTabProps = {
   blueprint: Blueprint;
@@ -22,6 +20,8 @@ type BlueprintTabProps = {
   dispatch: (action: GameAction) => void;
   onRename: (value: string) => void;
   imageVersion?: number;
+  onClone: () => void;
+  canClone: boolean;
 };
 
 export function BlueprintTab({
@@ -31,6 +31,8 @@ export function BlueprintTab({
   dispatch,
   onRename,
   imageVersion,
+  onClone,
+  canClone,
 }: BlueprintTabProps) {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -144,9 +146,9 @@ export function BlueprintTab({
             Image
           </p>
           <div
-            className={`mt-1 flex h-28 items-center justify-center overflow-hidden rounded-lg border border-dashed ${
-              "border-slate-300 bg-slate-50"
-            } ${isUploading ? "opacity-70" : ""}`}
+            className={`mt-1 flex h-28 items-center justify-center overflow-hidden rounded-lg border border-dashed ${"border-slate-300 bg-slate-50"} ${
+              isUploading ? "opacity-70" : ""
+            }`}
             onDragOver={(event) => event.preventDefault()}
             onDrop={handleImageDrop}
           >
@@ -194,9 +196,11 @@ export function BlueprintTab({
           />
           <input
             type="number"
-            className="w-full rounded-lg border border-slate-200 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-slate-400"
+            className="w-12 justify-self-end rounded-lg border border-slate-200 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-slate-400"
             value={blueprint.z}
-            onChange={(event) => handleUpdate("z", Number(event.target.value) || 0)}
+            onChange={(event) =>
+              handleUpdate("z", Number(event.target.value) || 0)
+            }
             aria-label="Z position"
           />
         </div>
@@ -227,13 +231,24 @@ export function BlueprintTab({
           onChange={(value) => handleUpdate("color", value)}
         />
       </div>
-      <button
-        type="button"
-        className="mt-4 self-start text-xs text-red-600 underline decoration-red-500 decoration-2 underline-offset-2 hover:text-red-700"
-        onClick={handleDeleteBlueprint}
-      >
-        Delete blueprint and items
-      </button>
+      <div className="mt-4 flex items-center gap-3 justify-between">
+        <ArrangeButton
+          label="Clone"
+          icon={<Copy className="size-4" />}
+          onClick={onClone}
+          disabled={!canClone}
+          fullWidth={false}
+          className="gap-1 px-2 py-1 text-xs"
+          ariaLabel="Clone selected items"
+        />
+        <button
+          type="button"
+          className="text-xs text-red-600 underline decoration-red-500 decoration-2 underline-offset-2 hover:text-red-700"
+          onClick={handleDeleteBlueprint}
+        >
+          Delete blueprint and items
+        </button>
+      </div>
     </>
   );
 }
