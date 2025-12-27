@@ -28,7 +28,6 @@ function createDefaultGameFile(id: number): GameFile {
     things: [],
     blueprints: [],
     camera: { x: 0, y: 0 },
-    screen: { width: 800, height: 600 },
     backgroundColor: DEFAULT_BACKGROUND_COLOR,
     isGravityEnabled: false,
     image: null,
@@ -210,14 +209,6 @@ function isVector(value: unknown): value is { x: number; y: number } {
   return typeof record.x === "number" && typeof record.y === "number";
 }
 
-function isScreen(value: unknown): value is { width: number; height: number } {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-  const record = value as { width?: unknown; height?: unknown };
-  return typeof record.width === "number" && typeof record.height === "number";
-}
-
 function isShape(value: unknown): value is Shape {
   return value === "rectangle" || value === "triangle" || value === "circle";
 }
@@ -290,7 +281,6 @@ export function isGameFile(value: unknown): value is GameFile {
   const record = value as Record<string, unknown>;
   const hasValidId = typeof record.id === "number";
   const hasCamera = isVector(record.camera);
-  const hasScreen = isScreen(record.screen);
   const hasThings =
     Array.isArray(record.things) &&
     record.things.every((thing) => isThing(thing));
@@ -310,7 +300,6 @@ export function isGameFile(value: unknown): value is GameFile {
   return (
     hasValidId &&
     hasCamera &&
-    hasScreen &&
     hasThings &&
     hasBlueprints &&
     hasBackgroundColor &&

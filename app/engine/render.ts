@@ -4,7 +4,6 @@ import { Blueprint, GameContext, RuntimeThing } from "./types";
 
 type RenderConfig = {
   ctx: CanvasRenderingContext2D;
-  viewport: { width: number; height: number };
 };
 
 export type PaintOverlay = {
@@ -17,7 +16,7 @@ export type PaintOverlay = {
 const RESIZE_HANDLE_SIZE = 12;
 
 export function renderGame(
-  { ctx, viewport }: RenderConfig,
+  { ctx }: RenderConfig,
   game: GameContext,
   blueprintLookup: Map<string, Blueprint>,
   getImageForThing?: (
@@ -34,25 +33,10 @@ export function renderGame(
   ctx.restore();
 
   ctx.fillStyle = state.backgroundColor;
-  ctx.fillRect(0, 0, viewport.width, viewport.height);
-
-  const screenOffsetX = (viewport.width - state.screen.width) / 2;
-  const screenOffsetY = (viewport.height - state.screen.height) / 2;
+  ctx.fillRect(0, 0, state.screen.width, state.screen.height);
 
   ctx.save();
-  ctx.strokeStyle = "#1f2937";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([6, 6]);
-  ctx.strokeRect(
-    screenOffsetX,
-    screenOffsetY,
-    state.screen.width,
-    state.screen.height
-  );
-  ctx.restore();
-
-  ctx.save();
-  ctx.translate(screenOffsetX - state.camera.x, screenOffsetY - state.camera.y);
+  ctx.translate(-state.camera.x, -state.camera.y);
 
   const stacking = createThingStack(state.things, blueprintLookup);
   for (const thing of stacking) {

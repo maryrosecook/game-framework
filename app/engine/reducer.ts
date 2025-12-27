@@ -83,11 +83,6 @@ export function reduceState(
         ...state,
         camera: { x: action.x, y: action.y },
       };
-    case "setScreenSize":
-      return {
-        ...state,
-        screen: { width: action.width, height: action.height },
-      };
     case "setGravityEnabled":
       return {
         ...state,

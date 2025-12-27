@@ -1,9 +1,7 @@
 import { RuntimeGameState, Vector } from "@/engine/types";
 
 export default function updateCamera(game: RuntimeGameState): Vector {
-  const target = game.things.find(
-    (thing) => thing.blueprintName === "camera-focus"
-  );
+  const target = game.things.find((thing) => thing.blueprintName === "player");
 
   if (!target) {
     return game.camera;

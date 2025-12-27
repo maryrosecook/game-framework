@@ -181,7 +181,10 @@ export type RawGameState = Omit<RuntimeGameState, "things"> & {
   image?: string | null;
 };
 
-export type PersistedGameState = Omit<RawGameState, "blueprints" | "things"> & {
+export type PersistedGameState = Omit<
+  RawGameState,
+  "blueprints" | "things" | "screen"
+> & {
   id: number;
   blueprints: BlueprintData[];
   things: PersistedThing[];
@@ -237,7 +240,6 @@ export type GameAction =
   | { type: "removeBlueprint"; blueprintName: string }
   | { type: "renameBlueprint"; previousName: string; nextName: string }
   | { type: "setCameraPosition"; x: number; y: number }
-  | { type: "setScreenSize"; width: number; height: number }
   | { type: "setGravityEnabled"; isGravityEnabled: boolean }
   | { type: "setPaused"; isPaused: boolean }
   | { type: "setSelectedThingId"; thingId: string | null }
@@ -249,7 +251,6 @@ export type GameFile = {
   things: PersistedThing[];
   blueprints: BlueprintData[];
   camera: Vector;
-  screen: { width: number; height: number };
   backgroundColor?: string;
   clearColor?: string;
   isGravityEnabled: boolean;
