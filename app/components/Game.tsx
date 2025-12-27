@@ -7,7 +7,6 @@ import { GameCanvas } from "@/components/GameCanvas";
 import { DragAndDrop } from "@/components/DragAndDrop";
 import { useGame } from "@/engine/useGame";
 import { Blueprint, RawThing, RuntimeGameState, Vector } from "@/engine/types";
-import { PointerMode } from "@/engine/input/pointer";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
 import { getColorOptions } from "@/components/ColorGrid";
@@ -30,10 +29,6 @@ export function Game({ gameDirectory }: GameProps) {
     null
   );
   const palette = useMemo(() => getColorOptions(), []);
-  const [pointerMode, setPointerMode] = useState<PointerMode>("pointer");
-  const [paintColor, setPaintColor] = useState<string>(
-    palette[0] ?? "#000000"
-  );
   const [imageVersions, setImageVersions] = useState<Record<string, number>>(
     {}
   );
@@ -91,16 +86,6 @@ export function Game({ gameDirectory }: GameProps) {
     setActiveBlueprintName(newBlueprint.name);
   };
 
-  const handlePointerModeChange = (mode: PointerMode) => {
-    setPointerMode(mode);
-    engine.setPointerMode(mode);
-  };
-
-  const handlePaintColorChange = (color: string) => {
-    setPaintColor(color);
-    engine.setPaintColor(color);
-  };
-
   const handleCloneSelection = () => {
     if (selectedThingIds.length === 0) {
       return;
@@ -151,13 +136,14 @@ export function Game({ gameDirectory }: GameProps) {
         gameDirectory={gameDirectory}
         onSelectBlueprint={setActiveBlueprintName}
       >
-        <GameCanvas canvasRef={canvasRef} pointerMode={pointerMode} />
+        <GameCanvas canvasRef={canvasRef} />
       </DragAndDrop>
       {activeBlueprintName ? (
         <EditPanel
           blueprintName={activeBlueprintName}
           subscribe={subscribe}
           onRename={setActiveBlueprintName}
+          engine={engine}
           gameDirectory={gameDirectory}
           imageVersions={imageVersions}
           onClone={handleCloneSelection}
@@ -173,10 +159,6 @@ export function Game({ gameDirectory }: GameProps) {
             onSelectBlueprint={handleSelectBlueprint}
             onAddBlueprint={handleAddBlueprint}
             gameDirectory={gameDirectory}
-            pointerMode={pointerMode}
-            onChangePointerMode={handlePointerModeChange}
-            paintColor={paintColor}
-            onChangePaintColor={handlePaintColorChange}
             imageVersions={imageVersions}
           />
         </div>

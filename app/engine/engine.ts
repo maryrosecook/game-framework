@@ -1,7 +1,6 @@
-import { InputManager, PointerInputEvent } from "./input";
+import { InputManager } from "./input";
 import { physicsStep } from "./physics";
 import { renderGame } from "./render";
-import type { PaintOverlay } from "./render";
 import {
   Blueprint,
   BlueprintData,
@@ -32,7 +31,6 @@ import { createThingProxy } from "./proxy";
 import { getBlueprintImageUrl } from "@/lib/images";
 import { loadImages } from "./imageLoader";
 import {
-  DEFAULT_IMAGE_SIZE,
   EditableImageRecord,
   extractFileName,
   EditableImageStore,
@@ -43,10 +41,7 @@ import {
   findTopThingAtPoint,
   getWorldPointFromClient as getPointerWorldPointFromClient,
 } from "./input/pointer";
-import {
-  PointerInteractionContext,
-  PointerMode,
-} from "./input/pointer/types";
+import { PointerInteractionContext } from "./input/pointer/types";
 import { createThingId } from "@/lib/id";
 
 const DUPLICATE_WORLD_OFFSET = 20;
@@ -151,12 +146,6 @@ export class GameEngine {
   private editableImageStore = new EditableImageStore((record) =>
     this.notifyImagePersistListeners(record)
   );
-  private pointerMode: PointerMode = "pointer";
-  private paintColor = "#000000";
-  private paintHover: {
-    thingId: string;
-    pixel: { x: number; y: number };
-  } | null = null;
   private editingThingIds = new Set<string>();
   private cameraPauseReasons = new Set<CameraPauseReason>();
   private pointerInterpreter = createPointerInterpreter();
@@ -174,8 +163,6 @@ export class GameEngine {
       this.blueprintImages.clear();
       this.blueprintImageLoadVersion = 0;
       this.editableImageStore.reset();
-      this.pointerMode = "pointer";
-      this.paintColor = "#000000";
       if (this.persistHandle) {
         clearTimeout(this.persistHandle);
         this.persistHandle = null;
@@ -250,22 +237,6 @@ export class GameEngine {
     this.notify();
   }
 
-  setPointerMode(mode: PointerMode) {
-    this.pointerMode = mode;
-  }
-
-  getPointerMode() {
-    return this.pointerMode;
-  }
-
-  setPaintColor(color: string) {
-    this.paintColor = color;
-  }
-
-  getPaintColor() {
-    return this.paintColor;
-  }
-
   duplicateThingsWithIds(selectedIds: string[], worldPoint: Vector): string[] {
     const duplicates = this.duplicateSelection(selectedIds, worldPoint);
     if (duplicates.length === 0) {
@@ -311,8 +282,6 @@ export class GameEngine {
       clearTimeout(this.persistHandle);
       this.persistHandle = null;
     }
-    this.pointerMode = "pointer";
-    this.paintColor = "#000000";
     this.ready = false;
   }
 
@@ -633,8 +602,7 @@ export class GameEngine {
       { ctx: this.ctx },
       gameContext,
       this.blueprintLookup,
-      (thing, blueprint) => this.getImageForThing(thing, blueprint),
-      this.buildPaintOverlay()
+      (thing, blueprint) => this.getImageForThing(thing, blueprint)
     );
     this.notify();
   }
@@ -647,42 +615,7 @@ export class GameEngine {
     }
 
     const context = this.createPointerInteractionContext();
-    this.processPaintHover(events, context);
     this.pointerInterpreter.process(events, () => this.gameState, context);
-  }
-
-  private processPaintHover(
-    events: PointerInputEvent[],
-    context: PointerInteractionContext
-  ) {
-    if (this.pointerMode !== "paint") {
-      this.paintHover = null;
-      return;
-    }
-
-    const selectedId = this.gameState.selectedThingId;
-    for (const event of events) {
-      if (event.type === "move") {
-        const worldPoint = context.getWorldPoint(event.clientX, event.clientY);
-        if (!worldPoint || !selectedId) {
-          this.paintHover = null;
-          continue;
-        }
-        const hit = context.hitTest(worldPoint);
-        if (!hit || hit.id !== selectedId) {
-          this.paintHover = null;
-          continue;
-        }
-        const pixel = this.worldPointToPixel(worldPoint, hit);
-        if (!pixel) {
-          this.paintHover = null;
-          continue;
-        }
-        this.paintHover = { thingId: hit.id, pixel };
-      } else if (event.type === "leave" || event.type === "cancel") {
-        this.paintHover = null;
-      }
-    }
   }
 
   private createPointerInteractionContext(): PointerInteractionContext {
@@ -699,10 +632,6 @@ export class GameEngine {
         this.inputManager?.capturePointer(pointerId),
       releasePointer: (pointerId) =>
         this.inputManager?.releasePointerCapture(pointerId),
-      pointerMode: this.pointerMode,
-      paintColor: this.paintColor,
-      paintAt: (thing, worldPoint, previousWorldPoint) =>
-        this.paintAt(thing, worldPoint, previousWorldPoint),
     };
   }
 
@@ -766,47 +695,96 @@ export class GameEngine {
     return duplicates;
   }
 
-  private paintAt(
-    thing: RuntimeThing,
-    worldPoint: Vector,
-    previousWorldPoint?: Vector | null
-  ) {
-    const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
+  getEditableImageForBlueprint(
+    blueprintName: string
+  ): EditableImageRecord | null {
+    const blueprint = this.blueprintLookup.get(blueprintName);
     if (!blueprint) {
-      return;
+      return null;
     }
+    const existingSrc = getBlueprintImageUrl(
+      this.gameDirectory,
+      blueprint.image
+    );
+    if (!existingSrc) {
+      return null;
+    }
+    return this.getOrCreateImageRecord(existingSrc);
+  }
 
-    const record = this.ensureEditableImageForBlueprint(blueprint);
+  ensureEditableImageForBlueprint(
+    blueprintName: string
+  ): EditableImageRecord | null {
+    const blueprint = this.blueprintLookup.get(blueprintName);
+    if (!blueprint) {
+      return null;
+    }
+    return this.ensureEditableImageRecordForBlueprint(blueprint);
+  }
+
+  paintBlueprintLine(
+    blueprintName: string,
+    start: { x: number; y: number },
+    end: { x: number; y: number },
+    color: string
+  ) {
+    const record = this.ensureEditableImageForBlueprint(blueprintName);
     if (!record) {
       return;
     }
-
-    const canvas = record.canvas;
-    const ctx = canvas.getContext("2d");
+    const ctx = record.canvas.getContext("2d");
     if (!ctx) {
       return;
     }
     ctx.imageSmoothingEnabled = false;
-
-    const currentPixel = this.worldPointToPixel(worldPoint, thing);
-    if (!currentPixel) {
-      return;
-    }
-
-    const previousPixel = previousWorldPoint
-      ? this.worldPointToPixel(previousWorldPoint, thing)
-      : null;
-
-    if (previousPixel) {
-      this.drawLine(ctx, previousPixel, currentPixel, this.paintColor);
-    } else {
-      this.drawPixel(ctx, currentPixel, this.paintColor);
-    }
-
+    this.drawLine(
+      ctx,
+      this.clampPixel(start, record.canvas),
+      this.clampPixel(end, record.canvas),
+      color
+    );
     this.markImageDirty(record);
   }
 
-  private ensureEditableImageForBlueprint(
+  clearBlueprintImage(blueprintName: string) {
+    const record = this.ensureEditableImageForBlueprint(blueprintName);
+    if (!record) {
+      return;
+    }
+    const ctx = record.canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+    ctx.clearRect(0, 0, record.canvas.width, record.canvas.height);
+    this.markImageDirty(record);
+  }
+
+  importBlueprintImage(
+    blueprintName: string,
+    source: CanvasImageSource
+  ): boolean {
+    const record = this.ensureEditableImageForBlueprint(blueprintName);
+    if (!record) {
+      return false;
+    }
+    const ctx = record.canvas.getContext("2d");
+    if (!ctx) {
+      return false;
+    }
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, record.canvas.width, record.canvas.height);
+    ctx.drawImage(
+      source,
+      0,
+      0,
+      record.canvas.width,
+      record.canvas.height
+    );
+    this.markImageDirty(record);
+    return true;
+  }
+
+  private ensureEditableImageRecordForBlueprint(
     blueprint: Blueprint
   ): EditableImageRecord | null {
     const existingSrc = getBlueprintImageUrl(
@@ -877,29 +855,15 @@ export class GameEngine {
     return record;
   }
 
-  private worldPointToPixel(worldPoint: Vector, thing: RuntimeThing) {
-    const size = { width: DEFAULT_IMAGE_SIZE, height: DEFAULT_IMAGE_SIZE };
-
-    const localX = (worldPoint.x - thing.x) / thing.width;
-    const localY = (worldPoint.y - thing.y) / thing.height;
-    if (localX < 0 || localX > 1 || localY < 0 || localY > 1) {
-      return null;
-    }
-
-    const pixelX = Math.floor(localX * size.width);
-    const pixelY = Math.floor(localY * size.height);
-
-    const clampedX = Math.min(size.width - 1, Math.max(0, pixelX));
-    const clampedY = Math.min(size.height - 1, Math.max(0, pixelY));
-
-    return { x: clampedX, y: clampedY };
-  }
-
   private drawPixel(
     ctx: CanvasRenderingContext2D,
     pixel: { x: number; y: number },
     color: string
   ) {
+    if (color === "transparent") {
+      ctx.clearRect(pixel.x, pixel.y, 1, 1);
+      return;
+    }
     ctx.fillStyle = color;
     ctx.fillRect(pixel.x, pixel.y, 1, 1);
   }
@@ -927,6 +891,13 @@ export class GameEngine {
     }
   }
 
+  private clampPixel(pixel: { x: number; y: number }, canvas: HTMLCanvasElement) {
+    return {
+      x: Math.max(0, Math.min(canvas.width - 1, Math.round(pixel.x))),
+      y: Math.max(0, Math.min(canvas.height - 1, Math.round(pixel.y))),
+    };
+  }
+
   private markImageDirty(record: EditableImageRecord) {
     this.editableImageStore.markDirty(record);
   }
@@ -939,22 +910,6 @@ export class GameEngine {
     for (const listener of this.imagePersistListeners) {
       listener(payload);
     }
-  }
-
-  private buildPaintOverlay(): PaintOverlay | undefined {
-    if (this.pointerMode !== "paint") {
-      return undefined;
-    }
-    const selectedThingId = this.gameState.selectedThingId ?? null;
-    return {
-      selectedThingId,
-      hoverPixel:
-        this.paintHover && this.paintHover.thingId === selectedThingId
-          ? this.paintHover.pixel
-          : null,
-      color: this.paintColor,
-      gridColor: "rgba(120,120,120,0.8)",
-    };
   }
 
   private runInputHandlers(game: GameContext, pendingRemovals: Set<string>) {

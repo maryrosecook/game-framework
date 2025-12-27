@@ -11,9 +11,6 @@ import {
 export function createResizeStrategy(): PointerInteractionStrategy {
   return {
     canStart({ worldPoint, state, context }) {
-      if (context.pointerMode !== "pointer") {
-        return null;
-      }
       const primaryId = state.selectedThingId;
       if (!primaryId) {
         return null;

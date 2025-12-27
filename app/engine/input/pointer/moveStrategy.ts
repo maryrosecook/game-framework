@@ -10,9 +10,6 @@ import { nextSelectedIdsForClick } from "./selectionHelpers";
 export function createMoveStrategy(): PointerInteractionStrategy {
   return {
     canStart({ event, worldPoint, hit, state, context }) {
-      if (context.pointerMode !== "pointer") {
-        return null;
-      }
       if (!hit) {
         return null;
       }
