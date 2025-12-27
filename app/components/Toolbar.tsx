@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Blueprint } from "@/engine/types";
 import { Button } from "@/components/ui/button";
-import { MousePointer2, PenTool, Plus } from "lucide-react";
+import { MousePointer2, PenTool, Plus, RotateCw } from "lucide-react";
 import { getBlueprintImageUrl } from "@/lib/images";
 import { PointerMode } from "@/engine/input/pointer";
 import { getColorOptions } from "@/components/ColorGrid";
@@ -54,15 +54,10 @@ export function Toolbar({
           variant="outline"
           size="icon"
           onClick={() => window.location.reload()}
-          aria-label="Reload window"
+          aria-label="Restart"
           className="border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
         >
-          <img
-            src="/icons/reload.png"
-            alt="Reload"
-            className="h-4 w-4"
-            style={{ imageRendering: "pixelated" }}
-          />
+          <RotateCw className="size-4" />
         </Button>
         <ModeToggleButton
           icon={<MousePointer2 className="size-4" />}
