@@ -746,6 +746,89 @@ export class GameEngine {
     this.markImageDirty(record);
   }
 
+  paintBlueprintFill(
+    blueprintName: string,
+    start: { x: number; y: number },
+    color: string
+  ) {
+    const record = this.ensureEditableImageForBlueprint(blueprintName);
+    if (!record) {
+      return;
+    }
+    const ctx = record.canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+
+    const canvas = record.canvas;
+    const clamped = this.clampPixel(start, canvas);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const { data, width, height } = imageData;
+    const targetOffset = (clamped.y * width + clamped.x) * 4;
+    const target = {
+      r: data[targetOffset],
+      g: data[targetOffset + 1],
+      b: data[targetOffset + 2],
+      a: data[targetOffset + 3],
+    };
+    const replacement = this.parseColorToRgba(color);
+    if (!replacement) {
+      return;
+    }
+    if (
+      target.r === replacement.r &&
+      target.g === replacement.g &&
+      target.b === replacement.b &&
+      target.a === replacement.a
+    ) {
+      return;
+    }
+
+    const visited = new Array<boolean>(width * height).fill(false);
+    const queue: Array<{ x: number; y: number }> = [clamped];
+
+    while (queue.length > 0) {
+      const current = queue.pop();
+      if (!current) {
+        break;
+      }
+      const index = current.y * width + current.x;
+      if (visited[index]) {
+        continue;
+      }
+      visited[index] = true;
+      const offset = index * 4;
+      if (
+        data[offset] !== target.r ||
+        data[offset + 1] !== target.g ||
+        data[offset + 2] !== target.b ||
+        data[offset + 3] !== target.a
+      ) {
+        continue;
+      }
+      data[offset] = replacement.r;
+      data[offset + 1] = replacement.g;
+      data[offset + 2] = replacement.b;
+      data[offset + 3] = replacement.a;
+
+      if (current.x > 0) {
+        queue.push({ x: current.x - 1, y: current.y });
+      }
+      if (current.x < width - 1) {
+        queue.push({ x: current.x + 1, y: current.y });
+      }
+      if (current.y > 0) {
+        queue.push({ x: current.x, y: current.y - 1 });
+      }
+      if (current.y < height - 1) {
+        queue.push({ x: current.x, y: current.y + 1 });
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    this.markImageDirty(record);
+  }
+
   clearBlueprintImage(blueprintName: string) {
     const record = this.ensureEditableImageForBlueprint(blueprintName);
     if (!record) {
@@ -889,6 +972,26 @@ export class GameEngine {
       const y = Math.round(start.y + (end.y - start.y) * t);
       this.drawPixel(ctx, { x, y }, color);
     }
+  }
+
+  private parseColorToRgba(
+    color: string
+  ): { r: number; g: number; b: number; a: number } | null {
+    const normalized = color.trim();
+    if (normalized === "transparent") {
+      return { r: 0, g: 0, b: 0, a: 0 };
+    }
+    if (!normalized.startsWith("#") || normalized.length !== 7) {
+      return null;
+    }
+    const hex = normalized.slice(1);
+    const r = Number.parseInt(hex.slice(0, 2), 16);
+    const g = Number.parseInt(hex.slice(2, 4), 16);
+    const b = Number.parseInt(hex.slice(4, 6), 16);
+    if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+      return null;
+    }
+    return { r, g, b, a: 255 };
   }
 
   private clampPixel(pixel: { x: number; y: number }, canvas: HTMLCanvasElement) {
