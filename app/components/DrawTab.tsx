@@ -6,12 +6,9 @@ import {
   useMemo,
   useRef,
   useState,
-  type ChangeEvent,
   type DragEvent,
   type PointerEvent,
 } from "react";
-import { Upload, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { getColorOptions } from "@/components/ColorGrid";
 import type { GameEngine } from "@/engine/engine";
 import { DEFAULT_IMAGE_SIZE } from "@/engine/editableImages";
@@ -50,9 +47,7 @@ export function DrawTab({
     null
   );
   const [importError, setImportError] = useState<string | null>(null);
-  const [isDraggingFile, setIsDraggingFile] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const isDrawingRef = useRef(false);
   const lastPixelRef = useRef<Pixel | null>(null);
 
@@ -239,11 +234,6 @@ export function DrawTab({
     [stopDrawing]
   );
 
-  const handleClear = useCallback(() => {
-    engine.clearBlueprintImage(blueprint.name);
-    renderCanvas();
-  }, [blueprint.name, engine, renderCanvas]);
-
   const handleImportFile = useCallback(
     async (file: File) => {
       if (!file.type.startsWith("image/")) {
@@ -276,23 +266,9 @@ export function DrawTab({
     [blueprint.name, engine, renderCanvas]
   );
 
-  const handleFileChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.item(0);
-      if (file) {
-        void handleImportFile(file);
-      }
-      if (event.target.value) {
-        event.target.value = "";
-      }
-    },
-    [handleImportFile]
-  );
-
   const handleDrop = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
       event.preventDefault();
-      setIsDraggingFile(false);
       const file = event.dataTransfer.files.item(0);
       if (file) {
         void handleImportFile(file);
@@ -304,39 +280,23 @@ export function DrawTab({
   const handleDragOver = useCallback(
     (event: DragEvent<HTMLDivElement>) => {
       event.preventDefault();
-      setIsDraggingFile(true);
-    },
-    []
-  );
-
-  const handleDragLeave = useCallback(
-    (event: DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-      setIsDraggingFile(false);
     },
     []
   );
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col items-center gap-2">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
-          <span>Selected color</span>
-          <ColorSwatch color={selectedColor} />
-        </div>
+      <div className="flex flex-col gap-2">
         <div
-          className={`rounded-xl border border-slate-200 bg-white p-2 shadow-inner ${
-            isDraggingFile ? "ring-2 ring-blue-300 ring-offset-1" : ""
-          }`}
+          className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
         >
           <canvas
             ref={canvasRef}
             width={DISPLAY_SIZE}
             height={DISPLAY_SIZE}
-            className="block cursor-crosshair touch-none"
+            className="block w-full h-auto cursor-crosshair touch-none"
             style={{ imageRendering: "pixelated" }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -345,31 +305,6 @@ export function DrawTab({
             onPointerCancel={handlePointerCancel}
           />
         </div>
-        <p className="text-[10px] text-slate-400">
-          16x16 pixels. Click and drag to draw.
-        </p>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Upload className="size-4" />
-          Import 16x16
-        </Button>
-        <Button type="button" variant="outline" onClick={handleClear}>
-          <RotateCcw className="size-4" />
-          Clear
-        </Button>
       </div>
 
       {importError ? (
@@ -396,15 +331,30 @@ function ColorPalette({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-xs uppercase tracking-wide text-slate-500">
-        Color palette
-      </p>
-      <div className="grid grid-cols-4 gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div className="grid grid-cols-5 gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2">
+        {colors.map((color) => {
+          const isSelected = color === selectedColor;
+          return (
+            <button
+              key={color}
+              type="button"
+              className={`relative h-10 w-10 cursor-pointer overflow-hidden rounded-lg border transition ${
+                isSelected
+                  ? "border-2 border-blue-600 ring-2 ring-blue-300"
+                  : "border-slate-200 hover:border-slate-400"
+              }`}
+              style={{ backgroundColor: color }}
+              onClick={() => onColorSelect(color)}
+              aria-label={`Select color ${color}`}
+            >
+            </button>
+          );
+        })}
         <button
           type="button"
-          className={`group relative h-10 w-10 overflow-hidden rounded-lg border transition ${
+          className={`relative h-10 w-10 cursor-pointer overflow-hidden rounded-lg border transition ${
             selectedColor === "transparent"
-              ? "border-slate-500 ring-2 ring-slate-300"
+              ? "border-2 border-blue-600 ring-2 ring-blue-300"
               : "border-slate-200 hover:border-slate-400"
           }`}
           style={{ backgroundColor: "#e5e7eb" }}
@@ -419,60 +369,8 @@ function ColorPalette({
             }}
           />
         </button>
-
-        {colors.map((color) => {
-          const isSelected = color === selectedColor;
-          return (
-            <button
-              key={color}
-              type="button"
-              className={`group relative h-10 w-10 overflow-hidden rounded-lg border transition ${
-                isSelected
-                  ? "border-slate-500 ring-2 ring-slate-300"
-                  : "border-slate-200 hover:border-slate-400"
-              }`}
-              style={{ backgroundColor: color }}
-              onClick={() => onColorSelect(color)}
-              aria-label={`Select color ${color}`}
-            >
-              {!isSelected ? (
-                <span
-                  className="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-50"
-                  style={{ backgroundColor: selectedColor }}
-                />
-              ) : null}
-            </button>
-          );
-        })}
       </div>
-      <p className="text-[10px] text-slate-400 text-center">
-        {colors.length} colors + eraser
-      </p>
     </div>
-  );
-}
-
-function ColorSwatch({ color }: { color: string }) {
-  return (
-    <span className="relative inline-flex h-4 w-4 overflow-hidden rounded border border-slate-300">
-      {color === "transparent" ? (
-        <span
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%)",
-            backgroundSize: "6px 6px",
-            backgroundPosition: "0 0, 0 3px, 3px -3px, -3px 0px",
-            backgroundColor: "#ffffff",
-          }}
-        />
-      ) : (
-        <span
-          className="absolute inset-0"
-          style={{ backgroundColor: color }}
-        />
-      )}
-    </span>
   );
 }
 
@@ -499,15 +397,17 @@ function drawGrid(
   ctx.save();
   ctx.strokeStyle = "rgba(148, 163, 184, 0.6)";
   ctx.lineWidth = 1;
+  const max = gridSize * pixelSize;
   for (let i = 0; i <= gridSize; i += 1) {
-    const pos = Math.round(i * pixelSize) + 0.5;
+    const pos =
+      i === gridSize ? max - 0.5 : Math.round(i * pixelSize) + 0.5;
     ctx.beginPath();
     ctx.moveTo(pos, 0);
-    ctx.lineTo(pos, gridSize * pixelSize);
+    ctx.lineTo(pos, max);
     ctx.stroke();
     ctx.beginPath();
     ctx.moveTo(0, pos);
-    ctx.lineTo(gridSize * pixelSize, pos);
+    ctx.lineTo(max, pos);
     ctx.stroke();
   }
   ctx.restore();
