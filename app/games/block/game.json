@@ -622,7 +622,9 @@
       "z": 2,
       "color": "#000000",
       "shape": "rectangle",
-      "physicsType": "static"
+      "physicsType": "static",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "player",
@@ -632,7 +634,9 @@
       "color": "#ff0000",
       "shape": "rectangle",
       "physicsType": "dynamic",
-      "image": "player-paint-1765132959721.png"
+      "image": "player-paint-1765132959721.png",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "blueprint-3",
@@ -641,7 +645,9 @@
       "z": 1,
       "color": "#666666",
       "shape": "rectangle",
-      "physicsType": "ambient"
+      "physicsType": "ambient",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "blueprint-4",
@@ -650,7 +656,9 @@
       "z": 1,
       "color": "#000000",
       "shape": "rectangle",
-      "physicsType": "ambient"
+      "physicsType": "ambient",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "blueprint-5",
@@ -659,7 +667,9 @@
       "z": 1,
       "color": "#8b4500",
       "shape": "rectangle",
-      "physicsType": "ambient"
+      "physicsType": "ambient",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "blueprint-6",
@@ -669,7 +679,9 @@
       "color": "#ffd700",
       "shape": "rectangle",
       "physicsType": "static",
-      "image": "blueprint-6-paint-1765133769558.png"
+      "image": "blueprint-6-paint-1765133769558.png",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "blueprint-7",
@@ -678,7 +690,9 @@
       "z": 1,
       "color": "#ff6b6b",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "dynamic",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "blueprint-8",
@@ -688,7 +702,9 @@
       "color": "#ffb3b3",
       "shape": "rectangle",
       "physicsType": "ambient",
-      "image": "blueprint-8-1766623323309.png"
+      "image": "blueprint-8-1766623323309.png",
+      "weight": 1,
+      "bounce": 0
     }
   ],
   "camera": {

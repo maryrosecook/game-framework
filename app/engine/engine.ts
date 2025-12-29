@@ -773,13 +773,7 @@ export class GameEngine {
     }
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, record.canvas.width, record.canvas.height);
-    ctx.drawImage(
-      source,
-      0,
-      0,
-      record.canvas.width,
-      record.canvas.height
-    );
+    ctx.drawImage(source, 0, 0, record.canvas.width, record.canvas.height);
     this.markImageDirty(record);
     return true;
   }
@@ -891,7 +885,10 @@ export class GameEngine {
     }
   }
 
-  private clampPixel(pixel: { x: number; y: number }, canvas: HTMLCanvasElement) {
+  private clampPixel(
+    pixel: { x: number; y: number },
+    canvas: HTMLCanvasElement
+  ) {
     return {
       x: Math.max(0, Math.min(canvas.width - 1, Math.round(pixel.x))),
       y: Math.max(0, Math.min(canvas.height - 1, Math.round(pixel.y))),
@@ -1544,6 +1541,8 @@ function blueprintToBlueprintData(
     image: entry.image,
     shape: entry.shape,
     physicsType: entry.physicsType,
+    weight: entry.weight,
+    bounce: entry.bounce,
     behaviors: entry.behaviors,
   };
 }

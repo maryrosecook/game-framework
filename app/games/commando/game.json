@@ -358,7 +358,9 @@
       "z": 1,
       "color": "#99d6ff",
       "shape": "triangle",
-      "physicsType": "dynamic"
+      "physicsType": "dynamic",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "wall",
@@ -367,7 +369,9 @@
       "z": 1,
       "color": "#b3b3b3",
       "shape": "rectangle",
-      "physicsType": "static"
+      "physicsType": "static",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "bullet",
@@ -376,7 +380,9 @@
       "z": 1,
       "color": "#ff6699",
       "shape": "rectangle",
-      "physicsType": "ambient"
+      "physicsType": "ambient",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "enemy",
@@ -386,7 +392,9 @@
       "color": "#ff6699",
       "shape": "circle",
       "physicsType": "dynamic",
-      "image": "enemy-paint-1765091410453.png"
+      "image": "enemy-paint-1765091410453.png",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "exit",
@@ -395,7 +403,9 @@
       "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle",
-      "physicsType": "static"
+      "physicsType": "static",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "blueprint-6",
@@ -404,7 +414,9 @@
       "z": 1,
       "color": "#ff0000",
       "shape": "circle",
-      "physicsType": "dynamic"
+      "physicsType": "dynamic",
+      "weight": 1,
+      "bounce": 0
     }
   ],
   "camera": {

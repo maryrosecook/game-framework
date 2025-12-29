@@ -253,6 +253,20 @@ export function BlueprintTab({
           ]}
           onChange={(value) => handleUpdate("physicsType", value)}
         />
+        <div className="grid grid-cols-2 gap-2">
+          <SelectField
+            label="Weight"
+            value={resolveNumericOption(blueprint.weight, WEIGHT_OPTIONS)}
+            options={WEIGHT_OPTIONS}
+            onChange={(value) => handleUpdate("weight", Number(value))}
+          />
+          <SelectField
+            label="Bounce"
+            value={resolveNumericOption(blueprint.bounce, BOUNCE_OPTIONS)}
+            options={BOUNCE_OPTIONS}
+            onChange={(value) => handleUpdate("bounce", Number(value))}
+          />
+        </div>
         <ColorSelect
           label="Color"
           value={blueprint.color}
@@ -288,6 +302,32 @@ function buildBlueprintPropertyAction(
     case "z":
       if (typeof value !== "number") {
         throw new Error("Blueprint dimension must be a number.");
+      }
+      return {
+        type: "setBlueprintProperty",
+        blueprintName: name,
+        property,
+        value,
+      };
+    case "weight":
+      if (typeof value !== "number" || !Number.isFinite(value)) {
+        throw new Error("Weight must be a number.");
+      }
+      if (!WEIGHT_VALUES.includes(value)) {
+        throw new Error("Weight must be low, medium, or high.");
+      }
+      return {
+        type: "setBlueprintProperty",
+        blueprintName: name,
+        property,
+        value,
+      };
+    case "bounce":
+      if (typeof value !== "number" || !Number.isFinite(value)) {
+        throw new Error("Bounce must be a number.");
+      }
+      if (!BOUNCE_VALUES.includes(value)) {
+        throw new Error("Bounce must be none, some, or lots.");
       }
       return {
         type: "setBlueprintProperty",
@@ -339,4 +379,39 @@ function buildBlueprintPropertyAction(
     default:
       throw new Error("Unknown blueprint property.");
   }
+}
+
+const WEIGHT_OPTIONS = [
+  { label: "Low", value: "1" },
+  { label: "Medium", value: "3" },
+  { label: "High", value: "6" },
+];
+
+const BOUNCE_OPTIONS = [
+  { label: "None", value: "0" },
+  { label: "Some", value: "0.5" },
+  { label: "Lots", value: "1" },
+];
+
+const WEIGHT_VALUES = WEIGHT_OPTIONS.map((option) => Number(option.value));
+const BOUNCE_VALUES = BOUNCE_OPTIONS.map((option) => Number(option.value));
+
+function resolveNumericOption(
+  value: number,
+  options: { value: string }[]
+) {
+  if (!Number.isFinite(value)) {
+    return options[0].value;
+  }
+  let closest = options[0].value;
+  let bestDistance = Infinity;
+  for (const option of options) {
+    const candidate = Number(option.value);
+    const distance = Math.abs(value - candidate);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      closest = option.value;
+    }
+  }
+  return closest;
 }

@@ -38,7 +38,8 @@
 ## Data modelling
 
 - Game objects are things, and inherit from a blueprint.
-- Blueprints specify image, shape, color, physics type and behavior.
+- Blueprints specify image, shape, color, physics type, weight, bounce, and
+  behavior.
 - Things override x, y, width, height, angle of their blueprint.
 
 ## Game Engine and Runtime Flow
