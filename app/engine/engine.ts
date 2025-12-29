@@ -856,13 +856,7 @@ export class GameEngine {
     }
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, record.canvas.width, record.canvas.height);
-    ctx.drawImage(
-      source,
-      0,
-      0,
-      record.canvas.width,
-      record.canvas.height
-    );
+    ctx.drawImage(source, 0, 0, record.canvas.width, record.canvas.height);
     this.markImageDirty(record);
     return true;
   }
@@ -1647,6 +1641,8 @@ function blueprintToBlueprintData(
     image: entry.image,
     shape: entry.shape,
     physicsType: entry.physicsType,
+    weight: entry.weight,
+    bounce: entry.bounce,
     behaviors: entry.behaviors,
   };
 }

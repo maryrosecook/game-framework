@@ -23,7 +23,9 @@
       "color": "#000000",
       "image": "blueprint-1-1766269758478.png",
       "shape": "rectangle",
-      "physicsType": "dynamic"
+      "physicsType": "dynamic",
+      "weight": 1,
+      "bounce": 0
     }
   ],
   "camera": {

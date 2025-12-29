@@ -1,5 +1,8 @@
 import { Blueprint, PhysicsType, Shape } from "@/engine/types";
 
+export const DEFAULT_BLUEPRINT_WEIGHT = 1;
+export const DEFAULT_BLUEPRINT_BOUNCE = 0;
+
 const SLUG_PATTERN = /[^a-z0-9]+/g;
 
 export function blueprintSlug(name: string) {
@@ -16,7 +19,7 @@ export function blueprintTemplate() {
 
 const DEFAULTS: Pick<
   Blueprint,
-  "width" | "height" | "z" | "shape" | "physicsType" | "image"
+  "width" | "height" | "z" | "shape" | "physicsType" | "image" | "weight" | "bounce"
 > = {
   width: 100,
   height: 100,
@@ -24,6 +27,8 @@ const DEFAULTS: Pick<
   shape: "rectangle",
   physicsType: "dynamic",
   image: undefined,
+  weight: DEFAULT_BLUEPRINT_WEIGHT,
+  bounce: DEFAULT_BLUEPRINT_BOUNCE,
 };
 
 export function createBlueprint(
@@ -31,6 +36,8 @@ export function createBlueprint(
 ): Blueprint {
   const shape: Shape = values.shape ?? DEFAULTS.shape;
   const physicsType: PhysicsType = values.physicsType ?? DEFAULTS.physicsType;
+  const weight = values.weight ?? DEFAULTS.weight;
+  const bounce = values.bounce ?? DEFAULTS.bounce;
   return {
     ...DEFAULTS,
     color: values.color ?? "#888888",
@@ -38,6 +45,8 @@ export function createBlueprint(
     ...values,
     shape,
     physicsType,
+    weight,
+    bounce,
   };
 }
 

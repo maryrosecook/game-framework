@@ -11,7 +11,8 @@
 - 2D game framework with basic SAT physics.
 - Game objects are called things.
 - Things inherit from a blueprint.
-- Blueprints specify image, shape, color, physics type and behavior.
+- Blueprints specify image, shape, color, physics type, weight, bounce, and
+  behavior.
 - A blueprint's behavior is implemented in
   `app/games/[game-name]/blueprints/[blueprint-name].ts`.
 - Every blueprint must have a [blueprint-name].ts file. However, it can be
@@ -91,6 +92,7 @@ export default function createBlueprint(data: BlueprintData<BlueprintData>) {
   - z, width, height
   - An image to render
   - A physics type
+  - A weight (mass) and bounce (restitution)
 - Blueprint API
   - update, render, input, collision, getAdjustedVelocity
   - All called every frame.
@@ -104,6 +106,8 @@ export default function createBlueprint(data: BlueprintData<BlueprintData>) {
   - static - solid and does not move
   - dynamic - solid and moves when pushed
   - ambient - registers collisions, but other things pass through
+- Blueprints define weight (mass, independent of size) and bounce
+  (coefficient of restitution).
 - Things have a velocityX and velocityY.
 - Things have a isGrounded flag to indicates if they're on solid ground.
 - Things are automatically kept from overlapping by the physics engine.

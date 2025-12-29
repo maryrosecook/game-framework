@@ -34,7 +34,9 @@
       "z": 2,
       "color": "#ffffff",
       "shape": "rectangle",
-      "physicsType": "ambient"
+      "physicsType": "ambient",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "target",
@@ -44,7 +46,9 @@
       "color": "#ffd700",
       "shape": "rectangle",
       "physicsType": "ambient",
-      "image": "target-1765948277594.png"
+      "image": "target-1765948277594.png",
+      "weight": 1,
+      "bounce": 0
     },
     {
       "name": "crosshair",
@@ -53,7 +57,9 @@
       "z": 100,
       "color": "#c7c7c7",
       "shape": "rectangle",
-      "physicsType": "ambient"
+      "physicsType": "ambient",
+      "weight": 1,
+      "bounce": 0
     }
   ],
   "camera": {

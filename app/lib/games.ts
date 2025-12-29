@@ -1,17 +1,20 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import {
+  BlueprintBehaviors,
   BlueprintData,
   GameFile,
   PersistedThing,
   PhysicsType,
   Shape,
+  TriggerName,
 } from "@/engine/types";
 
 const ROOT = process.cwd();
 const GAMES_ROOT = path.join(ROOT, "app", "games");
 const EDITOR_SETTINGS_PATH = path.join(ROOT, "data", "editorSettings.json");
 const DEFAULT_BACKGROUND_COLOR = "#f8fafc";
+const MIN_BLUEPRINT_WEIGHT = 0.0001;
 
 const GAME_NAME_PATTERN = /[^a-z0-9]+/g;
 
@@ -171,42 +174,30 @@ async function fileExists(filePath: string) {
   }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
 export function isNotFoundError(
   error: unknown
 ): error is NodeJS.ErrnoException {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code?: unknown }).code === "ENOENT"
-  );
+  return isRecord(error) && "code" in error && error.code === "ENOENT";
 }
 
 function isExistingFileError(error: unknown): error is NodeJS.ErrnoException {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code?: unknown }).code === "EEXIST"
-  );
+  return isRecord(error) && "code" in error && error.code === "EEXIST";
 }
 
 function isEditorSettings(value: unknown): value is EditorSettings {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "currentGameDirectory" in value &&
-    typeof (value as { currentGameDirectory: unknown }).currentGameDirectory ===
-      "string"
-  );
+  return isRecord(value) && typeof value.currentGameDirectory === "string";
 }
 
 function isVector(value: unknown): value is { x: number; y: number } {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-  const record = value as { x?: unknown; y?: unknown };
-  return typeof record.x === "number" && typeof record.y === "number";
+  return (
+    isRecord(value) &&
+    typeof value.x === "number" &&
+    typeof value.y === "number"
+  );
 }
 
 function isShape(value: unknown): value is Shape {
@@ -217,19 +208,45 @@ function isPhysicsType(value: unknown): value is PhysicsType {
   return value === "dynamic" || value === "static" || value === "ambient";
 }
 
-function isThing(value: unknown): value is PersistedThing {
-  if (typeof value !== "object" || value === null) {
+function isTriggerName(value: string): value is TriggerName {
+  return (
+    value === "create" ||
+    value === "input" ||
+    value === "update" ||
+    value === "collision"
+  );
+}
+
+function isBlueprintBehaviors(value: unknown): value is BlueprintBehaviors {
+  if (!isRecord(value)) {
     return false;
   }
-  const record = value as Record<string, unknown>;
+  for (const [key, entry] of Object.entries(value)) {
+    if (!isTriggerName(key)) {
+      return false;
+    }
+    if (
+      !Array.isArray(entry) ||
+      !entry.every((item) => typeof item === "string")
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function isThing(value: unknown): value is PersistedThing {
+  if (!isRecord(value)) {
+    return false;
+  }
   const hasRequiredFields =
-    typeof record.id === "string" &&
-    typeof record.x === "number" &&
-    typeof record.y === "number" &&
-    typeof record.angle === "number" &&
-    typeof record.velocityX === "number" &&
-    typeof record.velocityY === "number" &&
-    typeof record.blueprintName === "string";
+    typeof value.id === "string" &&
+    typeof value.x === "number" &&
+    typeof value.y === "number" &&
+    typeof value.angle === "number" &&
+    typeof value.velocityX === "number" &&
+    typeof value.velocityY === "number" &&
+    typeof value.blueprintName === "string";
   if (!hasRequiredFields) {
     return false;
   }
@@ -239,64 +256,85 @@ function isThing(value: unknown): value is PersistedThing {
     "width" | "height"
   >)[] = ["width", "height"];
   const hasValidOptionalNumbers = numericOptionalKeys.every(
-    (key) => record[key] === undefined || typeof record[key] === "number"
+    (key) => value[key] === undefined || typeof value[key] === "number"
   );
   if (!hasValidOptionalNumbers) {
     return false;
   }
 
-  if (record.physicsType !== undefined && !isPhysicsType(record.physicsType)) {
+  if (value.physicsType !== undefined && !isPhysicsType(value.physicsType)) {
     return false;
   }
-  if (record.color !== undefined && typeof record.color !== "string") {
+  if (value.color !== undefined && typeof value.color !== "string") {
     return false;
   }
-  if (record.shape !== undefined) {
+  if (value.shape !== undefined) {
     return false;
   }
   return true;
 }
 
 function isBlueprintData(value: unknown): value is BlueprintData {
-  if (typeof value !== "object" || value === null) {
+  if (!isRecord(value)) {
     return false;
   }
-  const record = value as Record<string, unknown>;
-  return (
-    typeof record.name === "string" &&
-    typeof record.width === "number" &&
-    typeof record.height === "number" &&
-    typeof record.z === "number" &&
-    typeof record.color === "string" &&
-    isShape(record.shape) &&
-    isPhysicsType(record.physicsType) &&
-    (record.image === undefined || typeof record.image === "string")
-  );
+  if (
+    typeof value.name !== "string" ||
+    typeof value.width !== "number" ||
+    typeof value.height !== "number" ||
+    typeof value.z !== "number" ||
+    typeof value.color !== "string" ||
+    !isShape(value.shape) ||
+    !isPhysicsType(value.physicsType)
+  ) {
+    return false;
+  }
+  if (value.image !== undefined && typeof value.image !== "string") {
+    return false;
+  }
+  if (
+    typeof value.weight !== "number" ||
+    !Number.isFinite(value.weight) ||
+    value.weight < MIN_BLUEPRINT_WEIGHT
+  ) {
+    return false;
+  }
+  if (
+    typeof value.bounce !== "number" ||
+    !Number.isFinite(value.bounce) ||
+    value.bounce < 0 ||
+    value.bounce > 1
+  ) {
+    return false;
+  }
+  if (value.behaviors !== undefined && !isBlueprintBehaviors(value.behaviors)) {
+    return false;
+  }
+  return true;
 }
 
 export function isGameFile(value: unknown): value is GameFile {
-  if (!value || typeof value !== "object") {
+  if (!isRecord(value)) {
     return false;
   }
-  const record = value as Record<string, unknown>;
-  const hasValidId = typeof record.id === "number";
-  const hasCamera = isVector(record.camera);
+  const hasValidId = typeof value.id === "number";
+  const hasCamera = isVector(value.camera);
   const hasThings =
-    Array.isArray(record.things) &&
-    record.things.every((thing) => isThing(thing));
+    Array.isArray(value.things) &&
+    value.things.every((thing) => isThing(thing));
   const hasBlueprints =
-    Array.isArray(record.blueprints) &&
-    record.blueprints.every((bp) => isBlueprintData(bp));
+    Array.isArray(value.blueprints) &&
+    value.blueprints.every((bp) => isBlueprintData(bp));
   const hasBackgroundColor =
-    record.backgroundColor === undefined ||
-    typeof record.backgroundColor === "string" ||
-    record.clearColor === undefined ||
-    typeof record.clearColor === "string";
+    value.backgroundColor === undefined ||
+    typeof value.backgroundColor === "string" ||
+    value.clearColor === undefined ||
+    typeof value.clearColor === "string";
   const hasValidImage =
-    record.image === undefined ||
-    record.image === null ||
-    typeof record.image === "string";
-  const hasGravitySetting = typeof record.isGravityEnabled === "boolean";
+    value.image === undefined ||
+    value.image === null ||
+    typeof value.image === "string";
+  const hasGravitySetting = typeof value.isGravityEnabled === "boolean";
   return (
     hasValidId &&
     hasCamera &&

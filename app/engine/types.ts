@@ -91,6 +91,8 @@ export type BlueprintData<TData = unknown> = {
   image?: string;
   shape: Shape;
   physicsType: PhysicsType;
+  weight: number;
+  bounce: number;
   behaviors?: BlueprintBehaviors;
 };
 
@@ -148,7 +150,15 @@ export type RuntimeThing<TData = unknown> = RawThing<TData> &
       RawThing,
       keyof Omit<
         BlueprintData,
-        "name" | "physicsType" | "image" | "z" | "color" | "shape" | "behaviors"
+        | "name"
+        | "physicsType"
+        | "image"
+        | "z"
+        | "color"
+        | "shape"
+        | "behaviors"
+        | "weight"
+        | "bounce"
       >
     >
   > & { color: string; isGrounded: boolean };

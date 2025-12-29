@@ -13,6 +13,11 @@ const EPSILON = 0.0001;
 const GRAVITY_ACCELERATION = 0.1;
 const GROUND_NORMAL_THRESHOLD = 0.7;
 const GROUND_VELOCITY_EPSILON = 0.0001;
+const NORMAL_VELOCITY_EPSILON = 0.0001;
+const MIN_WEIGHT = 0.0001;
+const POSITION_SLOP = 0.01;
+const POSITION_CORRECTION_PERCENT = 0.8;
+const SOLVER_ITERATIONS = 6;
 const DOWN_VECTOR: Vector = { x: 0, y: 1 };
 const simulatedThingIds = new Set<string>();
 
@@ -30,6 +35,12 @@ type CircleCollisionShape = {
 
 type CollisionShape = PolygonCollisionShape | CircleCollisionShape;
 
+type PhysicsMaterial = {
+  weight: number;
+  invMass: number;
+  bounce: number;
+};
+
 export function physicsStep(
   gameState: RuntimeGameState,
   blueprintLookup: Map<string, Blueprint>,
@@ -39,7 +50,6 @@ export function physicsStep(
   game.collidingThingIds.clear();
 
   const isGravityEnabled = game.gameState.isGravityEnabled;
-  const preCollisionVelocities = new Map<string, Vector>();
   const wasGroundedMap = new Map<string, boolean>();
   const hasSimulatedBeforeMap = new Map<string, boolean>();
   const things = [...gameState.things];
@@ -67,35 +77,47 @@ export function physicsStep(
 
     thing.velocityX = nextVelocity.x;
     thing.velocityY = nextVelocity.y;
-    preCollisionVelocities.set(thing.id, { ...nextVelocity });
   }
 
-  for (const thing of things) {
-    if (suspendedThingIds.has(thing.id)) continue;
-    thing.x += thing.velocityX;
-    thing.y += thing.velocityY;
-  }
+  const substeps = computeSubsteps(things, suspendedThingIds);
+  const stepScale = 1 / substeps;
 
-  for (let i = 0; i < things.length; i += 1) {
-    for (let j = i + 1; j < things.length; j += 1) {
-      if (
-        suspendedThingIds.has(things[i].id) ||
-        suspendedThingIds.has(things[j].id)
-      ) {
-        continue;
+  for (let step = 0; step < substeps; step += 1) {
+    for (const thing of things) {
+      if (suspendedThingIds.has(thing.id)) continue;
+      thing.x += thing.velocityX * stepScale;
+      thing.y += thing.velocityY * stepScale;
+    }
+
+    for (let iteration = 0; iteration < SOLVER_ITERATIONS; iteration += 1) {
+      let resolvedAny = false;
+      for (let i = 0; i < things.length; i += 1) {
+        for (let j = i + 1; j < things.length; j += 1) {
+          if (
+            suspendedThingIds.has(things[i].id) ||
+            suspendedThingIds.has(things[j].id)
+          ) {
+            continue;
+          }
+          const resolved = resolveCollision(
+            things[i],
+            things[j],
+            blueprintLookup,
+            gameState,
+            game.collidingThingIds,
+            game,
+            isGravityEnabled,
+            hasSimulatedBeforeMap,
+            wasGroundedMap
+          );
+          if (resolved) {
+            resolvedAny = true;
+          }
+        }
       }
-      resolveCollision(
-        things[i],
-        things[j],
-        blueprintLookup,
-        gameState,
-        game.collidingThingIds,
-        game,
-        preCollisionVelocities,
-        isGravityEnabled,
-        hasSimulatedBeforeMap,
-        wasGroundedMap
-      );
+      if (!resolvedAny) {
+        break;
+      }
     }
   }
 }
@@ -107,15 +129,14 @@ function resolveCollision(
   gameState: RuntimeGameState,
   collidingThingIds: CollisionMap,
   game: GameContext,
-  preCollisionVelocities: Map<string, Vector>,
   gravityEnabled: boolean,
   hasSimulatedBeforeMap: Map<string, boolean>,
   wasGroundedMap: Map<string, boolean>
-) {
+): boolean {
   const stillExistsA = gameState.things.includes(a);
   const stillExistsB = gameState.things.includes(b);
   if (!stillExistsA || !stillExistsB) {
-    return;
+    return false;
   }
 
   const shapeA = getCollisionShapeForThing(a, blueprintLookup);
@@ -123,14 +144,18 @@ function resolveCollision(
   const mtv = getMinimumTranslationVector(shapeA, shapeB);
 
   if (!mtv) {
-    return;
+    return false;
   }
 
-  recordCollision(collidingThingIds, a, b);
+  const isNewCollision = recordCollision(collidingThingIds, a, b);
+  const preCollisionVelocityA = { x: a.velocityX, y: a.velocityY };
+  const preCollisionVelocityB = { x: b.velocityX, y: b.velocityY };
 
   if (a.physicsType === "ambient" || b.physicsType === "ambient") {
-    notifyCollision(a, b, blueprintLookup, game);
-    return;
+    if (isNewCollision) {
+      notifyCollision(a, b, blueprintLookup, game);
+    }
+    return true;
   }
 
   const canMoveA = a.physicsType === "dynamic";
@@ -140,39 +165,56 @@ function resolveCollision(
     shapeA,
     shapeB,
     mtv.axis,
-    mtv.overlap + EPSILON
+    mtv.overlap
   );
 
-  const normalForA = normalize(separationVector);
-  const normalForB = { x: -normalForA.x, y: -normalForA.y };
+  const contactNormalForA = normalize(separationVector);
+  const collisionNormal = { x: -contactNormalForA.x, y: -contactNormalForA.y };
 
   if (!canMoveA && !canMoveB) {
-    notifyCollision(a, b, blueprintLookup, game);
-    return;
+    if (isNewCollision) {
+      notifyCollision(a, b, blueprintLookup, game);
+    }
+    return true;
   }
 
-  if (canMoveA && canMoveB) {
-    a.x += separationVector.x / 2;
-    a.y += separationVector.y / 2;
-    b.x -= separationVector.x / 2;
-    b.y -= separationVector.y / 2;
-    dampenVelocity(a, mtv.axis);
-    dampenVelocity(b, mtv.axis);
-  } else if (canMoveA) {
-    a.x += separationVector.x;
-    a.y += separationVector.y;
-    dampenVelocity(a, mtv.axis);
-  } else if (canMoveB) {
-    b.x -= separationVector.x;
-    b.y -= separationVector.y;
-    dampenVelocity(b, mtv.axis);
+  const materialA = getPhysicsMaterial(a, blueprintLookup);
+  const materialB = getPhysicsMaterial(b, blueprintLookup);
+  const invMassA = canMoveA ? materialA.invMass : 0;
+  const invMassB = canMoveB ? materialB.invMass : 0;
+  const totalInvMass = invMassA + invMassB;
+
+  if (totalInvMass > 0) {
+    applyPositionCorrection(a, b, collisionNormal, mtv.overlap, invMassA, invMassB);
+
+    const relativeVelocity = {
+      x: b.velocityX - a.velocityX,
+      y: b.velocityY - a.velocityY,
+    };
+    const velocityAlongNormal =
+      relativeVelocity.x * collisionNormal.x +
+      relativeVelocity.y * collisionNormal.y;
+
+    if (velocityAlongNormal < 0) {
+      const bounce = combineBounce(materialA.bounce, materialB.bounce);
+      const impulseMagnitude =
+        (-(1 + bounce) * velocityAlongNormal) / totalInvMass;
+      applyImpulse(a, b, collisionNormal, impulseMagnitude, invMassA, invMassB);
+    }
+
+    if (canMoveA) {
+      removeSmallNormalVelocity(a, collisionNormal);
+    }
+    if (canMoveB) {
+      removeSmallNormalVelocity(b, collisionNormal);
+    }
   }
 
   if (canMoveA) {
     updateGroundedState(
       a,
-      normalForA,
-      preCollisionVelocities.get(a.id),
+      contactNormalForA,
+      preCollisionVelocityA,
       gravityEnabled,
       hasSimulatedBeforeMap.get(a.id) ?? false,
       wasGroundedMap.get(a.id) ?? false
@@ -182,15 +224,118 @@ function resolveCollision(
   if (canMoveB) {
     updateGroundedState(
       b,
-      normalForB,
-      preCollisionVelocities.get(b.id),
+      { x: -contactNormalForA.x, y: -contactNormalForA.y },
+      preCollisionVelocityB,
       gravityEnabled,
       hasSimulatedBeforeMap.get(b.id) ?? false,
       wasGroundedMap.get(b.id) ?? false
     );
   }
 
-  notifyCollision(a, b, blueprintLookup, game);
+  if (isNewCollision) {
+    notifyCollision(a, b, blueprintLookup, game);
+  }
+
+  return true;
+}
+
+function computeSubsteps(
+  things: RuntimeThing[],
+  suspendedThingIds: ReadonlySet<string>
+) {
+  let maxSubsteps = 1;
+  for (const thing of things) {
+    if (suspendedThingIds.has(thing.id)) continue;
+    if (thing.physicsType !== "dynamic") continue;
+    const speed = Math.hypot(thing.velocityX, thing.velocityY);
+    if (!Number.isFinite(speed) || speed <= EPSILON) continue;
+    const minExtent = Math.min(thing.width, thing.height) / 2;
+    const maxStep = Math.max(1, minExtent * 0.5);
+    const stepsForThing = Math.ceil(speed / maxStep);
+    if (Number.isFinite(stepsForThing)) {
+      maxSubsteps = Math.max(maxSubsteps, stepsForThing);
+    }
+  }
+  return Math.max(1, maxSubsteps);
+}
+
+function getPhysicsMaterial(
+  thing: RuntimeThing,
+  blueprintLookup: Map<string, Blueprint>
+): PhysicsMaterial {
+  const blueprint = getBlueprintForThing(thing, blueprintLookup);
+  const rawWeight = blueprint?.weight ?? 1;
+  const rawBounce = blueprint?.bounce ?? 0;
+  const weightValue = Number.isFinite(rawWeight) ? rawWeight : 1;
+  const bounceValue = Number.isFinite(rawBounce) ? rawBounce : 0;
+  const weight = weightValue > MIN_WEIGHT ? weightValue : MIN_WEIGHT;
+  const bounce = clamp(bounceValue, 0, 1);
+  const invMass = thing.physicsType === "dynamic" ? 1 / weight : 0;
+  return { weight, invMass, bounce };
+}
+
+function combineBounce(a: number, b: number) {
+  return Math.min(a, b);
+}
+
+function applyPositionCorrection(
+  a: RuntimeThing,
+  b: RuntimeThing,
+  normal: Vector,
+  overlap: number,
+  invMassA: number,
+  invMassB: number
+) {
+  const totalInvMass = invMassA + invMassB;
+  if (totalInvMass <= 0) {
+    return;
+  }
+  const correctionMagnitude =
+    (Math.max(overlap - POSITION_SLOP, 0) * POSITION_CORRECTION_PERCENT) /
+    totalInvMass;
+  const correction = {
+    x: normal.x * correctionMagnitude,
+    y: normal.y * correctionMagnitude,
+  };
+  if (invMassA > 0) {
+    a.x -= correction.x * invMassA;
+    a.y -= correction.y * invMassA;
+  }
+  if (invMassB > 0) {
+    b.x += correction.x * invMassB;
+    b.y += correction.y * invMassB;
+  }
+}
+
+function applyImpulse(
+  a: RuntimeThing,
+  b: RuntimeThing,
+  normal: Vector,
+  magnitude: number,
+  invMassA: number,
+  invMassB: number
+) {
+  const impulse = { x: normal.x * magnitude, y: normal.y * magnitude };
+  if (invMassA > 0) {
+    a.velocityX -= impulse.x * invMassA;
+    a.velocityY -= impulse.y * invMassA;
+  }
+  if (invMassB > 0) {
+    b.velocityX += impulse.x * invMassB;
+    b.velocityY += impulse.y * invMassB;
+  }
+}
+
+function removeSmallNormalVelocity(thing: RuntimeThing, normal: Vector) {
+  const normalVelocity = thing.velocityX * normal.x + thing.velocityY * normal.y;
+  if (Math.abs(normalVelocity) < NORMAL_VELOCITY_EPSILON) {
+    thing.velocityX -= normalVelocity * normal.x;
+    thing.velocityY -= normalVelocity * normal.y;
+  }
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
 }
 
 export function getClosestPointsBetweenThings(
@@ -671,31 +816,27 @@ function computeSeparationVector(
   };
 }
 
-function dampenVelocity(thing: RuntimeThing, axis: Vector) {
-  const projected = thing.velocityX * axis.x + thing.velocityY * axis.y;
-  thing.velocityX -= projected * axis.x;
-  thing.velocityY -= projected * axis.y;
-}
-
 function recordCollision(
   map: CollisionMap,
   first: RuntimeThing,
   second: RuntimeThing
-) {
+): boolean {
   const existingForFirst = map.get(first.id) ?? [];
   const existingForSecond = map.get(second.id) ?? [];
+  const alreadyRecorded = existingForFirst.includes(second.id);
   if (!map.has(first.id)) {
     map.set(first.id, existingForFirst);
   }
   if (!map.has(second.id)) {
     map.set(second.id, existingForSecond);
   }
-  if (!existingForFirst.includes(second.id)) {
+  if (!alreadyRecorded) {
     existingForFirst.push(second.id);
   }
   if (!existingForSecond.includes(first.id)) {
     existingForSecond.push(first.id);
   }
+  return !alreadyRecorded;
 }
 
 function updateGroundedState(
