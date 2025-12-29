@@ -414,7 +414,7 @@ function ColorPalette({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-5 gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2">
+      <div className="grid grid-cols-5 gap-1.5 rounded-xl border border-slate-200 bg-white p-3">
         {colors.map((color) => {
           const isSelected = color === selectedColor;
           return (

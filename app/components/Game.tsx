@@ -160,6 +160,7 @@ export function Game({ gameDirectory }: GameProps) {
             onAddBlueprint={handleAddBlueprint}
             gameDirectory={gameDirectory}
             imageVersions={imageVersions}
+            subscribe={subscribe}
           />
         </div>
       </div>
