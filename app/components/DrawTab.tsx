@@ -9,9 +9,13 @@ import {
   type DragEvent,
   type PointerEvent,
 } from "react";
+import { PaintBucket, Pen } from "lucide-react";
 import { getColorOptions } from "@/components/ColorGrid";
 import type { GameEngine } from "@/engine/engine";
-import { DEFAULT_IMAGE_SIZE } from "@/engine/editableImages";
+import {
+  DEFAULT_IMAGE_SIZE,
+  type EditableImageRecord,
+} from "@/engine/editableImages";
 import { Blueprint } from "@/engine/types";
 import { getBlueprintImageUrl } from "@/lib/images";
 
@@ -28,6 +32,9 @@ type DrawTabProps = {
 };
 
 type Pixel = { x: number; y: number };
+type DrawTool = "pen" | "fill";
+type PixelData = { data: Uint8ClampedArray; width: number; height: number };
+type Rgba = { r: number; g: number; b: number; a: number };
 
 type StoredColorMap = Record<string, string>;
 
@@ -42,6 +49,7 @@ export function DrawTab({
   const [selectedColor, setSelectedColor] = useState<string>(() =>
     getStoredColor(blueprint.name, defaultColor)
   );
+  const [selectedTool, setSelectedTool] = useState<DrawTool>("pen");
   const [hoverPixel, setHoverPixel] = useState<Pixel | null>(null);
   const [fallbackImage, setFallbackImage] = useState<HTMLImageElement | null>(
     null
@@ -128,9 +136,27 @@ export function DrawTab({
       ctx.drawImage(source, 0, 0, DISPLAY_SIZE, DISPLAY_SIZE);
     }
 
-    drawHover(ctx, hoverPixel, selectedColor, DISPLAY_PIXEL_SIZE);
+    if (selectedTool === "fill") {
+      const fillPixels = getFillHoverPixels({
+        hoverPixel,
+        selectedColor,
+        record,
+        fallbackImage,
+        size: DEFAULT_IMAGE_SIZE,
+      });
+      drawHoverPixels(ctx, fillPixels, selectedColor, DISPLAY_PIXEL_SIZE);
+    } else {
+      drawHover(ctx, hoverPixel, selectedColor, DISPLAY_PIXEL_SIZE);
+    }
     drawGrid(ctx, DEFAULT_IMAGE_SIZE, DISPLAY_PIXEL_SIZE);
-  }, [blueprint.name, engine, fallbackImage, hoverPixel, selectedColor]);
+  }, [
+    blueprint.name,
+    engine,
+    fallbackImage,
+    hoverPixel,
+    selectedColor,
+    selectedTool,
+  ]);
 
   useEffect(() => {
     renderCanvas();
@@ -173,6 +199,14 @@ export function DrawTab({
     [blueprint.name, engine, renderCanvas, selectedColor]
   );
 
+  const fillPixels = useCallback(
+    (pixel: Pixel) => {
+      engine.paintBlueprintFill(blueprint.name, pixel, selectedColor);
+      renderCanvas();
+    },
+    [blueprint.name, engine, renderCanvas, selectedColor]
+  );
+
   const handlePointerDown = useCallback(
     (event: PointerEvent<HTMLCanvasElement>) => {
       if (event.button !== 0) {
@@ -182,32 +216,40 @@ export function DrawTab({
       if (!pixel) {
         return;
       }
+      if (selectedTool === "fill") {
+        fillPixels(pixel);
+        setHoverPixel(pixel);
+        return;
+      }
       isDrawingRef.current = true;
       lastPixelRef.current = pixel;
       canvasRef.current?.setPointerCapture(event.pointerId);
       paintPixel(pixel, null);
       setHoverPixel(pixel);
     },
-    [getPixelFromEvent, paintPixel]
+    [fillPixels, getPixelFromEvent, paintPixel, selectedTool]
   );
 
   const handlePointerMove = useCallback(
     (event: PointerEvent<HTMLCanvasElement>) => {
       const pixel = getPixelFromEvent(event);
       setHoverPixel(pixel);
-      if (!isDrawingRef.current || !pixel) {
+      if (selectedTool !== "pen" || !isDrawingRef.current || !pixel) {
         return;
       }
       const previous = lastPixelRef.current;
       paintPixel(pixel, previous);
       lastPixelRef.current = pixel;
     },
-    [getPixelFromEvent, paintPixel]
+    [getPixelFromEvent, paintPixel, selectedTool]
   );
 
   const stopDrawing = useCallback((event?: PointerEvent) => {
     if (event) {
-      canvasRef.current?.releasePointerCapture(event.pointerId);
+      const canvas = canvasRef.current;
+      if (canvas?.hasPointerCapture(event.pointerId)) {
+        canvas.releasePointerCapture(event.pointerId);
+      }
     }
     isDrawingRef.current = false;
     lastPixelRef.current = null;
@@ -307,6 +349,8 @@ export function DrawTab({
         </div>
       </div>
 
+      <ToolBar selectedTool={selectedTool} onToolSelect={setSelectedTool} />
+
       {importError ? (
         <p className="text-xs text-red-600">{importError}</p>
       ) : null}
@@ -316,6 +360,45 @@ export function DrawTab({
         selectedColor={selectedColor}
         onColorSelect={setSelectedColor}
       />
+    </div>
+  );
+}
+
+function ToolBar({
+  selectedTool,
+  onToolSelect,
+}: {
+  selectedTool: DrawTool;
+  onToolSelect: (tool: DrawTool) => void;
+}) {
+  return (
+    <div className="flex gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2">
+      <button
+        type="button"
+        className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border text-xs font-semibold uppercase tracking-wide transition ${
+          selectedTool === "pen"
+            ? "border-2 border-blue-600 ring-2 ring-blue-300"
+            : "border-slate-200 hover:border-slate-400"
+        }`}
+        onClick={() => onToolSelect("pen")}
+        aria-pressed={selectedTool === "pen"}
+        aria-label="Pen tool"
+      >
+        <Pen className="h-5 w-5" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border text-xs font-semibold uppercase tracking-wide transition ${
+          selectedTool === "fill"
+            ? "border-2 border-blue-600 ring-2 ring-blue-300"
+            : "border-slate-200 hover:border-slate-400"
+        }`}
+        onClick={() => onToolSelect("fill")}
+        aria-pressed={selectedTool === "fill"}
+        aria-label="Paint can tool"
+      >
+        <PaintBucket className="h-5 w-5" aria-hidden="true" />
+      </button>
     </div>
   );
 }
@@ -422,20 +505,223 @@ function drawHover(
   if (!hoverPixel) {
     return;
   }
+  drawHoverPixels(ctx, [hoverPixel], color, pixelSize);
+}
+
+function drawHoverPixels(
+  ctx: CanvasRenderingContext2D,
+  pixels: Pixel[],
+  color: string,
+  pixelSize: number
+) {
+  if (pixels.length === 0) {
+    return;
+  }
   ctx.save();
   ctx.globalAlpha = color === "transparent" ? 0.6 : 0.5;
   ctx.fillStyle = color === "transparent" ? "#ffffff" : color;
-  ctx.fillRect(
-    hoverPixel.x * pixelSize,
-    hoverPixel.y * pixelSize,
-    pixelSize,
-    pixelSize
-  );
+  for (const pixel of pixels) {
+    ctx.fillRect(
+      pixel.x * pixelSize,
+      pixel.y * pixelSize,
+      pixelSize,
+      pixelSize
+    );
+  }
   ctx.restore();
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function getFillHoverPixels({
+  hoverPixel,
+  selectedColor,
+  record,
+  fallbackImage,
+  size,
+}: {
+  hoverPixel: Pixel | null;
+  selectedColor: string;
+  record: EditableImageRecord | null;
+  fallbackImage: HTMLImageElement | null;
+  size: number;
+}): Pixel[] {
+  if (!hoverPixel) {
+    return [];
+  }
+  const replacement = parseColorToRgba(selectedColor);
+  if (!replacement) {
+    return [];
+  }
+  const pixelData = getPreviewPixelData(record, fallbackImage, size);
+  if (pixelData.width === 0 || pixelData.height === 0) {
+    return [];
+  }
+  if (
+    hoverPixel.x < 0 ||
+    hoverPixel.y < 0 ||
+    hoverPixel.x >= pixelData.width ||
+    hoverPixel.y >= pixelData.height
+  ) {
+    return [];
+  }
+  const target = getRgbaAt(
+    pixelData.data,
+    hoverPixel.x,
+    hoverPixel.y,
+    pixelData.width
+  );
+  if (colorsMatch(target, replacement)) {
+    return [];
+  }
+  return floodFillPixels(pixelData, hoverPixel, target);
+}
+
+function getPreviewPixelData(
+  record: EditableImageRecord | null,
+  fallbackImage: HTMLImageElement | null,
+  size: number
+): PixelData {
+  if (record) {
+    const fromCanvas = getPixelDataFromCanvas(record.canvas);
+    if (fromCanvas) {
+      return fromCanvas;
+    }
+  }
+  if (fallbackImage) {
+    const fromImage = getPixelDataFromImage(fallbackImage);
+    if (fromImage) {
+      return fromImage;
+    }
+  }
+  return createBlankPixelData(size);
+}
+
+function getPixelDataFromCanvas(canvas: HTMLCanvasElement): PixelData | null {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return null;
+  }
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  return {
+    data: imageData.data,
+    width: imageData.width,
+    height: imageData.height,
+  };
+}
+
+function getPixelDataFromImage(image: HTMLImageElement): PixelData | null {
+  if (typeof document === "undefined") {
+    return null;
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = image.width;
+  canvas.height = image.height;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return null;
+  }
+  ctx.drawImage(image, 0, 0);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  return {
+    data: imageData.data,
+    width: imageData.width,
+    height: imageData.height,
+  };
+}
+
+function createBlankPixelData(size: number): PixelData {
+  return {
+    data: new Uint8ClampedArray(size * size * 4),
+    width: size,
+    height: size,
+  };
+}
+
+function floodFillPixels(
+  pixelData: PixelData,
+  start: Pixel,
+  target: Rgba
+): Pixel[] {
+  const { data, width, height } = pixelData;
+  const visited = new Array<boolean>(width * height).fill(false);
+  const queue: Pixel[] = [start];
+  const result: Pixel[] = [];
+
+  while (queue.length > 0) {
+    const current = queue.pop();
+    if (!current) {
+      break;
+    }
+    const index = current.y * width + current.x;
+    if (visited[index]) {
+      continue;
+    }
+    visited[index] = true;
+    const offset = index * 4;
+    if (
+      data[offset] !== target.r ||
+      data[offset + 1] !== target.g ||
+      data[offset + 2] !== target.b ||
+      data[offset + 3] !== target.a
+    ) {
+      continue;
+    }
+    result.push(current);
+    if (current.x > 0) {
+      queue.push({ x: current.x - 1, y: current.y });
+    }
+    if (current.x < width - 1) {
+      queue.push({ x: current.x + 1, y: current.y });
+    }
+    if (current.y > 0) {
+      queue.push({ x: current.x, y: current.y - 1 });
+    }
+    if (current.y < height - 1) {
+      queue.push({ x: current.x, y: current.y + 1 });
+    }
+  }
+
+  return result;
+}
+
+function getRgbaAt(
+  data: Uint8ClampedArray,
+  x: number,
+  y: number,
+  width: number
+): Rgba {
+  const offset = (y * width + x) * 4;
+  return {
+    r: data[offset],
+    g: data[offset + 1],
+    b: data[offset + 2],
+    a: data[offset + 3],
+  };
+}
+
+function colorsMatch(a: Rgba, b: Rgba): boolean {
+  return a.r === b.r && a.g === b.g && a.b === b.b && a.a === b.a;
+}
+
+function parseColorToRgba(color: string): Rgba | null {
+  const normalized = color.trim();
+  if (normalized === "transparent") {
+    return { r: 0, g: 0, b: 0, a: 0 };
+  }
+  if (!normalized.startsWith("#") || normalized.length !== 7) {
+    return null;
+  }
+  const hex = normalized.slice(1);
+  const r = Number.parseInt(hex.slice(0, 2), 16);
+  const g = Number.parseInt(hex.slice(2, 4), 16);
+  const b = Number.parseInt(hex.slice(4, 6), 16);
+  if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+    return null;
+  }
+  return { r, g, b, a: 255 };
 }
 
 function loadStoredColors(): StoredColorMap {
