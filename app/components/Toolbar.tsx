@@ -2,8 +2,18 @@
 
 import { Blueprint } from "@/engine/types";
 import { Button } from "@/components/ui/button";
-import { Plus, RotateCw } from "lucide-react";
+import { Plus, RotateCw, Settings, X } from "lucide-react";
 import { getBlueprintImageUrl } from "@/lib/images";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { SettingsTab } from "@/components/SettingsTab";
+import { GameSubscribe } from "@/engine/useGame";
 
 const BLUEPRINT_MIME = "application/x-blueprint";
 
@@ -14,6 +24,7 @@ type ToolbarProps = {
   onAddBlueprint: () => void;
   gameDirectory: string;
   imageVersions: Record<string, number>;
+  subscribe: GameSubscribe;
 };
 
 export function Toolbar({
@@ -23,6 +34,7 @@ export function Toolbar({
   onAddBlueprint,
   gameDirectory,
   imageVersions,
+  subscribe,
 }: ToolbarProps) {
   return (
     <div className="inline-flex max-w-[800px] min-w-fit items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-lg">
@@ -37,6 +49,34 @@ export function Toolbar({
         >
           <RotateCw className="size-4" />
         </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Settings"
+              className="border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+            >
+              <Settings className="size-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="w-[360px] max-w-[92vw]">
+            <DialogHeader className="flex-row items-center justify-between">
+              <DialogTitle>Settings</DialogTitle>
+              <DialogClose asChild>
+                <button
+                  type="button"
+                  aria-label="Close settings"
+                  className="rounded-md p-1 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+                >
+                  <X className="size-4" />
+                </button>
+              </DialogClose>
+            </DialogHeader>
+            <SettingsTab subscribe={subscribe} />
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="flex flex-1 gap-2 overflow-x-auto py-1">
         {blueprints.map((blueprint) => (
