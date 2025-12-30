@@ -63,3 +63,16 @@ export function ColorGrid({
 export function getColorOptions() {
   return [...COLOR_OPTIONS];
 }
+
+export function getRandomColorOption(colors?: string[]): string {
+  const options = colors && colors.length > 0 ? colors : getColorOptions();
+  if (options.length === 0) {
+    throw new Error("No color options available.");
+  }
+  const index = Math.floor(Math.random() * options.length);
+  const selected = options[index];
+  if (!selected) {
+    throw new Error("Failed to select a color option.");
+  }
+  return selected;
+}
