@@ -75,6 +75,11 @@ export type ActionSettingValues<
 
 export type BehaviorAction = { action: string; settings: ActionSettings };
 
+export type BlueprintBehavior = {
+  trigger: TriggerName;
+  actions: BehaviorAction[];
+};
+
 export type CreateHandler<TData = unknown> = (
   thing: RuntimeThing<TData>,
   game: GameContext
@@ -112,7 +117,7 @@ export type BlueprintHandlerMap<TData = unknown> = {
   render: RenderHandler<TData>;
 };
 
-export type BlueprintBehaviors = Partial<Record<TriggerName, BehaviorAction[]>>;
+export type BlueprintBehaviors = BlueprintBehavior[];
 
 export type Vector = { x: number; y: number };
 
@@ -497,24 +502,30 @@ export function isBehaviorAction(value: unknown): value is BehaviorAction {
   return isActionSettings(value.settings);
 }
 
-export function isBlueprintBehaviors(
+export function isBlueprintBehavior(
   value: unknown
-): value is BlueprintBehaviors {
+): value is BlueprintBehavior {
   if (!isRecord(value)) {
     return false;
   }
-  for (const [key, entry] of Object.entries(value)) {
-    if (!isTriggerName(key)) {
-      return false;
-    }
-    if (
-      !Array.isArray(entry) ||
-      !entry.every((item) => isBehaviorAction(item))
-    ) {
-      return false;
-    }
+  if (typeof value.trigger !== "string" || !isTriggerName(value.trigger)) {
+    return false;
+  }
+  if (
+    !Array.isArray(value.actions) ||
+    !value.actions.every((item) => isBehaviorAction(item))
+  ) {
+    return false;
   }
   return true;
+}
+
+export function isBlueprintBehaviors(
+  value: unknown
+): value is BlueprintBehaviors {
+  return (
+    Array.isArray(value) && value.every((entry) => isBlueprintBehavior(entry))
+  );
 }
 
 export function isThing(value: unknown): value is PersistedThing {

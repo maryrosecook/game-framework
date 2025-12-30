@@ -3,8 +3,8 @@
   "things": [
     {
       "id": "81to1qneerfz",
-      "x": 792.46484375,
-      "y": 373.87109375,
+      "x": 950.09375,
+      "y": 561.109375,
       "z": 1,
       "angle": 0,
       "velocityX": 0,
@@ -37,9 +37,19 @@
       "physicsType": "dynamic",
       "weight": 1,
       "bounce": 0,
-      "behaviors": {
-        "update": []
-      }
+      "behaviors": [
+        {
+          "trigger": "collision",
+          "actions": [
+            {
+              "action": "spawnObject",
+              "settings": {
+                "blueprint": "blueprint-2"
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "blueprint-2",
