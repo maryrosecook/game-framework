@@ -4,7 +4,7 @@ import { DragEvent, PropsWithChildren, RefObject, useRef } from "react";
 import { GameEngine } from "@/engine/engine";
 import { Blueprint, RuntimeGameState } from "@/engine/types";
 import { GameSubscribe } from "@/engine/useGame";
-import { getColorOptions } from "@/components/ColorGrid";
+import { getColorOptions, getRandomColorOption } from "@/components/ColorGrid";
 import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
 import { getWorldPointFromEvent } from "@/lib/canvas";
 import { getDroppedPngFile, uploadBlueprintImage } from "@/lib/imageUploads";
@@ -102,8 +102,7 @@ export function DragAndDrop({
         file,
       });
       const colors = getColorOptions();
-      const color =
-        colors[existingBlueprints.length % colors.length] ?? "#888888";
+      const color = getRandomColorOption(colors);
       const width = IMPORTED_BLUEPRINT_SIZE;
       const height = IMPORTED_BLUEPRINT_SIZE;
       const blueprint = createBlueprint({

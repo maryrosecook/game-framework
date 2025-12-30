@@ -9,7 +9,7 @@ import { useGame } from "@/engine/useGame";
 import { Blueprint, RawThing, RuntimeGameState, Vector } from "@/engine/types";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
-import { getColorOptions } from "@/components/ColorGrid";
+import { getColorOptions, getRandomColorOption } from "@/components/ColorGrid";
 import { createThingFromBlueprint } from "@/engine/blueprints";
 
 type GameProps = {
@@ -78,9 +78,7 @@ export function Game({ gameDirectory }: GameProps) {
 
   const handleAddBlueprint = () => {
     const name = getNextBlueprintName(blueprints ?? []);
-    const index = blueprints?.length ?? 0;
-    const colors = palette.length > 0 ? palette : getColorOptions();
-    const color = colors[index % colors.length];
+    const color = getRandomColorOption(palette);
     const newBlueprint: Blueprint = createBlueprint({ name, color });
     engine.dispatch({ type: "addBlueprint", blueprint: newBlueprint });
     setActiveBlueprintName(newBlueprint.name);
