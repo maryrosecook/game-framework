@@ -989,7 +989,10 @@ export class GameEngine {
     return { r, g, b, a: 255 };
   }
 
-  private clampPixel(pixel: { x: number; y: number }, canvas: HTMLCanvasElement) {
+  private clampPixel(
+    pixel: { x: number; y: number },
+    canvas: HTMLCanvasElement
+  ) {
     return {
       x: Math.max(0, Math.min(canvas.width - 1, Math.round(pixel.x))),
       y: Math.max(0, Math.min(canvas.height - 1, Math.round(pixel.y))),
@@ -1024,14 +1027,15 @@ export class GameEngine {
   }
 
   private runUpdateHandlers(game: GameContext, pendingRemovals: Set<string>) {
+    if (!this.inputManager) return;
     const thingsView = Object.freeze([...this.gameState.things]);
-
+    const keyState = this.inputManager.keyState;
     for (const thing of thingsView) {
       if (this.editingThingIds.has(thing.id)) continue;
       if (pendingRemovals.has(thing.id)) continue;
       const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
       runBlueprintHandlers("update", blueprint, blueprint?.update, (handler) =>
-        handler(thing, game)
+        handler(thing, game, keyState)
       );
     }
   }

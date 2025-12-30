@@ -1,9 +1,10 @@
 import { ActionDefinition } from "@/engine/types";
 
-const allowedTriggers: ActionDefinition<"input">["allowedTriggers"] = ["input"];
+const allowedTriggers: ActionDefinition<"input" | "update">["allowedTriggers"] =
+  ["input", "update"];
 
 const moveWithArrows: ActionDefinition<
-  "input",
+  "input" | "update",
   { speed: { kind: "number"; default: number } }
 > = {
   allowedTriggers,

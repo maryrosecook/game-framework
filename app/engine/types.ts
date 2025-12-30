@@ -88,7 +88,8 @@ export type InputHandler<TData = unknown> = (
 
 export type UpdateHandler<TData = unknown> = (
   thing: RuntimeThing<TData>,
-  game: GameContext
+  game: GameContext,
+  keyState: KeyState
 ) => void;
 
 export type CollisionHandler<TData = unknown> = (
@@ -229,7 +230,7 @@ type ActionContextBase<TSettings extends Record<string, ActionSetting>> = {
 type ActionContextMap<TSettings extends Record<string, ActionSetting>> = {
   create: ActionContextBase<TSettings>;
   input: ActionContextBase<TSettings> & { keyState: KeyState };
-  update: ActionContextBase<TSettings>;
+  update: ActionContextBase<TSettings> & { keyState: KeyState };
   collision: ActionContextBase<TSettings> & { otherThing: RuntimeThing };
 };
 
