@@ -24,7 +24,7 @@
   - Built-in: moveThing
   - Custom: Custom-written function that can be edited in the UI.
 - Actions on disk:
-  - each action is a `.ts` file exporting a default const pointing at an object with this structure { summary: string, code: handler function signature, allowedTriggers: TriggerName[] }.
+  - each action is a `.ts` file exporting a default const pointing at an object with this structure { code: handler function signature, allowedTriggers: TriggerName[] }.
   - Filename is the canonical action name.
   - Custom actions live under `[game-name]/actions/`
   - Built-in actions live under `engine/actions/`.
@@ -63,7 +63,7 @@
 
 - Conversation-driven edits. Each turn includes action name, code for blueprint file based actions and behaviors actions for the blueprint, prior code written during the chat.
 - Only edits the current action.
-- Agent returns updated code (for entire action) + natural-language summary. System runs `tsc`/lint; on failure, revert to last good and show error.
+- Agent returns updated code (for entire action). System runs `tsc`/lint; on failure, revert to last good and show error.
 - Encourage concise code.
 - Use Sonnet 4.5 for code generation.
 
@@ -88,7 +88,7 @@
 ### Observability
 
 - For each action, show
-  - Natural language summary
+  - Notes about changes
   - API methods called by the action.
   - Calls to spawn/destroy.
 

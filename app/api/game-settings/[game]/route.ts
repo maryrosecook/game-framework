@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import {
   gameSlug,
-  isNotFoundError,
   readGameFile,
   writeGameFile,
 } from "@/lib/games";
+import { isNotFoundError } from "@/engine/types";
 import { getErrorMessage } from "@/lib/errors";
 
 type RouteContext = {

@@ -1,21 +1,17 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import {
-  BlueprintBehaviors,
-  BlueprintData,
   GameFile,
-  PersistedThing,
-  PhysicsType,
-  Shape,
-  TriggerName,
+  isEditorSettings,
+  isExistingFileError,
+  isGameFile,
+  isNotFoundError,
 } from "@/engine/types";
 
 const ROOT = process.cwd();
 const GAMES_ROOT = path.join(ROOT, "app", "games");
 const EDITOR_SETTINGS_PATH = path.join(ROOT, "data", "editorSettings.json");
 const DEFAULT_BACKGROUND_COLOR = "#f8fafc";
-const MIN_BLUEPRINT_WEIGHT = 0.0001;
-
 const GAME_NAME_PATTERN = /[^a-z0-9]+/g;
 
 export type EditorSettings = { currentGameDirectory: string };
@@ -172,176 +168,4 @@ async function fileExists(filePath: string) {
     }
     throw error;
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
-export function isNotFoundError(
-  error: unknown
-): error is NodeJS.ErrnoException {
-  return isRecord(error) && "code" in error && error.code === "ENOENT";
-}
-
-function isExistingFileError(error: unknown): error is NodeJS.ErrnoException {
-  return isRecord(error) && "code" in error && error.code === "EEXIST";
-}
-
-function isEditorSettings(value: unknown): value is EditorSettings {
-  return isRecord(value) && typeof value.currentGameDirectory === "string";
-}
-
-function isVector(value: unknown): value is { x: number; y: number } {
-  return (
-    isRecord(value) &&
-    typeof value.x === "number" &&
-    typeof value.y === "number"
-  );
-}
-
-function isShape(value: unknown): value is Shape {
-  return value === "rectangle" || value === "triangle" || value === "circle";
-}
-
-function isPhysicsType(value: unknown): value is PhysicsType {
-  return value === "dynamic" || value === "static" || value === "ambient";
-}
-
-function isTriggerName(value: string): value is TriggerName {
-  return (
-    value === "create" ||
-    value === "input" ||
-    value === "update" ||
-    value === "collision"
-  );
-}
-
-function isBlueprintBehaviors(value: unknown): value is BlueprintBehaviors {
-  if (!isRecord(value)) {
-    return false;
-  }
-  for (const [key, entry] of Object.entries(value)) {
-    if (!isTriggerName(key)) {
-      return false;
-    }
-    if (
-      !Array.isArray(entry) ||
-      !entry.every((item) => typeof item === "string")
-    ) {
-      return false;
-    }
-  }
-  return true;
-}
-
-function isThing(value: unknown): value is PersistedThing {
-  if (!isRecord(value)) {
-    return false;
-  }
-  const hasRequiredFields =
-    typeof value.id === "string" &&
-    typeof value.x === "number" &&
-    typeof value.y === "number" &&
-    typeof value.angle === "number" &&
-    typeof value.velocityX === "number" &&
-    typeof value.velocityY === "number" &&
-    typeof value.blueprintName === "string";
-  if (!hasRequiredFields) {
-    return false;
-  }
-
-  const numericOptionalKeys: (keyof Pick<
-    PersistedThing,
-    "width" | "height"
-  >)[] = ["width", "height"];
-  const hasValidOptionalNumbers = numericOptionalKeys.every(
-    (key) => value[key] === undefined || typeof value[key] === "number"
-  );
-  if (!hasValidOptionalNumbers) {
-    return false;
-  }
-
-  if (value.physicsType !== undefined && !isPhysicsType(value.physicsType)) {
-    return false;
-  }
-  if (value.color !== undefined && typeof value.color !== "string") {
-    return false;
-  }
-  if (value.shape !== undefined) {
-    return false;
-  }
-  return true;
-}
-
-function isBlueprintData(value: unknown): value is BlueprintData {
-  if (!isRecord(value)) {
-    return false;
-  }
-  if (
-    typeof value.name !== "string" ||
-    typeof value.width !== "number" ||
-    typeof value.height !== "number" ||
-    typeof value.z !== "number" ||
-    typeof value.color !== "string" ||
-    !isShape(value.shape) ||
-    !isPhysicsType(value.physicsType)
-  ) {
-    return false;
-  }
-  if (value.image !== undefined && typeof value.image !== "string") {
-    return false;
-  }
-  if (
-    typeof value.weight !== "number" ||
-    !Number.isFinite(value.weight) ||
-    value.weight < MIN_BLUEPRINT_WEIGHT
-  ) {
-    return false;
-  }
-  if (
-    typeof value.bounce !== "number" ||
-    !Number.isFinite(value.bounce) ||
-    value.bounce < 0 ||
-    value.bounce > 1
-  ) {
-    return false;
-  }
-  if (value.behaviors !== undefined && !isBlueprintBehaviors(value.behaviors)) {
-    return false;
-  }
-  return true;
-}
-
-export function isGameFile(value: unknown): value is GameFile {
-  if (!isRecord(value)) {
-    return false;
-  }
-  const hasValidId = typeof value.id === "number";
-  const hasCamera = isVector(value.camera);
-  const hasThings =
-    Array.isArray(value.things) &&
-    value.things.every((thing) => isThing(thing));
-  const hasBlueprints =
-    Array.isArray(value.blueprints) &&
-    value.blueprints.every((bp) => isBlueprintData(bp));
-  const hasBackgroundColor =
-    value.backgroundColor === undefined ||
-    typeof value.backgroundColor === "string" ||
-    value.clearColor === undefined ||
-    typeof value.clearColor === "string";
-  const hasValidImage =
-    value.image === undefined ||
-    value.image === null ||
-    typeof value.image === "string";
-  const hasGravitySetting = typeof value.isGravityEnabled === "boolean";
-  return (
-    hasValidId &&
-    hasCamera &&
-    hasThings &&
-    hasBlueprints &&
-    hasBackgroundColor &&
-    hasValidImage &&
-    hasGravitySetting
-  );
 }

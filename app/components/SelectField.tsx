@@ -15,7 +15,7 @@ export function SelectField<TValue extends string>({
     <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
       {label}
       <select
-        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
+        className="select-chevron w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400 cursor-pointer"
         disabled={disabled}
         value={value}
         onChange={(event) => {

@@ -18,7 +18,7 @@
 ## Actions
 
 - **Location**: `app/engine/actions/` (global only; no per-game actions yet).
-- **Shape**: each file exports a default const `{ summary: string; code: TriggerHandler; allowedTriggers: TriggerName[] }`.
+- **Shape**: each file exports a default const `{ code: TriggerHandler; allowedTriggers: TriggerName[] }`.
 - **Naming**: filename (without `.ts`) is the action name referenced by blueprints.
 - **Compatibility**: UI and engine only allow binding an action to triggers listed in `allowedTriggers`.
 

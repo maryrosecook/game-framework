@@ -10,3 +10,4 @@
   `as` casts, or other unsafe coercions.
 - Ensure all changes have no lints or TypeScript errors.
 - Check TS errors with `npx tsc`
+- Never migrate any game data in code or handle legacy data. Assume all data uses latest schema. If a schema is changed as part of a code / spec change, migrate the existing game data as part of the change.

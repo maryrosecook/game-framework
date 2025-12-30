@@ -2,12 +2,15 @@ import { createThingId } from "@/lib/id";
 import { z, type ZodType, type ZodTypeAny } from "zod";
 import {
   ActionDefinition,
+  ActionSettings,
+  BehaviorAction,
   Blueprint,
   BlueprintData,
   BlueprintDefinition,
   BlueprintKind,
   BlueprintModule,
   GameContext,
+  KeyState,
   RawThing,
   RuntimeThing,
   TriggerHandler,
@@ -15,6 +18,9 @@ import {
   Vector,
 } from "./types";
 import { actions as globalActions } from "./actions";
+import { resolveActionSettings } from "./actions/settings";
+
+const TRIGGERS: TriggerName[] = ["create", "input", "update", "collision"];
 
 type DataContext = { blueprintName: string; source: "blueprint" | "thing" };
 
@@ -30,25 +36,25 @@ function dataSchemaFor<TData>(
 }
 
 function validateThingData<TData>(
-  schema: ZodType<TData> | undefined,
+  dataSchema: ZodType<TData> | undefined,
   candidate: TData | undefined,
   fallback: TData | undefined,
   context: DataContext,
   allowUndefined = false
 ): TData | undefined {
-  if (!schema) {
+  if (!dataSchema) {
     return candidate ?? fallback;
   }
 
   const chosen = candidate === undefined ? fallback : candidate;
 
   if (chosen === undefined) {
-    const defaultResult = schema.safeParse(undefined);
+    const defaultResult = dataSchema.safeParse(undefined);
     if (defaultResult.success) {
       return defaultResult.data;
     }
 
-    const emptyObjectResult = schema.safeParse({});
+    const emptyObjectResult = dataSchema.safeParse({});
     if (emptyObjectResult.success) {
       return emptyObjectResult.data;
     }
@@ -63,13 +69,13 @@ function validateThingData<TData>(
     return undefined;
   }
 
-  const parsed = schema.safeParse(chosen);
+  const parsed = dataSchema.safeParse(chosen);
   if (parsed.success) {
     return parsed.data;
   }
 
   const fallbackParsed =
-    chosen === fallback ? null : schema.safeParse(fallback);
+    chosen === fallback ? null : dataSchema.safeParse(fallback);
   if (fallbackParsed?.success) {
     console.warn(
       `Invalid data for blueprint "${context.blueprintName}" (${context.source}); using fallback data.`,
@@ -84,12 +90,18 @@ function validateThingData<TData>(
   return undefined;
 }
 
+// Ensures that blueprint behaviors match the latest action definitions and have
+// all defaults filled in.
 export function normalizeBlueprintData<TData>(
   blueprint: Blueprint<TData>
 ): Blueprint<TData> {
   const schema = dataSchemaFor(blueprint);
-  if (!schema) return blueprint;
-  return { ...blueprint, dataSchema: schema };
+  const normalizedBehaviors = normalizeBlueprintBehaviors(blueprint.behaviors);
+  const withSchema = schema ? { ...blueprint, dataSchema: schema } : blueprint;
+  if (normalizedBehaviors === undefined) {
+    return withSchema;
+  }
+  return { ...withSchema, behaviors: normalizedBehaviors };
 }
 
 export function getBlueprintForThing(
@@ -157,14 +169,14 @@ export function sanitizeThingData(
 
 type DefineBlueprintInput<Name extends string, TData> = {
   name: Name;
-  schema?: ZodType<TData>;
+  dataSchema?: ZodType<TData>;
   create: (
     data: BlueprintData<TData>
   ) => Blueprint<TData> | BlueprintModule<TData> | BlueprintData<TData>;
 };
 
 export function defineBlueprint<Name extends string, Schema extends ZodTypeAny>(
-  input: DefineBlueprintInput<Name, z.infer<Schema>> & { schema: Schema }
+  input: DefineBlueprintInput<Name, z.infer<Schema>> & { dataSchema: Schema }
 ): BlueprintDefinition<Name, z.infer<Schema>>;
 export function defineBlueprint<Name extends string>(
   input: DefineBlueprintInput<Name, unknown>
@@ -180,7 +192,7 @@ export function defineBlueprint<Name extends string, TData = unknown>(
       ...blueprintData,
       ...blueprintBody,
       name: input.name,
-      ...(input.schema ? { dataSchema: input.schema } : {}),
+      ...(input.dataSchema ? { dataSchema: input.dataSchema } : {}),
     };
 
     return normalizeBlueprintData(merged) as BlueprintKind<Name, TData>;
@@ -199,7 +211,7 @@ export function defineBlueprint<Name extends string, TData = unknown>(
 
   return {
     name: input.name,
-    dataSchema: input.schema,
+    dataSchema: input.dataSchema,
     createBlueprint,
     createThing,
     isThing,
@@ -220,18 +232,123 @@ export function isBlueprintDefinition(
   );
 }
 
-function doesActionSupportTrigger<T extends TriggerName>(
+function doesActionSupportTrigger(
   action: ActionDefinition,
-  trigger: T
-): action is ActionDefinition<T> {
+  trigger: TriggerName
+): boolean {
   return action.allowedTriggers.includes(trigger);
 }
 
-function getBehaviorActionsForTrigger(
+type ActionHandlerFactoriesByTrigger = {
+  [K in TriggerName]: (
+    action: ActionDefinition,
+    settings: ActionSettings
+  ) => TriggerHandler<K>;
+};
+
+const actionHandlerFactoriesByTrigger: ActionHandlerFactoriesByTrigger = {
+  create: (action, settings) => (thing, game) => {
+    action.code({ thing, game, settings });
+  },
+  input: (action, settings) => (thing, game, keyState) => {
+    if (action.inputGate !== "always" && !hasActiveInput(keyState)) {
+      return;
+    }
+    action.code({ thing, game, keyState, settings });
+  },
+  update: (action, settings) => (thing, game, keyState) => {
+    action.code({ thing, game, settings, keyState });
+  },
+  collision: (action, settings) => (thing, otherThing, game) => {
+    action.code({ thing, otherThing, game, settings });
+  },
+};
+
+function createActionHandlerForTrigger<T extends TriggerName>(
+  trigger: T,
+  action: ActionDefinition,
+  settings: ActionSettings
+): TriggerHandler<T> {
+  return actionHandlerFactoriesByTrigger[trigger](action, settings);
+}
+
+function getActionsForTrigger(
   blueprint: Blueprint | undefined,
   trigger: TriggerName
-): string[] {
+): BehaviorAction[] {
   return blueprint?.behaviors?.[trigger] ?? [];
+}
+
+// Ensures that blueprint behaviors match the latest action definitions and have
+// all defaults filled in.
+function normalizeBlueprintBehaviors(
+  behaviors: Blueprint["behaviors"]
+): Blueprint["behaviors"] {
+  if (!behaviors) {
+    return behaviors;
+  }
+  let changed = false;
+  const nextBehaviors: Blueprint["behaviors"] = { ...behaviors };
+  for (const trigger of TRIGGERS) {
+    const actions = behaviors[trigger];
+    if (!actions) {
+      continue;
+    }
+    let triggerChanged = false;
+    const nextActions = actions.map((behaviorAction) => {
+      const actionDefinition = globalActions[behaviorAction.action];
+      if (!actionDefinition) {
+        return behaviorAction;
+      }
+      const resolvedSettings = resolveActionSettings(
+        actionDefinition.settings,
+        behaviorAction.settings
+      );
+      if (areSettingsEqual(resolvedSettings, behaviorAction.settings)) {
+        return behaviorAction;
+      }
+      triggerChanged = true;
+      changed = true;
+      return { ...behaviorAction, settings: resolvedSettings };
+    });
+    if (triggerChanged) {
+      nextBehaviors[trigger] = nextActions;
+    }
+  }
+  return changed ? nextBehaviors : behaviors;
+}
+
+function areSettingsEqual(left: ActionSettings, right: ActionSettings) {
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+  if (leftKeys.length !== rightKeys.length) {
+    return false;
+  }
+  for (const key of leftKeys) {
+    if (left[key] !== right[key]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function hasActiveInput(keyState: KeyState) {
+  return (
+    keyState.arrowLeft ||
+    keyState.arrowRight ||
+    keyState.arrowUp ||
+    keyState.arrowDown ||
+    keyState.digit1 ||
+    keyState.digit0 ||
+    keyState.digit9 ||
+    keyState.space ||
+    keyState.shift ||
+    keyState.keyW ||
+    keyState.keyA ||
+    keyState.keyS ||
+    keyState.keyD ||
+    keyState.keyE
+  );
 }
 
 function collectBlueprintHandlers<T extends TriggerName>(
@@ -245,19 +362,28 @@ function collectBlueprintHandlers<T extends TriggerName>(
     handlers.push({ name: "blueprint", fn: blueprintHandler });
   }
 
-  for (const actionName of getBehaviorActionsForTrigger(blueprint, trigger)) {
-    const action = globalActions[actionName];
+  for (const behaviorAction of getActionsForTrigger(blueprint, trigger)) {
+    const action = globalActions[behaviorAction.action];
     if (!action) {
-      console.warn(`Action "${actionName}" not found for trigger "${trigger}".`);
+      console.warn(
+        `Action "${behaviorAction.action}" not found for trigger "${trigger}".`
+      );
       continue;
     }
     if (!doesActionSupportTrigger(action, trigger)) {
       console.warn(
-        `Action "${actionName}" cannot run on trigger "${trigger}".`
+        `Action "${behaviorAction.action}" cannot run on trigger "${trigger}".`
       );
       continue;
     }
-    handlers.push({ name: actionName, fn: action.code });
+    const resolvedSettings = resolveActionSettings(
+      action.settings,
+      behaviorAction.settings
+    );
+    handlers.push({
+      name: behaviorAction.action,
+      fn: createActionHandlerForTrigger(trigger, action, resolvedSettings),
+    });
   }
 
   return handlers;
@@ -269,7 +395,11 @@ export function runBlueprintHandlers<T extends TriggerName>(
   blueprintHandler: TriggerHandler<T> | undefined,
   invoke: (handler: TriggerHandler<T>) => void
 ): boolean {
-  const handlers = collectBlueprintHandlers(trigger, blueprint, blueprintHandler);
+  const handlers = collectBlueprintHandlers(
+    trigger,
+    blueprint,
+    blueprintHandler
+  );
   if (handlers.length === 0) {
     return false;
   }
@@ -289,7 +419,6 @@ export function runBlueprintHandlers<T extends TriggerName>(
 
   return true;
 }
-
 
 function hasBlueprintDefinitionShape(value: unknown): value is {
   name: unknown;

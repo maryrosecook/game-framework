@@ -16,7 +16,7 @@ export type TheseusData = z.infer<typeof TheseusDataSchema>;
 
 const TheseusBlueprintDefinition = defineBlueprint({
   name: "theseus",
-  schema: TheseusDataSchema,
+  dataSchema: TheseusDataSchema,
   create: (data) => ({
     ...data,
     input: (thing: RuntimeThing, _game: GameContext, keys: KeyState) => {

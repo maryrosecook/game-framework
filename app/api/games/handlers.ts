@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import {
   gameSlug,
-  isGameFile,
-  isNotFoundError,
   readGameFile,
   writeEditorSettings,
   writeGameFile,
 } from "@/lib/games";
+import { isGameFile, isNotFoundError } from "@/engine/types";
 import { getErrorMessage } from "@/lib/errors";
 
 type HandlerOptions = {

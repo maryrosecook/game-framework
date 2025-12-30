@@ -41,7 +41,7 @@ type BlueprintData = z.infer<typeof DataSchema>;
 
 const BlueprintDefinition = defineBlueprint({
   name: "blueprint-name",
-  schema: DataSchema,
+  dataSchema: DataSchema,
   create: (blueprintData) => ({
     ...blueprintData,
     input: (thing: RuntimeThing) => { /* ... */ },

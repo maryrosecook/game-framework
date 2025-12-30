@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { gameSlug, isNotFoundError } from "@/lib/games";
+import { gameSlug } from "@/lib/games";
+import { isNotFoundError } from "@/engine/types";
 import { getErrorMessage } from "@/lib/errors";
 
 export const dynamic = "force-dynamic";

@@ -38,7 +38,7 @@ type MinotaurData = z.infer<typeof MinotaurDataSchema>;
 
 const MinotaurBlueprintDefinition = defineBlueprint({
   name: "minotaur",
-  schema: MinotaurDataSchema,
+  dataSchema: MinotaurDataSchema,
   create: (blueprintData) => ({
     ...blueprintData,
     input: (thing: RuntimeThing) => {
