@@ -6,6 +6,7 @@ import {
   ActionSettings,
   BehaviorAction,
   Blueprint,
+  BlueprintBehaviors,
   GameAction,
   TriggerName,
 } from "@/engine/types";
@@ -33,8 +34,8 @@ type ActionTabProps = {
 };
 
 export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
-  const behaviors = blueprint.behaviors ?? {};
-  const triggerSections = TRIGGERS.filter((trigger) => trigger in behaviors);
+  const behaviors: BlueprintBehaviors = blueprint.behaviors ?? [];
+  const triggerSections = behaviors;
   const blueprintNames = useMemo(
     () =>
       [...blueprints]
@@ -44,10 +45,10 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
   );
 
   const handleAddTrigger = (trigger: TriggerName) => {
-    if (behaviors[trigger]) {
-      return;
-    }
-    const nextBehaviors = { ...behaviors, [trigger]: [] };
+    const nextBehaviors: BlueprintBehaviors = [
+      ...behaviors,
+      { trigger, actions: [] },
+    ];
     dispatch({
       type: "setBlueprintProperty",
       blueprintName: blueprint.name,
@@ -56,12 +57,11 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
     });
   };
 
-  const handleRemoveTrigger = (trigger: TriggerName) => {
-    if (!behaviors[trigger]) {
+  const handleRemoveTrigger = (index: number) => {
+    if (!behaviors[index]) {
       return;
     }
-    const nextBehaviors = { ...behaviors };
-    delete nextBehaviors[trigger];
+    const nextBehaviors = behaviors.filter((_, idx) => idx !== index);
     dispatch({
       type: "setBlueprintProperty",
       blueprintName: blueprint.name,
@@ -70,12 +70,16 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
     });
   };
 
-  const handleAddAction = (trigger: TriggerName, actionKey: string) => {
+  const handleAddAction = (index: number, actionKey: string) => {
     const definition = actions[actionKey];
     if (!definition) {
       return;
     }
-    const existing = behaviors[trigger] ?? [];
+    const target = behaviors[index];
+    if (!target) {
+      return;
+    }
+    const existing = target.actions;
     const nextActions: BehaviorAction[] = [
       ...existing,
       {
@@ -83,7 +87,9 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
         settings: getDefaultActionSettings(definition.settings),
       },
     ];
-    const nextBehaviors = { ...behaviors, [trigger]: nextActions };
+    const nextBehaviors = behaviors.map((behavior, idx) =>
+      idx === index ? { ...behavior, actions: nextActions } : behavior
+    );
     dispatch({
       type: "setBlueprintProperty",
       blueprintName: blueprint.name,
@@ -92,10 +98,16 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
     });
   };
 
-  const handleRemoveAction = (trigger: TriggerName, index: number) => {
-    const existing = behaviors[trigger] ?? [];
-    const nextActions = existing.filter((_, idx) => idx !== index);
-    const nextBehaviors = { ...behaviors, [trigger]: nextActions };
+  const handleRemoveAction = (behaviorIndex: number, actionIndex: number) => {
+    const target = behaviors[behaviorIndex];
+    if (!target) {
+      return;
+    }
+    const existing = target.actions;
+    const nextActions = existing.filter((_, idx) => idx !== actionIndex);
+    const nextBehaviors = behaviors.map((behavior, idx) =>
+      idx === behaviorIndex ? { ...behavior, actions: nextActions } : behavior
+    );
     dispatch({
       type: "setBlueprintProperty",
       blueprintName: blueprint.name,
@@ -105,21 +117,23 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
   };
 
   const handleSettingChange = (
-    trigger: TriggerName,
-    index: number,
+    behaviorIndex: number,
+    actionIndex: number,
     key: string,
     value: ActionSettings[string]
   ) => {
-    const existing = behaviors[trigger] ?? [];
-    const target = existing[index];
+    const existing = behaviors[behaviorIndex]?.actions ?? [];
+    const target = existing[actionIndex];
     if (!target) {
       return;
     }
     const nextSettings = { ...target.settings, [key]: value };
     const nextActions = existing.map((action, idx) =>
-      idx === index ? { ...action, settings: nextSettings } : action
+      idx === actionIndex ? { ...action, settings: nextSettings } : action
     );
-    const nextBehaviors = { ...behaviors, [trigger]: nextActions };
+    const nextBehaviors = behaviors.map((behavior, idx) =>
+      idx === behaviorIndex ? { ...behavior, actions: nextActions } : behavior
+    );
     dispatch({
       type: "setBlueprintProperty",
       blueprintName: blueprint.name,
@@ -154,19 +168,19 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
         </select>
       </div>
 
-      {triggerSections.map((trigger) => (
+      {triggerSections.map((behavior, index) => (
         <div
-          key={trigger}
+          key={`${behavior.trigger}-${index}`}
           className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3"
         >
           <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
-            <span>{TRIGGER_LABELS[trigger]}</span>
-            {(behaviors[trigger] ?? []).length === 0 ? (
+            <span>{TRIGGER_LABELS[behavior.trigger]}</span>
+            {behavior.actions.length === 0 ? (
               <button
                 type="button"
                 className="flex h-6 w-6 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 cursor-pointer"
-                onClick={() => handleRemoveTrigger(trigger)}
-                aria-label={`Remove ${TRIGGER_LABELS[trigger]} trigger`}
+                onClick={() => handleRemoveTrigger(index)}
+                aria-label={`Remove ${TRIGGER_LABELS[behavior.trigger]} trigger`}
               >
                 ×
               </button>
@@ -174,18 +188,18 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
           </div>
 
           <div className="space-y-2">
-            {(behaviors[trigger] ?? []).length === 0 ? (
+            {behavior.actions.length === 0 ? (
               <p className="text-xs text-slate-500">No actions yet.</p>
             ) : (
-              (behaviors[trigger] ?? []).map((behaviorAction, index) => (
+              behavior.actions.map((behaviorAction, actionIndex) => (
                 <ActionCard
-                  key={`${behaviorAction.action}-${index}`}
+                  key={`${behaviorAction.action}-${actionIndex}`}
                   actionKey={behaviorAction.action}
                   behaviorAction={behaviorAction}
                   blueprintNames={blueprintNames}
-                  onRemove={() => handleRemoveAction(trigger, index)}
+                  onRemove={() => handleRemoveAction(index, actionIndex)}
                   onSettingChange={(key, value) =>
-                    handleSettingChange(trigger, index, key, value)
+                    handleSettingChange(index, actionIndex, key, value)
                   }
                 />
               ))
@@ -198,7 +212,7 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
             onChange={(event) => {
               const selected = event.target.value;
               if (selected) {
-                handleAddAction(trigger, selected);
+                handleAddAction(index, selected);
               }
               event.currentTarget.value = "";
             }}
@@ -206,7 +220,7 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
             <option value="" disabled>
               Then…
             </option>
-            {getActionOptions(trigger).map((option) => (
+            {getActionOptions(behavior.trigger).map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

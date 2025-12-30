@@ -20,8 +20,6 @@ import {
 import { actions as globalActions } from "./actions";
 import { resolveActionSettings } from "./actions/settings";
 
-const TRIGGERS: TriggerName[] = ["create", "input", "update", "collision"];
-
 type DataContext = { blueprintName: string; source: "blueprint" | "thing" };
 
 const hasBlueprintName = (
@@ -276,7 +274,18 @@ function getActionsForTrigger(
   blueprint: Blueprint | undefined,
   trigger: TriggerName
 ): BehaviorAction[] {
-  return blueprint?.behaviors?.[trigger] ?? [];
+  const behaviors = blueprint?.behaviors;
+  if (!behaviors) {
+    return [];
+  }
+  const actions: BehaviorAction[] = [];
+  for (const behavior of behaviors) {
+    if (behavior.trigger !== trigger) {
+      continue;
+    }
+    actions.push(...behavior.actions);
+  }
+  return actions;
 }
 
 // Ensures that blueprint behaviors match the latest action definitions and have
@@ -288,14 +297,9 @@ function normalizeBlueprintBehaviors(
     return behaviors;
   }
   let changed = false;
-  const nextBehaviors: Blueprint["behaviors"] = { ...behaviors };
-  for (const trigger of TRIGGERS) {
-    const actions = behaviors[trigger];
-    if (!actions) {
-      continue;
-    }
-    let triggerChanged = false;
-    const nextActions = actions.map((behaviorAction) => {
+  const nextBehaviors = behaviors.map((behavior) => {
+    let entryChanged = false;
+    const nextActions = behavior.actions.map((behaviorAction) => {
       const actionDefinition = globalActions[behaviorAction.action];
       if (!actionDefinition) {
         return behaviorAction;
@@ -307,14 +311,15 @@ function normalizeBlueprintBehaviors(
       if (areSettingsEqual(resolvedSettings, behaviorAction.settings)) {
         return behaviorAction;
       }
-      triggerChanged = true;
-      changed = true;
+      entryChanged = true;
       return { ...behaviorAction, settings: resolvedSettings };
     });
-    if (triggerChanged) {
-      nextBehaviors[trigger] = nextActions;
+    if (!entryChanged) {
+      return behavior;
     }
-  }
+    changed = true;
+    return { ...behavior, actions: nextActions };
+  });
   return changed ? nextBehaviors : behaviors;
 }
 

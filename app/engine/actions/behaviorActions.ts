@@ -1,6 +1,4 @@
-import { BlueprintBehaviors, TriggerName } from "@/engine/types";
-
-const TRIGGERS: TriggerName[] = ["create", "input", "update", "collision"];
+import { BlueprintBehaviors } from "@/engine/types";
 
 export function renameSpawnObjectBlueprints(
   behaviors: BlueprintBehaviors | undefined,
@@ -11,14 +9,9 @@ export function renameSpawnObjectBlueprints(
     return behaviors;
   }
   let changed = false;
-  const nextBehaviors: BlueprintBehaviors = { ...behaviors };
-  for (const trigger of TRIGGERS) {
-    const actions = behaviors[trigger];
-    if (!actions) {
-      continue;
-    }
-    let triggerChanged = false;
-    const nextActions = actions.map((action) => {
+  const nextBehaviors: BlueprintBehaviors = behaviors.map((behavior) => {
+    let entryChanged = false;
+    const nextActions = behavior.actions.map((action) => {
       if (action.action !== "spawnObject") {
         return action;
       }
@@ -26,16 +19,17 @@ export function renameSpawnObjectBlueprints(
       if (typeof blueprint !== "string" || blueprint !== previousName) {
         return action;
       }
-      triggerChanged = true;
-      changed = true;
+      entryChanged = true;
       return {
         ...action,
         settings: { ...action.settings, blueprint: nextName },
       };
     });
-    if (triggerChanged) {
-      nextBehaviors[trigger] = nextActions;
+    if (!entryChanged) {
+      return behavior;
     }
-  }
+    changed = true;
+    return { ...behavior, actions: nextActions };
+  });
   return changed ? nextBehaviors : behaviors;
 }
