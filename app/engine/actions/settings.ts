@@ -1,4 +1,9 @@
-import { ActionSetting, ActionSettingValue, ActionSettings } from "@/engine/types";
+import {
+  ActionSetting,
+  ActionSettingValue,
+  ActionSettings,
+  isSpawnInitAssignments,
+} from "@/engine/types";
 
 function isValidSettingValue(
   definition: ActionSetting,
@@ -19,6 +24,8 @@ function isValidSettingValue(
         return true;
       }
       return definition.options.includes(value);
+    case "spawnInit":
+      return isSpawnInitAssignments(value);
     default: {
       const _exhaustiveCheck: never = definition;
       return _exhaustiveCheck;
@@ -26,12 +33,25 @@ function isValidSettingValue(
   }
 }
 
+function getDefaultSettingValue(definition: ActionSetting): ActionSettingValue {
+  if (definition.kind !== "spawnInit") {
+    return definition.default;
+  }
+  return definition.default.map((assignment) => ({
+    property: assignment.property,
+    value: {
+      type: assignment.value.type,
+      literal: assignment.value.literal ?? 0,
+    },
+  }));
+}
+
 export function getDefaultActionSettings<
   TSettings extends Record<string, ActionSetting>
 >(definitions: TSettings): ActionSettings {
   const defaults: ActionSettings = {};
   for (const key of Object.keys(definitions)) {
-    defaults[key] = definitions[key].default;
+    defaults[key] = getDefaultSettingValue(definitions[key]);
   }
   return defaults;
 }
@@ -46,7 +66,7 @@ export function resolveActionSettings<
     if (candidate !== undefined && isValidSettingValue(definition, candidate)) {
       resolved[key] = candidate;
     } else {
-      resolved[key] = definition.default;
+      resolved[key] = getDefaultSettingValue(definition);
     }
   }
   return resolved;

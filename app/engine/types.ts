@@ -67,13 +67,44 @@ export type ActionSettingEnum = {
   options: string[];
 };
 
+export type SpawnInitProperty = keyof Pick<
+  RawThing,
+  "angle" | "velocityX" | "velocityY" | "width" | "height"
+>;
+
+export const SPAWN_INIT_PROPERTIES: SpawnInitProperty[] = [
+  "angle",
+  "velocityX",
+  "velocityY",
+  "width",
+  "height",
+];
+
+export type SpawnInitValue = {
+  type: "literal" | "source";
+  literal?: number;
+};
+
+export type SpawnInitAssignment = {
+  property: SpawnInitProperty;
+  value: SpawnInitValue;
+};
+
+export type SpawnInitAssignments = SpawnInitAssignment[];
+
+export type ActionSettingSpawnInit = {
+  kind: "spawnInit";
+  default: SpawnInitAssignments;
+};
+
 export type ActionSetting =
   | ActionSettingNumber
   | ActionSettingString
   | ActionSettingBoolean
-  | ActionSettingEnum;
+  | ActionSettingEnum
+  | ActionSettingSpawnInit;
 
-export type ActionSettingValue = number | string | boolean;
+export type ActionSettingValue = number | string | boolean | SpawnInitAssignments;
 
 export type ActionSettings = Record<string, ActionSettingValue>;
 
@@ -86,6 +117,8 @@ export type ActionSettingValueFor<T extends ActionSetting> =
     ? boolean
     : T extends ActionSettingEnum
     ? string
+    : T extends ActionSettingSpawnInit
+    ? SpawnInitAssignments
     : never;
 
 export type ActionSettingValues<
@@ -511,9 +544,50 @@ export function isInputTriggerKey(value: unknown): value is InputTriggerKey {
   );
 }
 
+export function isSpawnInitProperty(
+  value: unknown
+): value is SpawnInitProperty {
+  return (
+    typeof value === "string" &&
+    SPAWN_INIT_PROPERTIES.some((property) => property === value)
+  );
+}
+
+export function isSpawnInitValue(value: unknown): value is SpawnInitValue {
+  if (!isRecord(value)) {
+    return false;
+  }
+  if (value.type === "literal") {
+    return typeof value.literal === "number" && Number.isFinite(value.literal);
+  }
+  if (value.type === "source") {
+    return (
+      value.literal === undefined ||
+      (typeof value.literal === "number" && Number.isFinite(value.literal))
+    );
+  }
+  return false;
+}
+
+export function isSpawnInitAssignment(
+  value: unknown
+): value is SpawnInitAssignment {
+  return (
+    isRecord(value) &&
+    isSpawnInitProperty(value.property) &&
+    isSpawnInitValue(value.value)
+  );
+}
+
+export function isSpawnInitAssignments(
+  value: unknown
+): value is SpawnInitAssignments {
+  return Array.isArray(value) && value.every((entry) => isSpawnInitAssignment(entry));
+}
+
 export function isActionSettings(
   value: unknown
-): value is Record<string, string | number | boolean> {
+): value is ActionSettings {
   if (!isRecord(value)) {
     return false;
   }
@@ -521,7 +595,8 @@ export function isActionSettings(
     if (
       typeof entry !== "string" &&
       typeof entry !== "number" &&
-      typeof entry !== "boolean"
+      typeof entry !== "boolean" &&
+      !isSpawnInitAssignments(entry)
     ) {
       return false;
     }
