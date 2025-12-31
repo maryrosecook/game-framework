@@ -251,7 +251,8 @@
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "behaviors": []
     },
     {
       "name": "blueprint-3",
