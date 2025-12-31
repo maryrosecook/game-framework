@@ -1,4 +1,3 @@
-import { DragEvent, useState } from "react";
 import { Copy, Plus, Trash2 } from "lucide-react";
 import {
   Blueprint,
@@ -8,12 +7,9 @@ import {
   RawThing,
   SetBlueprintPropertyAction,
 } from "@/engine/types";
-import { getColorOptions } from "@/components/ColorGrid";
-import { ColorSelect } from "@/components/ColorSelect";
 import { SelectField } from "@/components/SelectField";
 import { ArrangeButton } from "@/components/ArrangeButton";
 import { getBlueprintImageUrl } from "@/lib/images";
-import { getDroppedPngFile, uploadBlueprintImage } from "@/lib/imageUploads";
 
 type BlueprintTabProps = {
   blueprint: Blueprint;
@@ -40,15 +36,11 @@ export function BlueprintTab({
   canClone,
   onCreate,
 }: BlueprintTabProps) {
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-
   const imageUrl = getBlueprintImageUrl(
     gameDirectory,
     blueprint.image,
     imageVersion
   );
-  const colorOptions = getColorOptions();
   const orderedThings = getOrderedThings(things);
   const selectedIndex = selectedThingId
     ? orderedThings.findIndex((entry) => entry.thing.id === selectedThingId)
@@ -62,37 +54,6 @@ export function BlueprintTab({
     value: BlueprintData[K]
   ) => {
     dispatch(buildBlueprintPropertyAction(blueprint.name, property, value));
-  };
-
-  const handleImageDrop = async (event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const { file, error } = getDroppedPngFile(event);
-    if (error) {
-      setUploadError(error);
-      return;
-    }
-    if (!file) return;
-    setUploadError(null);
-    setIsUploading(true);
-    try {
-      const fileName = await uploadBlueprintImage({
-        gameDirectory,
-        blueprintName: blueprint.name,
-        file,
-      });
-      handleUpdate("image", fileName);
-    } catch (error) {
-      console.warn("Image upload failed", error);
-      const message =
-        error instanceof Error ? error.message : "Failed to save image.";
-      setUploadError(message);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleClearImage = () => {
-    handleUpdate("image", undefined);
   };
 
   const handleRename = (value: string) => {
@@ -187,14 +148,30 @@ export function BlueprintTab({
         <p className="text-xs uppercase tracking-wide text-slate-500">
           Blueprint
         </p>
-        <input
-          key={blueprint.name}
-          className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm outline-none focus:border-slate-400"
-          defaultValue={blueprint.name}
-          onBlur={(event) => {
-            handleRename(event.target.value);
-          }}
-        />
+        <div className="mt-1 flex items-stretch gap-2">
+          <input
+            key={blueprint.name}
+            className="h-9 w-full flex-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm outline-none focus:border-slate-400"
+            defaultValue={blueprint.name}
+            onBlur={(event) => {
+              handleRename(event.target.value);
+            }}
+          />
+          <div
+            className="relative h-9 w-9 overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
+            style={imageUrl ? undefined : { backgroundColor: blueprint.color }}
+            aria-hidden="true"
+          >
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt={`${blueprint.name} image`}
+                className="h-full w-full object-contain"
+                style={{ imageRendering: "pixelated" }}
+              />
+            ) : null}
+          </div>
+        </div>
         <div className="mt-2 flex items-center gap-2">
           <ArrangeButton
             label="Create"
@@ -224,46 +201,6 @@ export function BlueprintTab({
         </div>
       </header>
       <div className="space-y-3">
-        <div>
-          <p className="text-xs uppercase tracking-wide text-slate-500">
-            Image
-          </p>
-          <div
-            className={`mt-1 flex h-28 items-center justify-center overflow-hidden rounded-lg border border-dashed ${"border-slate-300 bg-slate-50"} ${
-              isUploading ? "opacity-70" : ""
-            }`}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={handleImageDrop}
-          >
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={`${blueprint.name} image`}
-                className="h-full w-full object-contain"
-                style={{ imageRendering: "pixelated" }}
-              />
-            ) : (
-              <p className="px-3 text-center text-xs text-slate-500">
-                Drop a PNG here to use it for this blueprint
-              </p>
-            )}
-          </div>
-          <div className="mt-2 flex items-center justify-between">
-            <p className="text-xs text-slate-500">
-              {isUploading ? "Uploading…" : uploadError ?? "\u00A0"}
-            </p>
-            {blueprint.image ? (
-              <button
-                type="button"
-                className="text-xs text-slate-600 underline decoration-slate-400 decoration-2 underline-offset-2 disabled:cursor-not-allowed disabled:text-slate-300"
-                onClick={handleClearImage}
-                disabled={isUploading}
-              >
-                Remove
-              </button>
-            ) : null}
-          </div>
-        </div>
         <div className="grid grid-cols-2 gap-2 items-center">
           <ArrangeButton
             label="Top"
@@ -356,12 +293,6 @@ export function BlueprintTab({
             onChange={(value) => handleUpdate("bounce", Number(value))}
           />
         </div>
-        <ColorSelect
-          label="Color"
-          value={blueprint.color}
-          options={colorOptions}
-          onChange={(value) => handleUpdate("color", value)}
-        />
       </div>
     </>
   );
