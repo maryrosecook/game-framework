@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { actions } from "@/engine/actions";
 import {
   ActionSetting,
@@ -67,6 +67,10 @@ type ActionTabProps = {
 export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
   const behaviors: BlueprintBehaviors = blueprint.behaviors ?? [];
   const triggerSections = behaviors;
+  const { listRef, markPendingScroll } = useScrollToNewTrigger(
+    blueprint.name,
+    behaviors.length
+  );
   const blueprintNames = useMemo(
     () =>
       [...blueprints]
@@ -84,6 +88,7 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
       ...behaviors,
       nextBehavior,
     ];
+    markPendingScroll(behaviors.length);
     dispatch({
       type: "setBlueprintProperty",
       blueprintName: blueprint.name,
@@ -194,7 +199,7 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="flex h-full flex-col gap-4">
       <div>
         <select
           className={`mt-1 ${SELECT_CLASS}`}
@@ -219,87 +224,93 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
         </select>
       </div>
 
-      {triggerSections.map((behavior, index) => (
-        <div
-          key={`${behavior.trigger}-${index}`}
-          className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3"
-        >
-          <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
-            <div className="flex items-center gap-2">
-              <span>{TRIGGER_LABELS[behavior.trigger]}</span>
-              {behavior.trigger === "input" ? (
-                <select
-                  className={INPUT_SELECT_CLASS}
-                  value={behavior.key}
-                  aria-label="Input key"
-                  onChange={(event) => {
-                    const selected = event.target.value;
-                    if (isInputTriggerKey(selected)) {
-                      handleInputKeyChange(index, selected);
-                    }
-                  }}
+      <div
+        className="flex-1 min-h-0 space-y-4 overflow-y-auto pr-1"
+        ref={listRef}
+      >
+        {triggerSections.map((behavior, index) => (
+          <div
+            key={`${behavior.trigger}-${index}`}
+            data-trigger-index={index}
+            className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3"
+          >
+            <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
+              <div className="flex items-center gap-2">
+                <span>{TRIGGER_LABELS[behavior.trigger]}</span>
+                {behavior.trigger === "input" ? (
+                  <select
+                    className={INPUT_SELECT_CLASS}
+                    value={behavior.key}
+                    aria-label="Input key"
+                    onChange={(event) => {
+                      const selected = event.target.value;
+                      if (isInputTriggerKey(selected)) {
+                        handleInputKeyChange(index, selected);
+                      }
+                    }}
+                  >
+                    {INPUT_KEY_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : null}
+              </div>
+              {behavior.actions.length === 0 ? (
+                <button
+                  type="button"
+                  className="flex h-6 w-6 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 cursor-pointer"
+                  onClick={() => handleRemoveTrigger(index)}
+                  aria-label={`Remove ${TRIGGER_LABELS[behavior.trigger]} trigger`}
                 >
-                  {INPUT_KEY_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  ×
+                </button>
               ) : null}
             </div>
-            {behavior.actions.length === 0 ? (
-              <button
-                type="button"
-                className="flex h-6 w-6 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 cursor-pointer"
-                onClick={() => handleRemoveTrigger(index)}
-                aria-label={`Remove ${TRIGGER_LABELS[behavior.trigger]} trigger`}
-              >
-                ×
-              </button>
-            ) : null}
-          </div>
 
-          <div className="space-y-2">
-            {behavior.actions.length === 0 ? (
-              <p className="text-xs text-slate-500">No actions yet.</p>
-            ) : (
-              behavior.actions.map((behaviorAction, actionIndex) => (
-                <ActionCard
-                  key={`${behaviorAction.action}-${actionIndex}`}
-                  actionKey={behaviorAction.action}
-                  behaviorAction={behaviorAction}
-                  blueprintNames={blueprintNames}
-                  onRemove={() => handleRemoveAction(index, actionIndex)}
-                  onSettingChange={(key, value) =>
-                    handleSettingChange(index, actionIndex, key, value)
-                  }
-                />
-              ))
-            )}
-          </div>
+            <div className="space-y-2">
+              {behavior.actions.length === 0 ? (
+                <p className="text-xs text-slate-500">No actions yet.</p>
+              ) : (
+                behavior.actions.map((behaviorAction, actionIndex) => (
+                  <ActionCard
+                    key={`${behaviorAction.action}-${actionIndex}`}
+                    actionKey={behaviorAction.action}
+                    behaviorAction={behaviorAction}
+                    blueprintNames={blueprintNames}
+                    onRemove={() => handleRemoveAction(index, actionIndex)}
+                    onSettingChange={(key, value) =>
+                      handleSettingChange(index, actionIndex, key, value)
+                    }
+                  />
+                ))
+              )}
+            </div>
 
-          <select
-            className={SELECT_CLASS}
-            defaultValue=""
-            onChange={(event) => {
-              const selected = event.target.value;
-              if (selected) {
-                handleAddAction(index, selected);
-              }
-              event.currentTarget.value = "";
-            }}
-          >
-            <option value="" disabled>
-              Then…
-            </option>
-            {getActionOptions(behavior.trigger).map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+            <select
+              className={SELECT_CLASS}
+              defaultValue=""
+              onChange={(event) => {
+                const selected = event.target.value;
+                if (selected) {
+                  handleAddAction(index, selected);
+                }
+                event.currentTarget.value = "";
+              }}
+            >
+              <option value="" disabled>
+                Then…
               </option>
-            ))}
-          </select>
-        </div>
-      ))}
+              {getActionOptions(behavior.trigger).map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -525,4 +536,41 @@ function humanizeKey(value: string) {
 
 function isTriggerName(value: string): value is TriggerName {
   return TRIGGERS.some((trigger) => trigger === value);
+}
+
+function useScrollToNewTrigger(blueprintName: string, behaviorCount: number) {
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const pendingScrollIndexRef = useRef<number | null>(null);
+  const previousBehaviorCountRef = useRef<number>(behaviorCount);
+  const previousBlueprintRef = useRef<string>(blueprintName);
+
+  useEffect(() => {
+    if (previousBlueprintRef.current !== blueprintName) {
+      previousBlueprintRef.current = blueprintName;
+      previousBehaviorCountRef.current = behaviorCount;
+      pendingScrollIndexRef.current = null;
+      return;
+    }
+    const previousCount = previousBehaviorCountRef.current;
+    if (behaviorCount > previousCount) {
+      const targetIndex =
+        pendingScrollIndexRef.current ?? behaviorCount - 1;
+      const container = listRef.current;
+      if (container) {
+        const selector = `[data-trigger-index="${targetIndex}"]`;
+        const target = container.querySelector(selector);
+        if (target instanceof HTMLElement) {
+          target.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }
+    }
+    previousBehaviorCountRef.current = behaviorCount;
+    pendingScrollIndexRef.current = null;
+  }, [behaviorCount, blueprintName]);
+
+  const markPendingScroll = (index: number) => {
+    pendingScrollIndexRef.current = index;
+  };
+
+  return { listRef, markPendingScroll };
 }
