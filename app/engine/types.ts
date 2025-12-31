@@ -21,6 +21,27 @@ export type KeyState = {
   keyE: boolean;
 };
 
+export type InputKey = keyof KeyState;
+
+export const INPUT_KEYS: InputKey[] = [
+  "arrowLeft",
+  "arrowRight",
+  "arrowUp",
+  "arrowDown",
+  "digit1",
+  "digit0",
+  "digit9",
+  "space",
+  "shift",
+  "keyW",
+  "keyA",
+  "keyS",
+  "keyD",
+  "keyE",
+];
+
+export type InputTriggerKey = InputKey | "any";
+
 export type TriggerName = "create" | "input" | "update" | "collision";
 
 export type ActionSettingNumber = {
@@ -75,10 +96,18 @@ export type ActionSettingValues<
 
 export type BehaviorAction = { action: string; settings: ActionSettings };
 
-export type BlueprintBehavior = {
-  trigger: TriggerName;
+export type InputBlueprintBehavior = {
+  trigger: "input";
+  key: InputTriggerKey;
   actions: BehaviorAction[];
 };
+
+export type NonInputBlueprintBehavior = {
+  trigger: Exclude<TriggerName, "input">;
+  actions: BehaviorAction[];
+};
+
+export type BlueprintBehavior = InputBlueprintBehavior | NonInputBlueprintBehavior;
 
 export type CreateHandler<TData = unknown> = (
   thing: RuntimeThing<TData>,
@@ -255,8 +284,6 @@ export type ActionHandler<
   >
 > = BivariantHandler<[ActionContext<T, TSettings>], void>;
 
-export type InputGate = "anyKey" | "always";
-
 export type ActionDefinition<
   T extends TriggerName = TriggerName,
   TSettings extends Record<string, ActionSetting> = Record<
@@ -267,7 +294,7 @@ export type ActionDefinition<
   settings: TSettings;
   code: ActionHandler<T, TSettings>;
   allowedTriggers: readonly T[];
-} & ("input" extends T ? { inputGate?: InputGate } : { inputGate?: never });
+};
 
 export type RuntimeGameState = {
   things: RuntimeThing[];
@@ -474,6 +501,16 @@ export function isTriggerName(value: string): value is TriggerName {
   );
 }
 
+export function isInputKey(value: string): value is InputKey {
+  return INPUT_KEYS.some((key) => key === value);
+}
+
+export function isInputTriggerKey(value: unknown): value is InputTriggerKey {
+  return (
+    typeof value === "string" && (value === "any" || isInputKey(value))
+  );
+}
+
 export function isActionSettings(
   value: unknown
 ): value is Record<string, string | number | boolean> {
@@ -509,6 +546,16 @@ export function isBlueprintBehavior(
     return false;
   }
   if (typeof value.trigger !== "string" || !isTriggerName(value.trigger)) {
+    return false;
+  }
+  if (value.trigger === "input") {
+    if (!("key" in value)) {
+      return false;
+    }
+    if (!isInputTriggerKey(value.key)) {
+      return false;
+    }
+  } else if ("key" in value) {
     return false;
   }
   if (

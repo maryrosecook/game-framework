@@ -8,7 +8,6 @@ const moveWithArrows: ActionDefinition<
   { speed: { kind: "number"; default: number } }
 > = {
   allowedTriggers,
-  inputGate: "always",
   settings: {
     speed: { kind: "number", default: 2 },
   },

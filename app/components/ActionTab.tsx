@@ -8,7 +8,11 @@ import {
   Blueprint,
   BlueprintBehaviors,
   GameAction,
+  INPUT_KEYS,
+  InputKey,
+  InputTriggerKey,
   TriggerName,
+  isInputTriggerKey,
 } from "@/engine/types";
 import {
   getDefaultActionSettings,
@@ -26,6 +30,33 @@ const TRIGGER_LABELS: Record<TriggerName, string> = {
 
 const SELECT_CLASS =
   "select-chevron w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400 cursor-pointer";
+
+const INPUT_SELECT_CLASS =
+  "select-chevron rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-slate-400 cursor-pointer";
+
+const INPUT_KEY_LABELS: Record<InputKey, string> = {
+  arrowLeft: "Arrow Left",
+  arrowRight: "Arrow Right",
+  arrowUp: "Arrow Up",
+  arrowDown: "Arrow Down",
+  digit1: "1",
+  digit0: "0",
+  digit9: "9",
+  space: "Space",
+  shift: "Shift",
+  keyW: "W",
+  keyA: "A",
+  keyS: "S",
+  keyD: "D",
+  keyE: "E",
+};
+
+const INPUT_KEY_OPTIONS: Array<{ value: InputTriggerKey; label: string }> = [
+  { value: "any", label: "Any key" },
+  ...INPUT_KEYS.map((key) => ({ value: key, label: INPUT_KEY_LABELS[key] })),
+];
+
+const DEFAULT_INPUT_TRIGGER_KEY: InputTriggerKey = "any";
 
 type ActionTabProps = {
   blueprint: Blueprint;
@@ -45,9 +76,13 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
   );
 
   const handleAddTrigger = (trigger: TriggerName) => {
+    const nextBehavior =
+      trigger === "input"
+        ? { trigger, key: DEFAULT_INPUT_TRIGGER_KEY, actions: [] }
+        : { trigger, actions: [] };
     const nextBehaviors: BlueprintBehaviors = [
       ...behaviors,
-      { trigger, actions: [] },
+      nextBehavior,
     ];
     dispatch({
       type: "setBlueprintProperty",
@@ -142,6 +177,22 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
     });
   };
 
+  const handleInputKeyChange = (index: number, key: InputTriggerKey) => {
+    const target = behaviors[index];
+    if (!target || target.trigger !== "input") {
+      return;
+    }
+    const nextBehaviors = behaviors.map((behavior, idx) =>
+      idx === index ? { ...behavior, key } : behavior
+    );
+    dispatch({
+      type: "setBlueprintProperty",
+      blueprintName: blueprint.name,
+      property: "behaviors",
+      value: nextBehaviors,
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -174,7 +225,28 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
           className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3"
         >
           <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
-            <span>{TRIGGER_LABELS[behavior.trigger]}</span>
+            <div className="flex items-center gap-2">
+              <span>{TRIGGER_LABELS[behavior.trigger]}</span>
+              {behavior.trigger === "input" ? (
+                <select
+                  className={INPUT_SELECT_CLASS}
+                  value={behavior.key}
+                  aria-label="Input key"
+                  onChange={(event) => {
+                    const selected = event.target.value;
+                    if (isInputTriggerKey(selected)) {
+                      handleInputKeyChange(index, selected);
+                    }
+                  }}
+                >
+                  {INPUT_KEY_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              ) : null}
+            </div>
             {behavior.actions.length === 0 ? (
               <button
                 type="button"
