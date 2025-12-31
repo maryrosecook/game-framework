@@ -12,8 +12,15 @@ import {
   InputKey,
   InputTriggerKey,
   InputTriggerStage,
+  SPAWN_INIT_PROPERTIES,
+  SpawnInitAssignment,
+  SpawnInitAssignments,
+  SpawnInitProperty,
+  SpawnInitValue,
   TriggerName,
   isInputTriggerKey,
+  isSpawnInitAssignments,
+  isSpawnInitProperty,
   isInputTriggerStage,
 } from "@/engine/types";
 import {
@@ -35,6 +42,9 @@ const SELECT_CLASS =
 
 const INPUT_SELECT_CLASS =
   "select-chevron rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-slate-400 cursor-pointer";
+
+const INLINE_INPUT_CLASS =
+  "rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-slate-400";
 
 const INPUT_KEY_LABELS: Record<InputKey, string> = {
   arrowLeft: "Arrow Left",
@@ -68,6 +78,19 @@ const INPUT_STAGE_OPTIONS: Array<{
 
 const DEFAULT_INPUT_TRIGGER_KEY: InputTriggerKey = "any";
 const DEFAULT_INPUT_TRIGGER_STAGE: InputTriggerStage = "press";
+
+const SPAWN_INIT_PROPERTY_OPTIONS = SPAWN_INIT_PROPERTIES.map((property) => ({
+  value: property,
+  label: humanizeKey(property),
+}));
+
+const SPAWN_INIT_VALUE_TYPE_OPTIONS: Array<{
+  value: SpawnInitValue["type"];
+  label: string;
+}> = [
+  { value: "literal", label: "Number" },
+  { value: "source", label: "Source" },
+];
 
 type ActionTabProps = {
   blueprint: Blueprint;
@@ -534,7 +557,164 @@ function ActionSettingField({
     );
   }
 
+  if (setting.kind === "spawnInit") {
+    const value = isSpawnInitAssignments(currentValue)
+      ? currentValue
+      : setting.default;
+    return (
+      <SpawnInitSettingField
+        assignments={value}
+        onChange={onChange}
+      />
+    );
+  }
+
   return null;
+}
+
+function SpawnInitSettingField({
+  assignments,
+  onChange,
+}: {
+  assignments: SpawnInitAssignments;
+  onChange: (value: SpawnInitAssignments) => void;
+}) {
+  const handleAdd = () => {
+    const defaultProperty: SpawnInitProperty = "angle";
+    const nextAssignment: SpawnInitAssignment = {
+      property: defaultProperty,
+      value: { type: "source", literal: 0 },
+    };
+    onChange([...assignments, nextAssignment]);
+  };
+
+  const handleRemove = (index: number) => {
+    onChange(assignments.filter((_, idx) => idx !== index));
+  };
+
+  const handlePropertyChange = (index: number, property: SpawnInitProperty) => {
+    onChange(
+      assignments.map((assignment, idx) =>
+        idx === index ? { ...assignment, property } : assignment
+      )
+    );
+  };
+
+  const handleValueTypeChange = (
+    index: number,
+    valueType: SpawnInitValue["type"]
+  ) => {
+    onChange(
+      assignments.map((assignment, idx) => {
+        if (idx !== index) {
+          return assignment;
+        }
+        return {
+          ...assignment,
+          value: {
+            type: valueType,
+            literal: assignment.value.literal ?? 0,
+          },
+        };
+      })
+    );
+  };
+
+  const handleLiteralValueChange = (index: number, value: number) => {
+    onChange(
+      assignments.map((assignment, idx) => {
+        if (idx !== index || assignment.value.type !== "literal") {
+          return assignment;
+        }
+        return {
+          ...assignment,
+          value: { type: "literal", literal: value },
+        };
+      })
+    );
+  };
+
+  return (
+    <div className="space-y-2">
+      {assignments.length === 0 ? (
+        <p className="text-xs text-slate-500">No vars yet.</p>
+      ) : (
+        <div className="space-y-2">
+          {assignments.map((assignment, index) => (
+            <div
+              key={`${assignment.property}-${index}`}
+              className="flex items-center gap-2"
+            >
+              <select
+                className={INPUT_SELECT_CLASS}
+                value={assignment.property}
+                aria-label="Spawn property"
+                onChange={(event) => {
+                  const selected = event.target.value;
+                  if (isSpawnInitProperty(selected)) {
+                    handlePropertyChange(index, selected);
+                  }
+                }}
+              >
+                {SPAWN_INIT_PROPERTY_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                className={INPUT_SELECT_CLASS}
+                value={assignment.value.type}
+                aria-label="Spawn value type"
+                onChange={(event) => {
+                  const selected = event.target.value;
+                  if (isSpawnInitValueType(selected)) {
+                    handleValueTypeChange(index, selected);
+                  }
+                }}
+              >
+                {SPAWN_INIT_VALUE_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {assignment.value.type === "literal" ? (
+                <input
+                  type="number"
+                  className={`${INLINE_INPUT_CLASS} w-24`}
+                  value={assignment.value.literal ?? 0}
+                  aria-label="Spawn number value"
+                  onChange={(event) => {
+                    const nextValue = Number(event.target.value);
+                    if (!Number.isFinite(nextValue)) {
+                      return;
+                    }
+                    handleLiteralValueChange(index, nextValue);
+                  }}
+                />
+              ) : null}
+              <button
+                type="button"
+                className="flex h-6 w-6 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 cursor-pointer"
+                aria-label="Remove spawn init"
+                onClick={() => handleRemove(index)}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      <button
+        type="button"
+        className="text-xs font-medium text-slate-600 hover:text-slate-900"
+        onClick={handleAdd}
+      >
+        + Add var
+      </button>
+    </div>
+  );
 }
 
 function getEnumOptions(
@@ -583,6 +763,10 @@ function sentenceCase(value: string) {
 function humanizeKey(value: string) {
   const withSpaces = value.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
   return sentenceCase(withSpaces);
+}
+
+function isSpawnInitValueType(value: string): value is SpawnInitValue["type"] {
+  return SPAWN_INIT_VALUE_TYPE_OPTIONS.some((option) => option.value === value);
 }
 
 function isTriggerName(value: string): value is TriggerName {

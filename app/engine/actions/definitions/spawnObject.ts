@@ -1,4 +1,12 @@
-import { ActionDefinition, TriggerName } from "@/engine/types";
+import {
+  ActionDefinition,
+  ActionSettingEnum,
+  ActionSettingSpawnInit,
+  RawThing,
+  SpawnInitAssignments,
+  TriggerName,
+  RuntimeThing,
+} from "@/engine/types";
 
 const allowedTriggers: ActionDefinition["allowedTriggers"] = [
   "create",
@@ -9,11 +17,12 @@ const allowedTriggers: ActionDefinition["allowedTriggers"] = [
 
 const spawnObject: ActionDefinition<
   TriggerName,
-  { blueprint: { kind: "enum"; default: string; options: string[] } }
+  { blueprint: ActionSettingEnum; initialVars: ActionSettingSpawnInit }
 > = {
   allowedTriggers,
   settings: {
     blueprint: { kind: "enum", default: "", options: [] },
+    initialVars: { kind: "spawnInit", default: [] },
   },
   code: ({ thing, game, settings }) => {
     const blueprintName = settings.blueprint.trim();
@@ -31,11 +40,31 @@ const spawnObject: ActionDefinition<
       x: thing.x + thing.width / 2,
       y: thing.y + thing.height / 2,
     };
-    const spawned = game.spawn({ blueprint: blueprintName, position });
+    const overrides = buildSpawnOverrides(settings.initialVars, thing);
+    const spawned = game.spawn({
+      blueprint: blueprintName,
+      position,
+      overrides: Object.keys(overrides).length > 0 ? overrides : undefined,
+    });
     if (!spawned) {
       console.warn(`Spawn failed for blueprint "${blueprintName}".`);
     }
   },
 };
+
+function buildSpawnOverrides(
+  assignments: SpawnInitAssignments,
+  source: RuntimeThing
+): Partial<RawThing> {
+    const overrides: Partial<RawThing> = {};
+  for (const assignment of assignments) {
+    const value =
+      assignment.value.type === "literal"
+        ? assignment.value.literal ?? 0
+        : source[assignment.property];
+    overrides[assignment.property] = value;
+  }
+  return overrides;
+}
 
 export default spawnObject;

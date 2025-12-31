@@ -70,7 +70,8 @@
             {
               "action": "spawnObject",
               "settings": {
-                "blueprint": "blueprint-2"
+                "blueprint": "blueprint-2",
+                "initialVars": []
               }
             }
           ]
