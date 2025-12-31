@@ -243,6 +243,38 @@ export function BlueprintTab({
           ]}
           onChange={(value) => handleUpdate("shape", value)}
         />
+        <div className="grid grid-cols-2 gap-2">
+          <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
+            Width
+            <input
+              type="number"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
+              value={blueprint.width}
+              onChange={(event) => {
+                const nextValue = Number(event.target.value);
+                if (!Number.isFinite(nextValue)) {
+                  return;
+                }
+                handleUpdate("width", nextValue);
+              }}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
+            Height
+            <input
+              type="number"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
+              value={blueprint.height}
+              onChange={(event) => {
+                const nextValue = Number(event.target.value);
+                if (!Number.isFinite(nextValue)) {
+                  return;
+                }
+                handleUpdate("height", nextValue);
+              }}
+            />
+          </label>
+        </div>
         <SelectField
           label="Physics"
           value={blueprint.physicsType}
