@@ -31,7 +31,7 @@ const TRIGGER_LABELS: Record<TriggerName, string> = {
 };
 
 const SELECT_CLASS =
-  "select-chevron w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400 cursor-pointer";
+  "select-chevron w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-slate-400 cursor-pointer";
 
 const INPUT_SELECT_CLASS =
   "select-chevron rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-slate-400 cursor-pointer";
