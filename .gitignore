@@ -40,3 +40,4 @@ yarn-error.log*
 next-env.d.ts
 app/games/*/blueprint-manifest.ts
 app/games/blueprint-manifest-index.ts
+editorSettings.json
