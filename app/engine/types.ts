@@ -21,6 +21,12 @@ export type KeyState = {
   keyE: boolean;
 };
 
+export type InputFrameState = {
+  keyState: KeyState;
+  pressed: KeyState;
+  released: KeyState;
+};
+
 export type InputKey = keyof KeyState;
 
 export const INPUT_KEYS: InputKey[] = [
@@ -41,6 +47,8 @@ export const INPUT_KEYS: InputKey[] = [
 ];
 
 export type InputTriggerKey = InputKey | "any";
+
+export type InputTriggerStage = "press" | "hold";
 
 export type TriggerName = "create" | "input" | "update" | "collision";
 
@@ -99,6 +107,7 @@ export type BehaviorAction = { action: string; settings: ActionSettings };
 export type InputBlueprintBehavior = {
   trigger: "input";
   key: InputTriggerKey;
+  stage: InputTriggerStage;
   actions: BehaviorAction[];
 };
 
@@ -510,6 +519,10 @@ export function isInputTriggerKey(value: unknown): value is InputTriggerKey {
   );
 }
 
+export function isInputTriggerStage(value: unknown): value is InputTriggerStage {
+  return value === "press" || value === "hold";
+}
+
 export function isActionSettings(
   value: unknown
 ): value is Record<string, string | number | boolean> {
@@ -551,10 +564,18 @@ export function isBlueprintBehavior(
     if (!("key" in value)) {
       return false;
     }
+    if (!("stage" in value)) {
+      return false;
+    }
     if (!isInputTriggerKey(value.key)) {
       return false;
     }
+    if (!isInputTriggerStage(value.stage)) {
+      return false;
+    }
   } else if ("key" in value) {
+    return false;
+  } else if ("stage" in value) {
     return false;
   }
   if (

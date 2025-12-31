@@ -1,4 +1,4 @@
-import { KeyState } from "./types";
+import { InputFrameState, KeyState } from "./types";
 
 export type PointerInputEventType =
   | "down"
@@ -53,6 +53,8 @@ const CODE_TO_KEY: Partial<Record<KeyboardEvent["code"], keyof KeyState>> = {
 
 export class InputManager {
   keyState: KeyState = { ...DEFAULT_STATE };
+  private pressedState: KeyState = { ...DEFAULT_STATE };
+  private releasedState: KeyState = { ...DEFAULT_STATE };
   private windowFocused = true;
   private pointerEvents: PointerInputEvent[] = [];
   private pointerTarget: HTMLCanvasElement | null = null;
@@ -72,6 +74,9 @@ export class InputManager {
     const mapped = CODE_TO_KEY[event.code];
     if (!mapped) return;
     event.preventDefault();
+    if (!this.keyState[mapped]) {
+      this.pressedState[mapped] = true;
+    }
     this.keyState[mapped] = true;
   };
 
@@ -86,6 +91,9 @@ export class InputManager {
     const mapped = CODE_TO_KEY[event.code];
     if (!mapped) return;
     event.preventDefault();
+    if (this.keyState[mapped]) {
+      this.releasedState[mapped] = true;
+    }
     this.keyState[mapped] = false;
   };
 
@@ -157,7 +165,7 @@ export class InputManager {
       this.keyboardAttached = false;
     }
     this.unbindPointerTarget();
-    this.keyState = { ...DEFAULT_STATE };
+    this.resetKeys();
   }
 
   bindPointerTarget(target: HTMLCanvasElement | null) {
@@ -181,6 +189,17 @@ export class InputManager {
     const events = this.pointerEvents;
     this.pointerEvents = [];
     return events;
+  }
+
+  consumeKeyTransitions(): InputFrameState {
+    const snapshot = {
+      keyState: { ...this.keyState },
+      pressed: { ...this.pressedState },
+      released: { ...this.releasedState },
+    };
+    this.pressedState = { ...DEFAULT_STATE };
+    this.releasedState = { ...DEFAULT_STATE };
+    return snapshot;
   }
 
   capturePointer(pointerId: number) {
@@ -236,6 +255,8 @@ export class InputManager {
 
   private resetKeys() {
     this.keyState = { ...DEFAULT_STATE };
+    this.pressedState = { ...DEFAULT_STATE };
+    this.releasedState = { ...DEFAULT_STATE };
   }
 
   private cancelActivePointers() {
