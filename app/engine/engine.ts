@@ -1015,13 +1015,18 @@ export class GameEngine {
 
   private runInputHandlers(game: GameContext, pendingRemovals: Set<string>) {
     if (!this.inputManager) return;
-    const keyState = this.inputManager.keyState;
+    const inputFrame = this.inputManager.consumeKeyTransitions();
+    const keyState = inputFrame.keyState;
     for (const thing of this.gameState.things) {
       if (this.editingThingIds.has(thing.id)) continue;
       if (pendingRemovals.has(thing.id)) continue;
       const blueprint = getBlueprintForThing(thing, this.blueprintLookup);
-      runBlueprintHandlers("input", blueprint, blueprint?.input, (handler) =>
-        handler(thing, game, keyState)
+      runBlueprintHandlers(
+        "input",
+        blueprint,
+        blueprint?.input,
+        (handler) => handler(thing, game, keyState),
+        inputFrame
       );
     }
   }

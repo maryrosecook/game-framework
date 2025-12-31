@@ -11,8 +11,10 @@ import {
   INPUT_KEYS,
   InputKey,
   InputTriggerKey,
+  InputTriggerStage,
   TriggerName,
   isInputTriggerKey,
+  isInputTriggerStage,
 } from "@/engine/types";
 import {
   getDefaultActionSettings,
@@ -56,7 +58,16 @@ const INPUT_KEY_OPTIONS: Array<{ value: InputTriggerKey; label: string }> = [
   ...INPUT_KEYS.map((key) => ({ value: key, label: INPUT_KEY_LABELS[key] })),
 ];
 
+const INPUT_STAGE_OPTIONS: Array<{
+  value: InputTriggerStage;
+  label: string;
+}> = [
+  { value: "press", label: "Press" },
+  { value: "hold", label: "Hold" },
+];
+
 const DEFAULT_INPUT_TRIGGER_KEY: InputTriggerKey = "any";
+const DEFAULT_INPUT_TRIGGER_STAGE: InputTriggerStage = "press";
 
 type ActionTabProps = {
   blueprint: Blueprint;
@@ -82,7 +93,12 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
   const handleAddTrigger = (trigger: TriggerName) => {
     const nextBehavior =
       trigger === "input"
-        ? { trigger, key: DEFAULT_INPUT_TRIGGER_KEY, actions: [] }
+        ? {
+            trigger,
+            key: DEFAULT_INPUT_TRIGGER_KEY,
+            stage: DEFAULT_INPUT_TRIGGER_STAGE,
+            actions: [],
+          }
         : { trigger, actions: [] };
     const nextBehaviors: BlueprintBehaviors = [
       ...behaviors,
@@ -198,6 +214,22 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
     });
   };
 
+  const handleInputStageChange = (index: number, stage: InputTriggerStage) => {
+    const target = behaviors[index];
+    if (!target || target.trigger !== "input") {
+      return;
+    }
+    const nextBehaviors = behaviors.map((behavior, idx) =>
+      idx === index ? { ...behavior, stage } : behavior
+    );
+    dispatch({
+      type: "setBlueprintProperty",
+      blueprintName: blueprint.name,
+      property: "behaviors",
+      value: nextBehaviors,
+    });
+  };
+
   return (
     <div className="flex h-full flex-col gap-4">
       <div>
@@ -238,23 +270,42 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
               <div className="flex items-center gap-2">
                 <span>{TRIGGER_LABELS[behavior.trigger]}</span>
                 {behavior.trigger === "input" ? (
-                  <select
-                    className={INPUT_SELECT_CLASS}
-                    value={behavior.key}
-                    aria-label="Input key"
-                    onChange={(event) => {
-                      const selected = event.target.value;
-                      if (isInputTriggerKey(selected)) {
-                        handleInputKeyChange(index, selected);
-                      }
-                    }}
-                  >
-                    {INPUT_KEY_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                  <>
+                    <select
+                      className={INPUT_SELECT_CLASS}
+                      value={behavior.key}
+                      aria-label="Input key"
+                      onChange={(event) => {
+                        const selected = event.target.value;
+                        if (isInputTriggerKey(selected)) {
+                          handleInputKeyChange(index, selected);
+                        }
+                      }}
+                    >
+                      {INPUT_KEY_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className={INPUT_SELECT_CLASS}
+                      value={behavior.stage}
+                      aria-label="Input stage"
+                      onChange={(event) => {
+                        const selected = event.target.value;
+                        if (isInputTriggerStage(selected)) {
+                          handleInputStageChange(index, selected);
+                        }
+                      }}
+                    >
+                      {INPUT_STAGE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </>
                 ) : null}
               </div>
               {behavior.actions.length === 0 ? (
