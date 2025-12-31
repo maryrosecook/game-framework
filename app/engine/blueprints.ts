@@ -10,6 +10,8 @@ import {
   BlueprintKind,
   BlueprintModule,
   GameContext,
+  INPUT_KEYS,
+  InputTriggerKey,
   KeyState,
   RawThing,
   RuntimeThing,
@@ -240,7 +242,8 @@ function doesActionSupportTrigger(
 type ActionHandlerFactoriesByTrigger = {
   [K in TriggerName]: (
     action: ActionDefinition,
-    settings: ActionSettings
+    settings: ActionSettings,
+    inputKey?: InputTriggerKey
   ) => TriggerHandler<K>;
 };
 
@@ -248,8 +251,8 @@ const actionHandlerFactoriesByTrigger: ActionHandlerFactoriesByTrigger = {
   create: (action, settings) => (thing, game) => {
     action.code({ thing, game, settings });
   },
-  input: (action, settings) => (thing, game, keyState) => {
-    if (action.inputGate !== "always" && !hasActiveInput(keyState)) {
+  input: (action, settings, inputKey = "any") => (thing, game, keyState) => {
+    if (!isInputTriggerActive(inputKey, keyState)) {
       return;
     }
     action.code({ thing, game, keyState, settings });
@@ -265,25 +268,34 @@ const actionHandlerFactoriesByTrigger: ActionHandlerFactoriesByTrigger = {
 function createActionHandlerForTrigger<T extends TriggerName>(
   trigger: T,
   action: ActionDefinition,
-  settings: ActionSettings
+  settings: ActionSettings,
+  inputKey?: InputTriggerKey
 ): TriggerHandler<T> {
-  return actionHandlerFactoriesByTrigger[trigger](action, settings);
+  return actionHandlerFactoriesByTrigger[trigger](action, settings, inputKey);
 }
+
+type TriggerBehaviorAction = {
+  action: BehaviorAction;
+  inputKey?: InputTriggerKey;
+};
 
 function getActionsForTrigger(
   blueprint: Blueprint | undefined,
   trigger: TriggerName
-): BehaviorAction[] {
+): TriggerBehaviorAction[] {
   const behaviors = blueprint?.behaviors;
   if (!behaviors) {
     return [];
   }
-  const actions: BehaviorAction[] = [];
+  const actions: TriggerBehaviorAction[] = [];
   for (const behavior of behaviors) {
     if (behavior.trigger !== trigger) {
       continue;
     }
-    actions.push(...behavior.actions);
+    const inputKey = behavior.trigger === "input" ? behavior.key : undefined;
+    for (const action of behavior.actions) {
+      actions.push({ action, inputKey });
+    }
   }
   return actions;
 }
@@ -338,22 +350,14 @@ function areSettingsEqual(left: ActionSettings, right: ActionSettings) {
 }
 
 function hasActiveInput(keyState: KeyState) {
-  return (
-    keyState.arrowLeft ||
-    keyState.arrowRight ||
-    keyState.arrowUp ||
-    keyState.arrowDown ||
-    keyState.digit1 ||
-    keyState.digit0 ||
-    keyState.digit9 ||
-    keyState.space ||
-    keyState.shift ||
-    keyState.keyW ||
-    keyState.keyA ||
-    keyState.keyS ||
-    keyState.keyD ||
-    keyState.keyE
-  );
+  return INPUT_KEYS.some((key) => keyState[key]);
+}
+
+function isInputTriggerActive(inputKey: InputTriggerKey, keyState: KeyState) {
+  if (inputKey === "any") {
+    return hasActiveInput(keyState);
+  }
+  return keyState[inputKey];
 }
 
 function collectBlueprintHandlers<T extends TriggerName>(
@@ -367,7 +371,8 @@ function collectBlueprintHandlers<T extends TriggerName>(
     handlers.push({ name: "blueprint", fn: blueprintHandler });
   }
 
-  for (const behaviorAction of getActionsForTrigger(blueprint, trigger)) {
+  for (const behaviorEntry of getActionsForTrigger(blueprint, trigger)) {
+    const behaviorAction = behaviorEntry.action;
     const action = globalActions[behaviorAction.action];
     if (!action) {
       console.warn(
@@ -387,7 +392,12 @@ function collectBlueprintHandlers<T extends TriggerName>(
     );
     handlers.push({
       name: behaviorAction.action,
-      fn: createActionHandlerForTrigger(trigger, action, resolvedSettings),
+      fn: createActionHandlerForTrigger(
+        trigger,
+        action,
+        resolvedSettings,
+        behaviorEntry.inputKey
+      ),
     });
   }
 

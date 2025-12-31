@@ -3,8 +3,8 @@
   "things": [
     {
       "id": "81to1qneerfz",
-      "x": 950.09375,
-      "y": 561.109375,
+      "x": 684.921875,
+      "y": 342.942499999999,
       "z": 1,
       "angle": 0,
       "velocityX": 0,
@@ -39,7 +39,34 @@
       "bounce": 0,
       "behaviors": [
         {
-          "trigger": "collision",
+          "trigger": "input",
+          "key": "arrowLeft",
+          "actions": [
+            {
+              "action": "turn",
+              "settings": {
+                "direction": "left",
+                "speed": 2
+              }
+            }
+          ]
+        },
+        {
+          "trigger": "input",
+          "key": "arrowRight",
+          "actions": [
+            {
+              "action": "turn",
+              "settings": {
+                "direction": "right",
+                "speed": 2
+              }
+            }
+          ]
+        },
+        {
+          "trigger": "input",
+          "key": "space",
           "actions": [
             {
               "action": "spawnObject",
@@ -60,7 +87,20 @@
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "behaviors": [
+        {
+          "trigger": "update",
+          "actions": [
+            {
+              "action": "moveForward",
+              "settings": {
+                "speed": 2
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "camera": {
