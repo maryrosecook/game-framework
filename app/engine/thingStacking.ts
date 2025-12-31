@@ -1,4 +1,4 @@
-import { Blueprint, RuntimeThing } from "./types";
+import { DEFAULT_THING_Z, RuntimeThing } from "./types";
 
 type LayeredThing = {
   thing: RuntimeThing;
@@ -16,16 +16,15 @@ const compareLayeredThings = (a: LayeredThing, b: LayeredThing) => {
 };
 
 export function createThingStack(
-  things: RuntimeThing[],
-  blueprintLookup: Map<string, Blueprint>
+  things: RuntimeThing[]
 ): ThingStack {
   const layeredThings: LayeredThing[] = things.map((thing, index) => ({
     thing,
-    z: thing.z ?? blueprintLookup.get(thing.blueprintName)?.z ?? 1,
+    z: thing.z ?? DEFAULT_THING_Z,
     sequence: index,
   }));
 
-  // Stable layering: blueprint z first, then existing list order for ties.
+  // Stable layering: thing z first, then existing list order for ties.
   const orderedLayers = [...layeredThings].sort(compareLayeredThings);
   return orderedLayers.map((entry) => entry.thing);
 }

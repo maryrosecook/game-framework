@@ -11,7 +11,8 @@
       "blueprintName": "arctic",
       "width": 277.13671875,
       "height": 273.5703125,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "9ujwa7tavvf7",
@@ -23,7 +24,8 @@
       "blueprintName": "arctic",
       "width": 274.28125,
       "height": 271.67578125,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "0789gogdo1xi",
@@ -35,7 +37,8 @@
       "blueprintName": "arctic",
       "width": 292.62109375,
       "height": 270.3203125,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "zaaw1xius841",
@@ -47,7 +50,8 @@
       "blueprintName": "arctic",
       "width": 266.30078125,
       "height": 258.96484375,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "jgt0v33lf5cu",
@@ -59,7 +63,8 @@
       "blueprintName": "shadow-minion",
       "width": 89.66796875,
       "height": 89.19921875,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "ad3z9axr6owc",
@@ -71,7 +76,8 @@
       "blueprintName": "shadow-minion",
       "width": 93.640625,
       "height": 95.32421875,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "t86nv38y43r7",
@@ -83,7 +89,8 @@
       "blueprintName": "shadow-minion",
       "width": 116.54296875,
       "height": 119.2265625,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "5j7xnluwpug2",
@@ -95,7 +102,8 @@
       "blueprintName": "player",
       "width": 52.44921875,
       "height": 52.5625,
-      "color": "#99d6ff"
+      "color": "#99d6ff",
+      "z": 1
     },
     {
       "id": "8cq33max06d8",
@@ -107,7 +115,8 @@
       "blueprintName": "fireman",
       "width": 69.91796875,
       "height": 61.75390625,
-      "color": "#ffcc99"
+      "color": "#ffcc99",
+      "z": 1
     },
     {
       "id": "5y57nkz3dfxi",
@@ -119,7 +128,8 @@
       "blueprintName": "get-pac",
       "width": 56.39453125,
       "height": 52.5546875,
-      "color": "#ff9966"
+      "color": "#ff9966",
+      "z": 1
     },
     {
       "id": "vspiyy7w6zla",
@@ -131,7 +141,8 @@
       "blueprintName": "trick-to-death",
       "width": 50,
       "height": 50,
-      "color": "#99e6cc"
+      "color": "#99e6cc",
+      "z": 1
     },
     {
       "id": "0nwyphrqma6q",
@@ -143,7 +154,8 @@
       "blueprintName": "boss-shadow-minion",
       "width": 187.14453125,
       "height": 572.73828125,
-      "color": "#66cc99"
+      "color": "#66cc99",
+      "z": 1
     },
     {
       "id": "fx7j61w72f89",
@@ -155,7 +167,8 @@
       "blueprintName": "treasure-chest",
       "width": 50,
       "height": 50,
-      "color": "#ffb3cc"
+      "color": "#ffb3cc",
+      "z": 1
     },
     {
       "id": "ihhkgjtzqw3w",
@@ -167,7 +180,8 @@
       "blueprintName": "treasure-chest",
       "width": 50,
       "height": 50,
-      "color": "#ffb3cc"
+      "color": "#ffb3cc",
+      "z": 1
     },
     {
       "id": "1tg0utf768tw",
@@ -179,7 +193,8 @@
       "blueprintName": "treasure-chest",
       "width": 50,
       "height": 50,
-      "color": "#ffb3cc"
+      "color": "#ffb3cc",
+      "z": 1
     },
     {
       "id": "eo6z9v751q82",
@@ -191,7 +206,8 @@
       "blueprintName": "house",
       "width": 102.6640625,
       "height": 96.0625,
-      "color": "#f5f5f5"
+      "color": "#f5f5f5",
+      "z": 1
     },
     {
       "id": "why7v6bpr59g",
@@ -203,7 +219,8 @@
       "blueprintName": "crafting-table",
       "width": 60.50390625,
       "height": 60.078125,
-      "color": "#d9d9d9"
+      "color": "#d9d9d9",
+      "z": 1
     },
     {
       "id": "aqo9to53ekqw",
@@ -215,7 +232,8 @@
       "blueprintName": "tree",
       "width": 89.87890625,
       "height": 178.0625,
-      "color": "#b3b3b3"
+      "color": "#b3b3b3",
+      "z": 1
     },
     {
       "id": "wnrcohbzwg99",
@@ -227,7 +245,8 @@
       "blueprintName": "heart-stand",
       "width": 514.5625,
       "height": 241.38671875,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "b5lfd1v1t4wj",
@@ -239,7 +258,8 @@
       "blueprintName": "food-stand",
       "width": 561.38671875,
       "height": 293.19921875,
-      "color": "#99d6ff"
+      "color": "#99d6ff",
+      "z": 1
     },
     {
       "id": "ebbnwotwntqf",
@@ -251,7 +271,8 @@
       "blueprintName": "lighthouse",
       "width": 160.6953125,
       "height": 226.02734375,
-      "color": "#ff9966"
+      "color": "#ff9966",
+      "z": 1
     },
     {
       "id": "tpan9ia8gqdm",
@@ -263,7 +284,8 @@
       "blueprintName": "boat",
       "width": 413.6796875,
       "height": 157.01953125,
-      "color": "#99e6cc"
+      "color": "#99e6cc",
+      "z": 1
     },
     {
       "id": "ahivz8nfd18y",
@@ -275,7 +297,8 @@
       "blueprintName": "castle",
       "width": 449.80859375,
       "height": 381.44140625,
-      "color": "#66cc99"
+      "color": "#66cc99",
+      "z": 1
     },
     {
       "id": "kdcwc45d6v7m",
@@ -287,7 +310,8 @@
       "blueprintName": "villager",
       "width": 54.57421875,
       "height": 71.80078125,
-      "color": "#ffb3cc"
+      "color": "#ffb3cc",
+      "z": 1
     },
     {
       "id": "tcmsd0s8v7a8",
@@ -299,7 +323,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "mqveirspl0zk",
@@ -311,7 +336,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "znly11bi72ci",
@@ -323,7 +349,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "mtj6358fxryo",
@@ -335,7 +362,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "t82r2bz8n8m7",
@@ -347,7 +375,8 @@
       "blueprintName": "shadow-minion",
       "width": 56.109375,
       "height": 110.5234375,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "dwr12w6cctbx",
@@ -359,7 +388,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "v322m2m8n9cg",
@@ -371,7 +401,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "30vybe5zgquv",
@@ -383,7 +414,8 @@
       "blueprintName": "mushroom",
       "width": 50,
       "height": 50,
-      "color": "#ff6699"
+      "color": "#ff6699",
+      "z": 1
     },
     {
       "id": "x4as9u2svnav",
@@ -395,7 +427,8 @@
       "blueprintName": "mushroom",
       "width": 50,
       "height": 50,
-      "color": "#ff6699"
+      "color": "#ff6699",
+      "z": 1
     },
     {
       "id": "g137yqrink2l",
@@ -407,7 +440,8 @@
       "blueprintName": "mushroom",
       "width": 50,
       "height": 50,
-      "color": "#ff6699"
+      "color": "#ff6699",
+      "z": 1
     },
     {
       "id": "w6a2f52xbtrl",
@@ -419,7 +453,8 @@
       "blueprintName": "mushroom",
       "width": 50,
       "height": 50,
-      "color": "#ff6699"
+      "color": "#ff6699",
+      "z": 1
     },
     {
       "id": "amr1hp0mr4kw",
@@ -431,7 +466,8 @@
       "blueprintName": "crafting-table",
       "width": 50,
       "height": 50,
-      "color": "#d9d9d9"
+      "color": "#d9d9d9",
+      "z": 1
     },
     {
       "id": "cr0jix6padew",
@@ -443,7 +479,8 @@
       "blueprintName": "rock",
       "width": 84.3046875,
       "height": 90.07421875,
-      "color": "#4d4d4d"
+      "color": "#4d4d4d",
+      "z": 1
     },
     {
       "id": "5cm4nx27dihi",
@@ -455,7 +492,8 @@
       "blueprintName": "rock",
       "width": 99.32421875,
       "height": 79.3046875,
-      "color": "#4d4d4d"
+      "color": "#4d4d4d",
+      "z": 1
     },
     {
       "id": "1xe8645nqkso",
@@ -467,7 +505,8 @@
       "blueprintName": "rock",
       "width": 122.21484375,
       "height": 121.87890625,
-      "color": "#4d4d4d"
+      "color": "#4d4d4d",
+      "z": 1
     },
     {
       "id": "ku9tava507wm",
@@ -479,7 +518,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "y7x15wu4t942",
@@ -491,7 +531,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "eh0ai3nyufim",
@@ -503,7 +544,8 @@
       "blueprintName": "house2",
       "width": 71.91015625,
       "height": 74.01171875,
-      "color": "#ffcc99"
+      "color": "#ffcc99",
+      "z": 1
     },
     {
       "id": "v9rndgg0voe4",
@@ -515,7 +557,8 @@
       "blueprintName": "house2",
       "width": 85.2109375,
       "height": 91.4765625,
-      "color": "#ffcc99"
+      "color": "#ffcc99",
+      "z": 1
     },
     {
       "id": "htnh63wwzwdu",
@@ -527,7 +570,8 @@
       "blueprintName": "house2",
       "width": 76.98828125,
       "height": 74.078125,
-      "color": "#ffcc99"
+      "color": "#ffcc99",
+      "z": 1
     },
     {
       "id": "ux2zau0t6j26",
@@ -539,7 +583,8 @@
       "blueprintName": "house2",
       "width": 56.66796875,
       "height": 64.38671875,
-      "color": "#ffcc99"
+      "color": "#ffcc99",
+      "z": 1
     },
     {
       "id": "epfnw8lml7vm",
@@ -551,7 +596,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "10qs3nyvkrn9",
@@ -563,7 +609,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "are2qo8569hh",
@@ -575,7 +622,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "j3v6clf4zw5a",
@@ -587,7 +635,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "7best50tdnpo",
@@ -599,7 +648,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2avnq7moohqk",
@@ -611,7 +661,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "b55y0qi2pmy1",
@@ -623,7 +674,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "fazatpgt7lge",
@@ -635,7 +687,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2vil5midd9da",
@@ -647,7 +700,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "vhppjdamtl9b",
@@ -659,7 +713,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "7ltzvvvc7tlw",
@@ -671,7 +726,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "gtvacpgqg45j",
@@ -683,7 +739,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "re1io4bb3ire",
@@ -695,7 +752,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "zsraplfngznr",
@@ -707,7 +765,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "9uhtfwzs52hq",
@@ -719,7 +778,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "cv9kfvq7cyrm",
@@ -731,7 +791,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "tidqhzhyz32j",
@@ -743,7 +804,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "26fkpyc9uu00",
@@ -755,7 +817,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "cy99z3ouq3t0",
@@ -767,7 +830,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "a0lti3gyxji7",
@@ -779,7 +843,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "9icgxd1acqvm",
@@ -791,7 +856,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "8yhskpu33mf6",
@@ -803,7 +869,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "qjivwwywo74e",
@@ -815,7 +882,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "x0w3k5k2wew6",
@@ -827,7 +895,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "f1bcapoie931",
@@ -839,7 +908,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "zw12mtv6c79w",
@@ -851,7 +921,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "j151qdsmxng7",
@@ -863,7 +934,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "34e89ra7ysqk",
@@ -875,7 +947,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ssxfet1dsytk",
@@ -887,7 +960,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "chw8geiw79eq",
@@ -899,7 +973,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "pc7fm012nh5i",
@@ -911,7 +986,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "238f2vvsbxeq",
@@ -923,7 +999,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "hktznr9w4s5r",
@@ -935,7 +1012,8 @@
       "blueprintName": "grass",
       "width": 50.0078125,
       "height": 63.59765625,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "jztjdzz596fu",
@@ -947,7 +1025,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "dfz21y4wkc5y",
@@ -959,7 +1038,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "510n68ge5xpu",
@@ -971,7 +1051,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "mg2kxyk518qw",
@@ -983,7 +1064,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2q3z6rcxfjh9",
@@ -995,7 +1077,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "14kwxd1hz81a",
@@ -1007,7 +1090,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "49xo9bel8yqb",
@@ -1019,7 +1103,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "sddqvt0rls7v",
@@ -1031,7 +1116,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "q1tzix5bcghp",
@@ -1043,7 +1129,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "1fml6p2g7d18",
@@ -1055,7 +1142,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "kftu1d9hlrwb",
@@ -1067,7 +1155,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "fird9rsfxuhz",
@@ -1079,7 +1168,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "zaaxthbz08un",
@@ -1091,7 +1181,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "gtydy69ih49g",
@@ -1103,7 +1194,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "g3916dqikibo",
@@ -1115,7 +1207,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "nlnwz7y5vmuy",
@@ -1127,7 +1220,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "4htekep6iuip",
@@ -1139,7 +1233,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "r9xsjaenvuwu",
@@ -1151,7 +1246,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "n5v1yqv4ahms",
@@ -1163,7 +1259,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "hseb9140fp6j",
@@ -1175,7 +1272,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "lg0a6srqkfow",
@@ -1187,7 +1285,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ghkihg1qlha6",
@@ -1199,7 +1298,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "os8usrplbdgf",
@@ -1211,7 +1311,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "t022e4j4cych",
@@ -1223,7 +1324,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "g2xsdz2s25ag",
@@ -1235,7 +1337,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "p1wncuv85hn4",
@@ -1247,7 +1350,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "g6xuctoijy9n",
@@ -1259,7 +1363,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "n01kdhb379yx",
@@ -1271,7 +1376,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "5av2498a0pg4",
@@ -1283,7 +1389,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "d4ktw22s896e",
@@ -1295,7 +1402,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "62atu3cvfa3f",
@@ -1307,7 +1415,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "1hiisye6glpb",
@@ -1319,7 +1428,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "wjhr7wkcas6w",
@@ -1331,7 +1441,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "zp64tccbcgsu",
@@ -1343,7 +1454,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "1pzvnvr8t310",
@@ -1355,7 +1467,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "6qc1snkuvh1u",
@@ -1367,7 +1480,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "gl2lpvrtpg8y",
@@ -1379,7 +1493,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "bw0unk65buzo",
@@ -1391,7 +1506,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "yk3wiiewa6xv",
@@ -1403,7 +1519,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "z68yqvuhagot",
@@ -1415,7 +1532,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "vcay7wpbwewj",
@@ -1427,7 +1545,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "n1gxkrfa1e37",
@@ -1439,7 +1558,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "l7oxxf6n65dp",
@@ -1451,7 +1571,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "yfuukq5oef04",
@@ -1463,7 +1584,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "xg6ryzsil8es",
@@ -1475,7 +1597,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "dwp4t5jv5q00",
@@ -1487,7 +1610,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ro6nws50hca4",
@@ -1499,7 +1623,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "164bk6sj6m4y",
@@ -1511,7 +1636,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "d792zqb7b3xl",
@@ -1523,7 +1649,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "sqayzampauu0",
@@ -1535,7 +1662,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "cng9k36wmahs",
@@ -1547,7 +1675,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "npkjxejiu4ed",
@@ -1559,7 +1688,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "89kyijdure0c",
@@ -1571,7 +1701,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "3y5otfmgn60l",
@@ -1583,7 +1714,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "tu19o97pnz9f",
@@ -1595,7 +1727,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "uboitsdkzhg2",
@@ -1607,7 +1740,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "8upqyhex2pdp",
@@ -1619,7 +1753,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "1o43bxh12qgc",
@@ -1631,7 +1766,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "trknos6wcz9v",
@@ -1643,7 +1779,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "fqilp0e7vg4s",
@@ -1655,7 +1792,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "iadijk5o07dx",
@@ -1667,7 +1805,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "hkurrxssjehv",
@@ -1679,7 +1818,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "o1j1ytfux0rs",
@@ -1691,7 +1831,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "5k3frglzce1p",
@@ -1703,7 +1844,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "wh4wsec7b7g8",
@@ -1715,7 +1857,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "65p637dp0kjr",
@@ -1727,7 +1870,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "xyt9s7g4gm3k",
@@ -1739,7 +1883,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "1se3c8cbjg38",
@@ -1751,7 +1896,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ez0le5g8rtk2",
@@ -1763,7 +1909,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "fa2zki3xwgqs",
@@ -1775,7 +1922,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "c7qdd3xgrtq1",
@@ -1787,7 +1935,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "octxg0r5nong",
@@ -1799,7 +1948,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ifib6l4yy990",
@@ -1811,7 +1961,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "swt4qwm5ns14",
@@ -1823,7 +1974,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ib8p6u5c5wp1",
@@ -1835,7 +1987,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ru0ldxsmvblk",
@@ -1847,7 +2000,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "qjqclxrkd5vp",
@@ -1859,7 +2013,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "q2ceco3m857b",
@@ -1871,7 +2026,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "gmofat8u2bht",
@@ -1883,7 +2039,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "qa1ffrqc8590",
@@ -1895,7 +2052,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "1cb78nxkhh4p",
@@ -1907,7 +2065,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "or3x66p9gjs5",
@@ -1919,7 +2078,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "84gc437szzpa",
@@ -1931,7 +2091,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2qs40t0rwlo7",
@@ -1943,7 +2104,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "xsfmo4o5d7fx",
@@ -1955,7 +2117,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "uzwchkqoh855",
@@ -1967,7 +2130,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "biznxbl1aag7",
@@ -1979,7 +2143,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "sk82ufwh1hod",
@@ -1991,7 +2156,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "n5ikrnh0nxml",
@@ -2003,7 +2169,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "vhfkc7zxaxev",
@@ -2015,7 +2182,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2s4dq6afcua7",
@@ -2027,7 +2195,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "i53d0th4yi9b",
@@ -2039,7 +2208,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "zxkps2gvdyys",
@@ -2051,7 +2221,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ecu0ztngyfyv",
@@ -2063,7 +2234,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "kxgbpmygd28m",
@@ -2075,7 +2247,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "gyakuotac0ck",
@@ -2087,7 +2260,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "9gljlq0qf6ih",
@@ -2099,7 +2273,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "rlm1csipm6ka",
@@ -2111,7 +2286,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "h21495l4y8g3",
@@ -2123,7 +2299,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "jfce3fd3z8xw",
@@ -2135,7 +2312,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "tod8x6vfp9bt",
@@ -2147,7 +2325,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "zwnetwypj4b8",
@@ -2159,7 +2338,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "5enet1wspay8",
@@ -2171,7 +2351,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "4x4asrnnk8sl",
@@ -2183,7 +2364,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "tzvktaoum4t6",
@@ -2195,7 +2377,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "24zxl5q36csm",
@@ -2207,7 +2390,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "wh2mpjdnvku3",
@@ -2219,7 +2403,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "e24fa6haggtd",
@@ -2231,7 +2416,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "pxdi7mtf1735",
@@ -2243,7 +2429,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2u67dqciqhjy",
@@ -2255,7 +2442,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "pfwfkabwkhcy",
@@ -2267,7 +2455,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "qq91lv1e7s85",
@@ -2279,7 +2468,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "avmdsbbmcb1t",
@@ -2291,7 +2481,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "6z9cd250hxvg",
@@ -2303,7 +2494,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "htrer7ejkywi",
@@ -2315,7 +2507,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "7v00m476vddu",
@@ -2327,7 +2520,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "fzcxvsnjlmnn",
@@ -2339,7 +2533,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "rgqemjnyzl8f",
@@ -2351,7 +2546,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "3r3trapnby67",
@@ -2363,7 +2559,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "vydmepwqli2q",
@@ -2375,7 +2572,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "pwj28y7lcl2q",
@@ -2387,7 +2585,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "4vyoxfqhdleh",
@@ -2399,7 +2598,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "1i0ufysjyg9u",
@@ -2411,7 +2611,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "q95gzhkokypf",
@@ -2423,7 +2624,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ye0uo54xb9ip",
@@ -2435,7 +2637,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "vx09f0hdowsk",
@@ -2447,7 +2650,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "nwougk2gfej4",
@@ -2459,7 +2663,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "gdupkiu9r2xv",
@@ -2471,7 +2676,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "mjwsq3ut05px",
@@ -2483,7 +2689,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "lxvxxk4ofesq",
@@ -2495,7 +2702,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "6wnq40vxd67t",
@@ -2507,7 +2715,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "x6nw47lnlfpw",
@@ -2519,7 +2728,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "jwqd39mx0n4n",
@@ -2531,7 +2741,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "3us2j364045t",
@@ -2543,7 +2754,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "mlfjm2qqvpas",
@@ -2555,7 +2767,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "nf4oa6oq918y",
@@ -2567,7 +2780,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "9hpt8mzlly9v",
@@ -2579,7 +2793,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ix8gb63c8t30",
@@ -2591,7 +2806,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "5h6ibza41vub",
@@ -2603,7 +2819,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "hgb7yudi5pkn",
@@ -2615,7 +2832,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "dwvq9i75jjl8",
@@ -2627,7 +2845,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "nhygp971y0gy",
@@ -2639,7 +2858,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "dcg3ou0zqla9",
@@ -2651,7 +2871,8 @@
       "blueprintName": "wolf",
       "width": 50,
       "height": 50,
-      "color": "#ff6699"
+      "color": "#ff6699",
+      "z": 1
     },
     {
       "id": "ulllqixgvhu8",
@@ -2663,7 +2884,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "wvdqmzfszucc",
@@ -2675,7 +2897,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "7dspi1blb2gh",
@@ -2687,7 +2910,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "qjg0y40tw3rm",
@@ -2699,7 +2923,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "egzd5i44ne8t",
@@ -2711,7 +2936,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2vn5bryl2yj4",
@@ -2723,7 +2949,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "k3306ojpd3yv",
@@ -2735,7 +2962,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ohrrgont9scb",
@@ -2747,7 +2975,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "fsqwglzvwecr",
@@ -2759,7 +2988,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2bj4sbudscw3",
@@ -2771,7 +3001,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "7762611fw4q4",
@@ -2783,7 +3014,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "b88yxhukxuje",
@@ -2795,7 +3027,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "jykm1b94p3wy",
@@ -2807,7 +3040,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "1hym67z716d3",
@@ -2819,7 +3053,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "q5mbs1qiaa0w",
@@ -2831,7 +3066,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "dk55wj6ate1t",
@@ -2843,7 +3079,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "pl2hffwjrdxp",
@@ -2855,7 +3092,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "10r4eq4yx90f",
@@ -2867,7 +3105,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "v8nzatdb4p4i",
@@ -2879,7 +3118,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "4pxk0yx89h9h",
@@ -2891,7 +3131,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2mlatcbtm88k",
@@ -2903,7 +3144,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "fqhcglo2ebez",
@@ -2915,7 +3157,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "dr85jsjv2gvw",
@@ -2927,7 +3170,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "3z6sdlc8nxpq",
@@ -2939,7 +3183,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "ysg2yccomft9",
@@ -2951,7 +3196,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "5njkvbzeg10m",
@@ -2963,7 +3209,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "rvrm8jwaxixn",
@@ -2975,7 +3222,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "n3ncxgridun7",
@@ -2987,7 +3235,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "183y36l7v638",
@@ -2999,7 +3248,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "quctsx8hl4ox",
@@ -3011,7 +3261,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "mca6mhqdvuj0",
@@ -3023,7 +3274,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "2u0ymhha3omb",
@@ -3035,7 +3287,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "jgzlibravnw1",
@@ -3047,7 +3300,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "snjx6vzkpeg6",
@@ -3059,7 +3313,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "jez2oj70hrer",
@@ -3071,7 +3326,8 @@
       "blueprintName": "grass",
       "width": 50,
       "height": 50,
-      "color": "#b399ff"
+      "color": "#b399ff",
+      "z": 1
     },
     {
       "id": "7nj3yo5fmhll",
@@ -3083,7 +3339,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "hq7i0gbcxd10",
@@ -3095,7 +3352,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "adtobzewwm5q",
@@ -3107,7 +3365,8 @@
       "blueprintName": "sea-monster",
       "width": 214.4765625,
       "height": 232.9375,
-      "color": "#f5f5f5"
+      "color": "#f5f5f5",
+      "z": 1
     },
     {
       "id": "rm5yt20chbs7",
@@ -3119,7 +3378,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "89e70nfjedzf",
@@ -3131,7 +3391,8 @@
       "blueprintName": "shadow-minion",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "qbrfeo1fbpiz",
@@ -3143,7 +3404,8 @@
       "blueprintName": "shadow-minion",
       "width": 139,
       "height": 146.390625,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "0oc2ixbqkumt",
@@ -3155,7 +3417,8 @@
       "blueprintName": "shadow-minion",
       "width": 81.1328125,
       "height": 75.66015624999997,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "ndaq1gmv3kco",
@@ -3167,7 +3430,8 @@
       "blueprintName": "shadow-minion",
       "width": 161.0877968108897,
       "height": 159.39052500000003,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "z6cmnilara1v",
@@ -3179,7 +3443,8 @@
       "blueprintName": "shadow-minion",
       "width": 231.26953125,
       "height": 231.45703125,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "i6l9rmc0m1n5",
@@ -3191,7 +3456,8 @@
       "blueprintName": "shadow-minion",
       "width": 252.5078125,
       "height": 243.2109375,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "ivrhz3t0q5kx",
@@ -3202,7 +3468,8 @@
       "velocityY": 0,
       "blueprintName": "get-pac",
       "width": 10,
-      "height": 10
+      "height": 10,
+      "z": 1
     },
     {
       "id": "q5yluv2z9tvh",
@@ -3213,7 +3480,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "6kathrkjtpyz",
@@ -3224,7 +3492,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "s3ygta3wq56w",
@@ -3235,7 +3504,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "2783sbdqh1fh",
@@ -3246,7 +3516,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "0egbr3dj8ks1",
@@ -3257,7 +3528,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "hxkyc0gr3kh3",
@@ -3268,7 +3540,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "fy1zej64b6rz",
@@ -3279,7 +3552,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 50,
-      "height": 50
+      "height": 50,
+      "z": 1
     },
     {
       "id": "sxcx6q4q17cg",
@@ -3290,7 +3564,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "f4kz9aq9n8a1",
@@ -3301,7 +3576,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "hvp0p8ybh0qm",
@@ -3312,7 +3588,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "7v3a9lnoru8a",
@@ -3323,7 +3600,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "ak9ey617dtud",
@@ -3334,7 +3612,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "ba43pyi30urq",
@@ -3345,7 +3624,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "2orfkhc5y6im",
@@ -3356,7 +3636,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "k1ydeakgj2sk",
@@ -3367,7 +3648,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "8ngvqtunbjob",
@@ -3378,7 +3660,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "lscsbeg0lpu3",
@@ -3389,7 +3672,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "xxzvcttcj8uj",
@@ -3400,7 +3684,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "j6rzzd9odg8y",
@@ -3411,7 +3696,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "g2d6qfz0ii6w",
@@ -3422,7 +3708,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "zs4xdiz54pf7",
@@ -3433,7 +3720,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "43objzpl5iig",
@@ -3444,7 +3732,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "w3efvgqdo839",
@@ -3455,7 +3744,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "fwpg4dscxgwm",
@@ -3466,7 +3756,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "1lawfk6ms5v4",
@@ -3477,7 +3768,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 207.91162109375,
-      "height": 129.0782470703125
+      "height": 129.0782470703125,
+      "z": 1
     },
     {
       "id": "qfazxe8gd95v",
@@ -3488,7 +3780,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 468.09381103515636,
-      "height": 192.1824951171875
+      "height": 192.1824951171875,
+      "z": 1
     },
     {
       "id": "evlqc8wbyz6y",
@@ -3499,7 +3792,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "ybht9to0j60a",
@@ -3510,7 +3804,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "u0gmzcjo9dma",
@@ -3521,7 +3816,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "kyr89g12v2t3",
@@ -3532,7 +3828,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "7697oyefe2gi",
@@ -3543,7 +3840,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "b89uop29rplh",
@@ -3554,7 +3852,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "0hpr90i6txaa",
@@ -3565,7 +3864,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "8xicm1ugg92k",
@@ -3576,7 +3876,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "hnm4zn7lif8a",
@@ -3587,7 +3888,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "n7dv87zp3eqe",
@@ -3598,7 +3900,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "5d12g41rsfz9",
@@ -3609,7 +3912,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "7x6rxcrq34qi",
@@ -3620,7 +3924,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "xrrfv9fysuw8",
@@ -3631,7 +3936,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "w6k4hzzvvl0l",
@@ -3642,7 +3948,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "dnmovd6k0e6z",
@@ -3653,7 +3960,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "ojurzpwyp5hl",
@@ -3664,7 +3972,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "r4f1vql5n6tq",
@@ -3675,7 +3984,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "j2zwivn2p8gv",
@@ -3686,7 +3996,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "wvoc2d2lteme",
@@ -3697,7 +4008,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "ah2sjdyuqdpz",
@@ -3708,7 +4020,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "xni6ammaosvd",
@@ -3719,7 +4032,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "c39txxf2z4pj",
@@ -3730,7 +4044,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 363.33837890625,
-      "height": 299.651123046875
+      "height": 299.651123046875,
+      "z": 1
     },
     {
       "id": "je0cc1udzrpa",
@@ -3741,7 +4056,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 384.40659227622245,
-      "height": 356.731921660877
+      "height": 356.731921660877,
+      "z": 1
     },
     {
       "id": "xqzeod9b9pw9",
@@ -3752,7 +4068,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 384.40659227622245,
-      "height": 356.731921660877
+      "height": 356.731921660877,
+      "z": 1
     },
     {
       "id": "973gbyuwacow",
@@ -3763,7 +4080,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 384.40659227622245,
-      "height": 356.731921660877
+      "height": 356.731921660877,
+      "z": 1
     },
     {
       "id": "eqjb0bu7ieon",
@@ -3774,7 +4092,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 384.40659227622245,
-      "height": 356.731921660877
+      "height": 356.731921660877,
+      "z": 1
     },
     {
       "id": "6erp7y0avkst",
@@ -3785,7 +4104,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 384.40659227622245,
-      "height": 356.731921660877
+      "height": 356.731921660877,
+      "z": 1
     },
     {
       "id": "jpggkyy3eoqa",
@@ -3796,7 +4116,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "xgfzbmfq2t31",
@@ -3807,7 +4128,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "nvgyudti4mve",
@@ -3818,7 +4140,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "zyepmhbmprlf",
@@ -3829,7 +4152,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "nki6kr0kl637",
@@ -3840,7 +4164,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "12b1b6h1h61l",
@@ -3851,7 +4176,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 542.427001953125,
-      "height": 403.697998046875
+      "height": 403.697998046875,
+      "z": 1
     },
     {
       "id": "7qgi12z1vtak",
@@ -3862,7 +4188,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 542.427001953125,
-      "height": 403.697998046875
+      "height": 403.697998046875,
+      "z": 1
     },
     {
       "id": "0q62ldlf5lrq",
@@ -3873,7 +4200,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 695.817626953125,
-      "height": 231.9478759765625
+      "height": 231.9478759765625,
+      "z": 1
     },
     {
       "id": "17e6ou2tk43p",
@@ -3884,7 +4212,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 176.557373046875,
-      "height": 294.7135009765625
+      "height": 294.7135009765625,
+      "z": 1
     },
     {
       "id": "vdhfpme03ko2",
@@ -3895,7 +4224,8 @@
       "velocityY": 0,
       "blueprintName": "shadow-minion",
       "width": 443.093994140625,
-      "height": 149.06395257907673
+      "height": 149.06395257907673,
+      "z": 1
     },
     {
       "id": "3supvkzjb126",
@@ -3906,7 +4236,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "wvz6i4i3p4sf",
@@ -3917,7 +4248,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "sscpv7aw6i1n",
@@ -3928,7 +4260,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "hlr1vgi3ttda",
@@ -3939,7 +4272,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "zhjedx5kcdst",
@@ -3950,7 +4284,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "r5r4qfzzcuu6",
@@ -3961,7 +4296,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "3cn3eun1auhu",
@@ -3972,7 +4308,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     },
     {
       "id": "k0zdgs6vrrl8",
@@ -3983,7 +4320,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 135.5364990234375,
-      "height": 140.546875
+      "height": 140.546875,
+      "z": 1
     },
     {
       "id": "2ge0h2rsgc0x",
@@ -3994,7 +4332,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 168.6458740234375,
-      "height": 374.64056396484375
+      "height": 374.64056396484375,
+      "z": 1
     },
     {
       "id": "1z6y5ekunbbr",
@@ -4005,7 +4344,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 46.9791259765625,
-      "height": 352.916748046875
+      "height": 352.916748046875,
+      "z": 1
     },
     {
       "id": "go4bkmz50d2t",
@@ -4016,7 +4356,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 62.885498046875,
-      "height": 69.463623046875
+      "height": 69.463623046875,
+      "z": 1
     },
     {
       "id": "rfzqf18gf8pi",
@@ -4027,7 +4368,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 50,
-      "height": 50
+      "height": 50,
+      "z": 1
     },
     {
       "id": "bgk0xse91jk7",
@@ -4038,7 +4380,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 50,
-      "height": 50
+      "height": 50,
+      "z": 1
     },
     {
       "id": "84nmrezf14kf",
@@ -4049,7 +4392,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 50,
-      "height": 50
+      "height": 50,
+      "z": 1
     },
     {
       "id": "xs6r0tcl25am",
@@ -4060,7 +4404,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 112.713623046875,
-      "height": 547.182373046875
+      "height": 547.182373046875,
+      "z": 1
     },
     {
       "id": "4fxi1owbepo8",
@@ -4071,7 +4416,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 57.7396240234375,
-      "height": 278.5208740234375
+      "height": 278.5208740234375,
+      "z": 1
     },
     {
       "id": "f4ceayb98n3g",
@@ -4082,7 +4428,8 @@
       "velocityY": 0,
       "blueprintName": "blueprint-27",
       "width": 70.859375,
-      "height": 65.80561420385763
+      "height": 65.80561420385763,
+      "z": 1
     },
     {
       "id": "drzhh5tms002",
@@ -4093,7 +4440,8 @@
       "velocityY": 0,
       "blueprintName": "blueprint-28",
       "width": 79.12787950012785,
-      "height": 110.50141580916738
+      "height": 110.50141580916738,
+      "z": 1
     },
     {
       "id": "z8s4mlnd2aq4",
@@ -4105,7 +4453,8 @@
       "blueprintName": "sea-monster",
       "width": 214.4765625,
       "height": 232.9375,
-      "color": "#f5f5f5"
+      "color": "#f5f5f5",
+      "z": 1
     },
     {
       "id": "cpvwn2bngg34",
@@ -4116,7 +4465,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 194.8177490234375,
-      "height": 253.77084350585938
+      "height": 253.77084350585938,
+      "z": 1
     },
     {
       "id": "lh05rbhzv6vo",
@@ -4127,7 +4477,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 435.23956298828125,
-      "height": 181.4375
+      "height": 181.4375,
+      "z": 1
     },
     {
       "id": "uot7n4vgr4jf",
@@ -4138,7 +4489,8 @@
       "velocityY": 0,
       "blueprintName": "blueprint-29",
       "width": 49.90379755859374,
-      "height": 60.14573798828121
+      "height": 60.14573798828121,
+      "z": 1
     },
     {
       "id": "spqqavf4vzx0",
@@ -4149,7 +4501,8 @@
       "velocityY": 0,
       "blueprintName": "blueprint-30",
       "width": 40.24732548828126,
-      "height": 39.94792597656249
+      "height": 39.94792597656249,
+      "z": 1
     },
     {
       "id": "5l8cvxay3l9b",
@@ -4160,7 +4513,8 @@
       "velocityY": 0,
       "blueprintName": "blueprint-31",
       "width": 50,
-      "height": 50
+      "height": 50,
+      "z": 1
     },
     {
       "id": "8sloks49nt1p",
@@ -4171,7 +4525,8 @@
       "velocityY": 0,
       "blueprintName": "blueprint-32",
       "width": 50,
-      "height": 50
+      "height": 50,
+      "z": 1
     },
     {
       "id": "wdz3p3f1k0hs",
@@ -4182,7 +4537,8 @@
       "velocityY": 0,
       "blueprintName": "shadow-minion",
       "width": 442.72412109375,
-      "height": 150.1771240234375
+      "height": 150.1771240234375,
+      "z": 1
     },
     {
       "id": "t33wwbwelf9u",
@@ -4193,7 +4549,8 @@
       "velocityY": 0,
       "blueprintName": "water",
       "width": 731.604066128687,
-      "height": 609.4048810384218
+      "height": 609.4048810384218,
+      "z": 1
     }
   ],
   "blueprints": [
@@ -4201,7 +4558,6 @@
       "name": "arctic",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle",
       "physicsType": "dynamic",
@@ -4213,7 +4569,6 @@
       "name": "shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 5,
       "color": "#99b3ff",
       "image": "blueprint-2-1764032226327.png",
       "shape": "rectangle",
@@ -4225,7 +4580,6 @@
       "name": "player",
       "width": 50,
       "height": 50,
-      "z": 3,
       "color": "#99d6ff",
       "image": "blueprint-3-1764032366437.png",
       "shape": "rectangle",
@@ -4237,7 +4591,6 @@
       "name": "fireman",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ffcc99",
       "image": "blueprint-4-1764032425102.png",
       "shape": "rectangle",
@@ -4249,7 +4602,6 @@
       "name": "get-pac",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff9966",
       "image": "blueprint-5-1764032466638.png",
       "shape": "rectangle",
@@ -4261,7 +4613,6 @@
       "name": "trick-to-death",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99e6cc",
       "image": "blueprint-6-1764032488723.png",
       "shape": "rectangle",
@@ -4273,7 +4624,6 @@
       "name": "boss-shadow-minion",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#66cc99",
       "image": "blueprint-7-1764032510862.png",
       "shape": "rectangle",
@@ -4285,7 +4635,6 @@
       "name": "treasure-chest",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ffb3cc",
       "image": "blueprint-8-1764032541998.png",
       "shape": "rectangle",
@@ -4297,7 +4646,6 @@
       "name": "mushroom",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff6699",
       "image": "blueprint-9-1764032575904.png",
       "shape": "rectangle",
@@ -4309,7 +4657,6 @@
       "name": "house",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#f5f5f5",
       "image": "blueprint-10-1764032589778.png",
       "shape": "rectangle",
@@ -4321,7 +4668,6 @@
       "name": "crafting-table",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#d9d9d9",
       "image": "blueprint-11-1764033053756.png",
       "shape": "rectangle",
@@ -4333,7 +4679,6 @@
       "name": "tree",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b3b3b3",
       "image": "blueprint-12-1764033090774.png",
       "shape": "rectangle",
@@ -4345,7 +4690,6 @@
       "name": "rock",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#4d4d4d",
       "image": "blueprint-13-1764033137887.png",
       "shape": "rectangle",
@@ -4357,7 +4701,6 @@
       "name": "grass",
       "width": 50,
       "height": 50,
-      "z": -100,
       "color": "#b399ff",
       "image": "blueprint-14-1764033196093.png",
       "shape": "rectangle",
@@ -4369,7 +4712,6 @@
       "name": "heart-stand",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "image": "blueprint-15-1764033217809.png",
       "shape": "rectangle",
@@ -4381,7 +4723,6 @@
       "name": "food-stand",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99d6ff",
       "image": "blueprint-16-1764033240460.png",
       "shape": "rectangle",
@@ -4393,7 +4734,6 @@
       "name": "house2",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ffcc99",
       "image": "blueprint-17-1764033298621.png",
       "shape": "rectangle",
@@ -4405,7 +4745,6 @@
       "name": "lighthouse",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff9966",
       "image": "blueprint-18-1764033308890.png",
       "shape": "rectangle",
@@ -4417,7 +4756,6 @@
       "name": "boat",
       "width": 50,
       "height": 50,
-      "z": 2,
       "color": "#99e6cc",
       "image": "boat-1764263081532.png",
       "shape": "rectangle",
@@ -4429,7 +4767,6 @@
       "name": "castle",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#66cc99",
       "image": "blueprint-20-1764033368660.png",
       "shape": "rectangle",
@@ -4441,7 +4778,6 @@
       "name": "villager",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ffb3cc",
       "image": "blueprint-21-1764033407996.png",
       "shape": "rectangle",
@@ -4453,7 +4789,6 @@
       "name": "wolf",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff6699",
       "image": "blueprint-22-1764034687645.png",
       "shape": "rectangle",
@@ -4465,7 +4800,6 @@
       "name": "sea-monster",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#f5f5f5",
       "image": "blueprint-23-1764035278865.png",
       "shape": "rectangle",
@@ -4477,7 +4811,6 @@
       "name": "bullet-1",
       "width": 10,
       "height": 10,
-      "z": 1,
       "color": "#ff6699",
       "shape": "rectangle",
       "physicsType": "ambient",
@@ -4489,7 +4822,6 @@
       "name": "water",
       "width": 50,
       "height": 50,
-      "z": 0,
       "color": "#b3b3b3",
       "image": "blueprint-25-1764104558304.png",
       "shape": "rectangle",
@@ -4501,7 +4833,6 @@
       "name": "bullet-2",
       "width": 20,
       "height": 20,
-      "z": 1,
       "color": "#b399ff",
       "shape": "rectangle",
       "physicsType": "ambient",
@@ -4513,7 +4844,6 @@
       "name": "blueprint-27",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#b399ff",
       "image": "blueprint-27-1764185953297.png",
       "shape": "rectangle",
@@ -4525,7 +4855,6 @@
       "name": "blueprint-28",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "image": "blueprint-28-1764186326717.png",
       "shape": "rectangle",
@@ -4537,7 +4866,6 @@
       "name": "blueprint-29",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99d6ff",
       "image": "blueprint-29-1764263371137.png",
       "shape": "rectangle",
@@ -4549,7 +4877,6 @@
       "name": "blueprint-30",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ffcc99",
       "image": "blueprint-30-1764263424337.png",
       "shape": "rectangle",
@@ -4561,7 +4888,6 @@
       "name": "blueprint-31",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff9966",
       "image": "blueprint-31-1764263506339.png",
       "shape": "rectangle",
@@ -4573,7 +4899,6 @@
       "name": "blueprint-32",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99e6cc",
       "image": "blueprint-32-1764263541460.png",
       "shape": "rectangle",

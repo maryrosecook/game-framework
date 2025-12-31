@@ -89,7 +89,7 @@ export default function createBlueprint(data: BlueprintData<BlueprintData>) {
 ## Expression
 
 - A blueprint can have
-  - z, width, height
+  - width, height
   - An image to render
   - A physics type
   - A weight (mass) and bounce (restitution)

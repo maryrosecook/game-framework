@@ -3,7 +3,9 @@ import { Copy, Plus, Trash2 } from "lucide-react";
 import {
   Blueprint,
   BlueprintData,
+  DEFAULT_THING_Z,
   GameAction,
+  RawThing,
   SetBlueprintPropertyAction,
 } from "@/engine/types";
 import { getColorOptions } from "@/components/ColorGrid";
@@ -15,7 +17,8 @@ import { getDroppedPngFile, uploadBlueprintImage } from "@/lib/imageUploads";
 
 type BlueprintTabProps = {
   blueprint: Blueprint;
-  blueprints: Blueprint[];
+  things: RawThing[];
+  selectedThingId: string | null;
   gameDirectory: string;
   dispatch: (action: GameAction) => void;
   onRename: (value: string) => void;
@@ -27,7 +30,8 @@ type BlueprintTabProps = {
 
 export function BlueprintTab({
   blueprint,
-  blueprints,
+  things,
+  selectedThingId,
   gameDirectory,
   dispatch,
   onRename,
@@ -44,8 +48,14 @@ export function BlueprintTab({
     blueprint.image,
     imageVersion
   );
-  const zBounds = getZBounds(blueprints, blueprint.z);
   const colorOptions = getColorOptions();
+  const orderedThings = getOrderedThings(things);
+  const selectedIndex = selectedThingId
+    ? orderedThings.findIndex((entry) => entry.thing.id === selectedThingId)
+    : -1;
+  const canMoveUp =
+    selectedIndex >= 0 && selectedIndex < orderedThings.length - 1;
+  const canMoveDown = selectedIndex > 0;
 
   const handleUpdate = <K extends keyof BlueprintData>(
     property: K,
@@ -111,20 +121,64 @@ export function BlueprintTab({
     });
   };
 
-  const handleSendToFront = () => {
-    const targetZ =
-      blueprint.z >= zBounds.maxZ ? blueprint.z : zBounds.maxZ + 1;
-    if (targetZ !== blueprint.z) {
-      handleUpdate("z", targetZ);
+  const setSelectedZ = (nextZ: number) => {
+    if (!selectedThingId) {
+      return;
     }
+    dispatch({
+      type: "setThingProperty",
+      thingId: selectedThingId,
+      property: "z",
+      value: nextZ,
+    });
   };
 
-  const handleSendToBack = () => {
-    const targetZ =
-      blueprint.z <= zBounds.minZ ? blueprint.z : zBounds.minZ - 1;
-    if (targetZ !== blueprint.z) {
-      handleUpdate("z", targetZ);
+  const handleMoveToTop = () => {
+    if (!canMoveUp) {
+      return;
     }
+    const topZ = orderedThings[orderedThings.length - 1]?.z ?? DEFAULT_THING_Z;
+    setSelectedZ(topZ + 1);
+  };
+
+  const handleMoveUp = () => {
+    if (!canMoveUp) {
+      return;
+    }
+    const above = orderedThings[selectedIndex + 1];
+    if (!above) {
+      return;
+    }
+    const aboveAbove = orderedThings[selectedIndex + 2];
+    const nextZ =
+      aboveAbove && aboveAbove.z > above.z
+        ? (above.z + aboveAbove.z) / 2
+        : above.z + 1;
+    setSelectedZ(nextZ);
+  };
+
+  const handleMoveDown = () => {
+    if (!canMoveDown) {
+      return;
+    }
+    const below = orderedThings[selectedIndex - 1];
+    if (!below) {
+      return;
+    }
+    const belowBelow = orderedThings[selectedIndex - 2];
+    const nextZ =
+      belowBelow && belowBelow.z < below.z
+        ? (below.z + belowBelow.z) / 2
+        : below.z - 1;
+    setSelectedZ(nextZ);
+  };
+
+  const handleMoveToBottom = () => {
+    if (!canMoveDown) {
+      return;
+    }
+    const bottomZ = orderedThings[0]?.z ?? DEFAULT_THING_Z;
+    setSelectedZ(bottomZ - 1);
   };
 
   return (
@@ -210,27 +264,30 @@ export function BlueprintTab({
             ) : null}
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-2 items-center">
+        <div className="grid grid-cols-2 gap-2 items-center">
           <ArrangeButton
-            label="Front"
+            label="Top"
+            icon="↑↑"
+            onClick={handleMoveToTop}
+            disabled={!canMoveUp}
+          />
+          <ArrangeButton
+            label="Up"
             icon="↑"
-            onClick={handleSendToFront}
-            disabled={blueprint.z >= zBounds.maxZ}
+            onClick={handleMoveUp}
+            disabled={!canMoveUp}
           />
           <ArrangeButton
-            label="Back"
-            icon="↓"
-            onClick={handleSendToBack}
-            disabled={blueprint.z <= zBounds.minZ}
+            label="Bottom"
+            icon="↓↓"
+            onClick={handleMoveToBottom}
+            disabled={!canMoveDown}
           />
-          <input
-            type="number"
-            className="w-12 justify-self-end rounded-lg border border-slate-200 bg-white px-2 py-2 text-sm text-slate-900 outline-none focus:border-slate-400"
-            value={blueprint.z}
-            onChange={(event) =>
-              handleUpdate("z", Number(event.target.value) || 0)
-            }
-            aria-label="Z position"
+          <ArrangeButton
+            label="Down"
+            icon="↓"
+            onClick={handleMoveDown}
+            disabled={!canMoveDown}
           />
         </div>
         <SelectField
@@ -243,6 +300,38 @@ export function BlueprintTab({
           ]}
           onChange={(value) => handleUpdate("shape", value)}
         />
+        <div className="grid grid-cols-2 gap-2">
+          <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
+            Width
+            <input
+              type="number"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
+              value={blueprint.width}
+              onChange={(event) => {
+                const nextValue = Number(event.target.value);
+                if (!Number.isFinite(nextValue)) {
+                  return;
+                }
+                handleUpdate("width", nextValue);
+              }}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
+            Height
+            <input
+              type="number"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
+              value={blueprint.height}
+              onChange={(event) => {
+                const nextValue = Number(event.target.value);
+                if (!Number.isFinite(nextValue)) {
+                  return;
+                }
+                handleUpdate("height", nextValue);
+              }}
+            />
+          </label>
+        </div>
         <SelectField
           label="Physics"
           value={blueprint.physicsType}
@@ -278,17 +367,25 @@ export function BlueprintTab({
   );
 }
 
-function getZBounds(blueprints: Blueprint[], fallback: number) {
-  if (blueprints.length === 0) {
-    return { minZ: fallback, maxZ: fallback };
-  }
-  let minZ = blueprints[0].z;
-  let maxZ = blueprints[0].z;
-  for (const blueprint of blueprints) {
-    minZ = Math.min(minZ, blueprint.z);
-    maxZ = Math.max(maxZ, blueprint.z);
-  }
-  return { minZ, maxZ };
+type OrderedThing = {
+  thing: RawThing;
+  index: number;
+  z: number;
+};
+
+function getOrderedThings(things: RawThing[]): OrderedThing[] {
+  return things
+    .map((entry, index) => ({
+      thing: entry,
+      index,
+      z: entry.z ?? DEFAULT_THING_Z,
+    }))
+    .sort((a, b) => {
+      if (a.z !== b.z) {
+        return a.z - b.z;
+      }
+      return a.index - b.index;
+    });
 }
 
 function buildBlueprintPropertyAction(
@@ -299,7 +396,6 @@ function buildBlueprintPropertyAction(
   switch (property) {
     case "width":
     case "height":
-    case "z":
       if (typeof value !== "number") {
         throw new Error("Blueprint dimension must be a number.");
       }

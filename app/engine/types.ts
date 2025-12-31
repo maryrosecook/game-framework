@@ -21,6 +21,12 @@ export type KeyState = {
   keyE: boolean;
 };
 
+export type InputFrameState = {
+  keyState: KeyState;
+  pressed: KeyState;
+  released: KeyState;
+};
+
 export type InputKey = keyof KeyState;
 
 export const INPUT_KEYS: InputKey[] = [
@@ -41,6 +47,8 @@ export const INPUT_KEYS: InputKey[] = [
 ];
 
 export type InputTriggerKey = InputKey | "any";
+
+export type InputTriggerStage = "press" | "hold";
 
 export type TriggerName = "create" | "input" | "update" | "collision";
 
@@ -132,6 +140,7 @@ export type BehaviorAction = { action: string; settings: ActionSettings };
 export type InputBlueprintBehavior = {
   trigger: "input";
   key: InputTriggerKey;
+  stage: InputTriggerStage;
   actions: BehaviorAction[];
 };
 
@@ -206,7 +215,6 @@ export type BlueprintData<TData = unknown> = {
   name: string;
   width: number;
   height: number;
-  z: number;
   color: string;
   image?: string;
   shape: Shape;
@@ -250,7 +258,7 @@ export type RawThing<TData = unknown> = {
   id: string;
   x: number;
   y: number;
-  z?: number;
+  z: number;
   width?: number;
   height?: number;
   angle: number;
@@ -273,7 +281,6 @@ export type RuntimeThing<TData = unknown> = RawThing<TData> &
         | "name"
         | "physicsType"
         | "image"
-        | "z"
         | "color"
         | "shape"
         | "behaviors"
@@ -486,6 +493,7 @@ export type ThingFromBlueprints<
 }[Bs[number]["name"]];
 
 const MIN_BLUEPRINT_WEIGHT = 0.0001;
+export const DEFAULT_THING_Z = 1;
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -542,6 +550,10 @@ export function isInputTriggerKey(value: unknown): value is InputTriggerKey {
   return (
     typeof value === "string" && (value === "any" || isInputKey(value))
   );
+}
+
+export function isInputTriggerStage(value: unknown): value is InputTriggerStage {
+  return value === "press" || value === "hold";
 }
 
 export function isSpawnInitProperty(
@@ -627,10 +639,18 @@ export function isBlueprintBehavior(
     if (!("key" in value)) {
       return false;
     }
+    if (!("stage" in value)) {
+      return false;
+    }
     if (!isInputTriggerKey(value.key)) {
       return false;
     }
+    if (!isInputTriggerStage(value.stage)) {
+      return false;
+    }
   } else if ("key" in value) {
+    return false;
+  } else if ("stage" in value) {
     return false;
   }
   if (
@@ -658,6 +678,7 @@ export function isThing(value: unknown): value is PersistedThing {
     typeof value.id === "string" &&
     typeof value.x === "number" &&
     typeof value.y === "number" &&
+    typeof value.z === "number" &&
     typeof value.angle === "number" &&
     typeof value.velocityX === "number" &&
     typeof value.velocityY === "number" &&
@@ -693,11 +714,13 @@ export function isBlueprintData(value: unknown): value is BlueprintData {
   if (!isRecord(value)) {
     return false;
   }
+  if ("z" in value) {
+    return false;
+  }
   if (
     typeof value.name !== "string" ||
     typeof value.width !== "number" ||
     typeof value.height !== "number" ||
-    typeof value.z !== "number" ||
     typeof value.color !== "string" ||
     !isShape(value.shape) ||
     !isPhysicsType(value.physicsType)

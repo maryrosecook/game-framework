@@ -12,7 +12,8 @@
       "velocityY": 0,
       "physicsType": "static",
       "color": "#b3b3b3",
-      "blueprintName": "wall"
+      "blueprintName": "wall",
+      "z": 1
     },
     {
       "id": "bk30k4h8oky1",
@@ -25,7 +26,8 @@
       "velocityY": 7.66044443118978,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "pdn04piboqfm",
@@ -38,7 +40,8 @@
       "velocityY": 7.66044443118978,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "babzviaawjk1",
@@ -51,7 +54,8 @@
       "velocityY": 7.66044443118978,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "4px9hi01sqcd",
@@ -64,7 +68,8 @@
       "velocityY": -3.746065934159124,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "0ag4lh4rssw9",
@@ -77,7 +82,8 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "hjfrfuhkkvzi",
@@ -90,7 +96,8 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "5x9avw0wzy4d",
@@ -103,7 +110,8 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "pws14tsgm3pz",
@@ -116,7 +124,8 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "fg2ido9fvvfq",
@@ -129,7 +138,8 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "vwhrmar23f0p",
@@ -142,7 +152,8 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "0d0811dpmxd4",
@@ -155,7 +166,8 @@
       "velocityY": 4.6947156278589075,
       "physicsType": "ambient",
       "color": "#99d6ff",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "nftrgulhers5",
@@ -168,7 +180,8 @@
       "velocityY": 0,
       "physicsType": "dynamic",
       "color": "#ff6699",
-      "blueprintName": "enemy"
+      "blueprintName": "enemy",
+      "z": 1
     },
     {
       "id": "wroqr2uh2j65",
@@ -181,7 +194,8 @@
       "velocityY": -9.612616959383189,
       "physicsType": "ambient",
       "color": "#ff6699",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "47uspf4dr8ll",
@@ -194,7 +208,8 @@
       "velocityY": -7.431448254773942,
       "physicsType": "ambient",
       "color": "#ff6699",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "9e7ufx4bmj2d",
@@ -207,7 +222,8 @@
       "velocityY": -4.067366430758002,
       "physicsType": "ambient",
       "color": "#ff6699",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "lf4rjhmw0xn5",
@@ -220,7 +236,8 @@
       "velocityY": -4.067366430758002,
       "physicsType": "ambient",
       "color": "#ff6699",
-      "blueprintName": "bullet"
+      "blueprintName": "bullet",
+      "z": 1
     },
     {
       "id": "26mo9vovzwb5",
@@ -233,7 +250,8 @@
       "velocityY": 0,
       "physicsType": "static",
       "color": "#b3b3b3",
-      "blueprintName": "wall"
+      "blueprintName": "wall",
+      "z": 1
     },
     {
       "id": "u3g4kacv4bz2",
@@ -246,7 +264,8 @@
       "velocityY": 0,
       "physicsType": "static",
       "color": "#b3b3b3",
-      "blueprintName": "wall"
+      "blueprintName": "wall",
+      "z": 1
     },
     {
       "id": "qrcx8zst4qdu",
@@ -259,7 +278,8 @@
       "velocityY": 0,
       "physicsType": "dynamic",
       "color": "#ff6699",
-      "blueprintName": "enemy"
+      "blueprintName": "enemy",
+      "z": 1
     },
     {
       "id": "lhnlshl0iyl4",
@@ -272,7 +292,8 @@
       "velocityY": 0,
       "physicsType": "dynamic",
       "color": "#ff6699",
-      "blueprintName": "enemy"
+      "blueprintName": "enemy",
+      "z": 1
     },
     {
       "id": "tpwpyqhlcfu7",
@@ -285,7 +306,8 @@
       "velocityY": 0,
       "physicsType": "static",
       "color": "#b3b3b3",
-      "blueprintName": "wall"
+      "blueprintName": "wall",
+      "z": 1
     },
     {
       "id": "2n4x6v5p5w4k",
@@ -298,7 +320,8 @@
       "velocityY": 0,
       "physicsType": "dynamic",
       "color": "#ffcc99",
-      "blueprintName": "exit"
+      "blueprintName": "exit",
+      "z": 1
     },
     {
       "id": "w31rr4h03tdw",
@@ -311,7 +334,8 @@
       "blueprintName": "player",
       "width": 31.310546875,
       "height": 45.962890625,
-      "color": "#99d6ff"
+      "color": "#99d6ff",
+      "z": 1
     },
     {
       "id": "hte8qzm9yrk6",
@@ -323,7 +347,8 @@
       "blueprintName": "exit",
       "width": 50,
       "height": 50,
-      "color": "#99b3ff"
+      "color": "#99b3ff",
+      "z": 1
     },
     {
       "id": "0rfeqw177dmy",
@@ -355,7 +380,6 @@
       "name": "player",
       "width": 96,
       "height": 60,
-      "z": 1,
       "color": "#99d6ff",
       "shape": "triangle",
       "physicsType": "dynamic",
@@ -366,7 +390,6 @@
       "name": "wall",
       "width": 50,
       "height": 64,
-      "z": 1,
       "color": "#b3b3b3",
       "shape": "rectangle",
       "physicsType": "static",
@@ -377,7 +400,6 @@
       "name": "bullet",
       "width": 8,
       "height": 8,
-      "z": 1,
       "color": "#ff6699",
       "shape": "rectangle",
       "physicsType": "ambient",
@@ -388,7 +410,6 @@
       "name": "enemy",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#ff6699",
       "shape": "circle",
       "physicsType": "dynamic",
@@ -400,7 +421,6 @@
       "name": "exit",
       "width": 50,
       "height": 50,
-      "z": 1,
       "color": "#99b3ff",
       "shape": "rectangle",
       "physicsType": "static",
@@ -411,7 +431,6 @@
       "name": "blueprint-6",
       "width": 100,
       "height": 100,
-      "z": 1,
       "color": "#ff0000",
       "shape": "circle",
       "physicsType": "dynamic",
