@@ -242,7 +242,7 @@ export function BlueprintTab({
             Width
             <input
               type="number"
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
+              className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-slate-400"
               value={blueprint.width}
               onChange={(event) => {
                 const nextValue = Number(event.target.value);
@@ -257,7 +257,7 @@ export function BlueprintTab({
             Height
             <input
               type="number"
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
+              className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-slate-400"
               value={blueprint.height}
               onChange={(event) => {
                 const nextValue = Number(event.target.value);

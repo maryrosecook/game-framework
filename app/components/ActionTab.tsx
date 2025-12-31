@@ -483,7 +483,7 @@ function ActionSettingField({
         {humanizeKey(settingKey)}
         <input
           type="number"
-          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
+          className={`w-full ${INLINE_INPUT_CLASS}`}
           value={value}
           min={setting.min}
           max={setting.max}
@@ -507,7 +507,7 @@ function ActionSettingField({
         {humanizeKey(settingKey)}
         <input
           type="text"
-          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-slate-400"
+          className={`w-full ${INLINE_INPUT_CLASS}`}
           value={value}
           maxLength={setting.maxLength}
           placeholder={setting.placeholder}
