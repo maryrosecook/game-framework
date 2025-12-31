@@ -1,4 +1,4 @@
-import { Blueprint, RuntimeThing, Vector } from "../../types";
+import { RuntimeThing, Vector } from "../../types";
 import { createThingStack, findTopmostInStack } from "../../thingStacking";
 
 const RESIZE_HANDLE_SIZE = 12;
@@ -24,10 +24,9 @@ export function hitTestResizeHandle(point: Vector, thing: RuntimeThing) {
 
 export function findTopThingAtPoint(
   point: Vector,
-  things: RuntimeThing[],
-  blueprintLookup: Map<string, Blueprint>
+  things: RuntimeThing[]
 ) {
-  const stack = createThingStack(things, blueprintLookup);
+  const stack = createThingStack(things);
   return findTopmostInStack(stack, (thing) => hitTestThing(point, thing));
 }
 
