@@ -30,7 +30,7 @@ export function renderGame(
   ctx.save();
   ctx.translate(-state.camera.x, -state.camera.y);
 
-  const stacking = createThingStack(state.things, blueprintLookup);
+  const stacking = createThingStack(state.things);
   for (const thing of stacking) {
     renderThing(ctx, thing, game, blueprintLookup, getImageForThing);
   }

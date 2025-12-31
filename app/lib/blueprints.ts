@@ -19,11 +19,10 @@ export function blueprintTemplate() {
 
 const DEFAULTS: Pick<
   Blueprint,
-  "width" | "height" | "z" | "shape" | "physicsType" | "image" | "weight" | "bounce"
+  "width" | "height" | "shape" | "physicsType" | "image" | "weight" | "bounce"
 > = {
   width: 100,
   height: 100,
-  z: 1,
   shape: "rectangle",
   physicsType: "dynamic",
   image: undefined,

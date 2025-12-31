@@ -31,7 +31,6 @@
       "name": "blueprint-1",
       "width": 100,
       "height": 100,
-      "z": 1,
       "color": "#000000",
       "shape": "rectangle",
       "physicsType": "dynamic",
@@ -71,7 +70,8 @@
             {
               "action": "spawnObject",
               "settings": {
-                "blueprint": "blueprint-2"
+                "blueprint": "blueprint-2",
+                "initialVars": []
               }
             }
           ]
@@ -82,7 +82,6 @@
       "name": "blueprint-2",
       "width": 7,
       "height": 7,
-      "z": 1,
       "color": "#ff0000",
       "shape": "rectangle",
       "physicsType": "dynamic",

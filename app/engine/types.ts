@@ -75,13 +75,44 @@ export type ActionSettingEnum = {
   options: string[];
 };
 
+export type SpawnInitProperty = keyof Pick<
+  RawThing,
+  "angle" | "velocityX" | "velocityY" | "width" | "height"
+>;
+
+export const SPAWN_INIT_PROPERTIES: SpawnInitProperty[] = [
+  "angle",
+  "velocityX",
+  "velocityY",
+  "width",
+  "height",
+];
+
+export type SpawnInitValue = {
+  type: "literal" | "source";
+  literal?: number;
+};
+
+export type SpawnInitAssignment = {
+  property: SpawnInitProperty;
+  value: SpawnInitValue;
+};
+
+export type SpawnInitAssignments = SpawnInitAssignment[];
+
+export type ActionSettingSpawnInit = {
+  kind: "spawnInit";
+  default: SpawnInitAssignments;
+};
+
 export type ActionSetting =
   | ActionSettingNumber
   | ActionSettingString
   | ActionSettingBoolean
-  | ActionSettingEnum;
+  | ActionSettingEnum
+  | ActionSettingSpawnInit;
 
-export type ActionSettingValue = number | string | boolean;
+export type ActionSettingValue = number | string | boolean | SpawnInitAssignments;
 
 export type ActionSettings = Record<string, ActionSettingValue>;
 
@@ -94,6 +125,8 @@ export type ActionSettingValueFor<T extends ActionSetting> =
     ? boolean
     : T extends ActionSettingEnum
     ? string
+    : T extends ActionSettingSpawnInit
+    ? SpawnInitAssignments
     : never;
 
 export type ActionSettingValues<
@@ -182,7 +215,6 @@ export type BlueprintData<TData = unknown> = {
   name: string;
   width: number;
   height: number;
-  z: number;
   color: string;
   image?: string;
   shape: Shape;
@@ -226,7 +258,7 @@ export type RawThing<TData = unknown> = {
   id: string;
   x: number;
   y: number;
-  z?: number;
+  z: number;
   width?: number;
   height?: number;
   angle: number;
@@ -249,7 +281,6 @@ export type RuntimeThing<TData = unknown> = RawThing<TData> &
         | "name"
         | "physicsType"
         | "image"
-        | "z"
         | "color"
         | "shape"
         | "behaviors"
@@ -462,6 +493,7 @@ export type ThingFromBlueprints<
 }[Bs[number]["name"]];
 
 const MIN_BLUEPRINT_WEIGHT = 0.0001;
+export const DEFAULT_THING_Z = 1;
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -524,9 +556,50 @@ export function isInputTriggerStage(value: unknown): value is InputTriggerStage 
   return value === "press" || value === "hold";
 }
 
+export function isSpawnInitProperty(
+  value: unknown
+): value is SpawnInitProperty {
+  return (
+    typeof value === "string" &&
+    SPAWN_INIT_PROPERTIES.some((property) => property === value)
+  );
+}
+
+export function isSpawnInitValue(value: unknown): value is SpawnInitValue {
+  if (!isRecord(value)) {
+    return false;
+  }
+  if (value.type === "literal") {
+    return typeof value.literal === "number" && Number.isFinite(value.literal);
+  }
+  if (value.type === "source") {
+    return (
+      value.literal === undefined ||
+      (typeof value.literal === "number" && Number.isFinite(value.literal))
+    );
+  }
+  return false;
+}
+
+export function isSpawnInitAssignment(
+  value: unknown
+): value is SpawnInitAssignment {
+  return (
+    isRecord(value) &&
+    isSpawnInitProperty(value.property) &&
+    isSpawnInitValue(value.value)
+  );
+}
+
+export function isSpawnInitAssignments(
+  value: unknown
+): value is SpawnInitAssignments {
+  return Array.isArray(value) && value.every((entry) => isSpawnInitAssignment(entry));
+}
+
 export function isActionSettings(
   value: unknown
-): value is Record<string, string | number | boolean> {
+): value is ActionSettings {
   if (!isRecord(value)) {
     return false;
   }
@@ -534,7 +607,8 @@ export function isActionSettings(
     if (
       typeof entry !== "string" &&
       typeof entry !== "number" &&
-      typeof entry !== "boolean"
+      typeof entry !== "boolean" &&
+      !isSpawnInitAssignments(entry)
     ) {
       return false;
     }
@@ -604,6 +678,7 @@ export function isThing(value: unknown): value is PersistedThing {
     typeof value.id === "string" &&
     typeof value.x === "number" &&
     typeof value.y === "number" &&
+    typeof value.z === "number" &&
     typeof value.angle === "number" &&
     typeof value.velocityX === "number" &&
     typeof value.velocityY === "number" &&
@@ -639,11 +714,13 @@ export function isBlueprintData(value: unknown): value is BlueprintData {
   if (!isRecord(value)) {
     return false;
   }
+  if ("z" in value) {
+    return false;
+  }
   if (
     typeof value.name !== "string" ||
     typeof value.width !== "number" ||
     typeof value.height !== "number" ||
-    typeof value.z !== "number" ||
     typeof value.color !== "string" ||
     !isShape(value.shape) ||
     !isPhysicsType(value.physicsType)

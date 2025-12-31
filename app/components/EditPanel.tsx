@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Blueprint } from "@/engine/types";
+import { Blueprint, RawThing } from "@/engine/types";
 import { GameSubscribe } from "@/engine/useGame";
 import { BlueprintTab } from "@/components/BlueprintTab";
 import { DrawTab } from "@/components/DrawTab";
@@ -31,10 +31,12 @@ export function EditPanel({
   onCreate: () => void;
 }) {
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
+  const [things] = subscribe<RawThing[]>(["things"]);
   const [blueprint, dispatchGame] = subscribe<Blueprint | undefined>([
     "blueprints",
     blueprintName,
   ]);
+  const [selectedThingId] = subscribe<string | null>(["selectedThingId"]);
   const [activeTab, setActiveTab] = useState<PanelTab>("blueprint");
 
   if (!blueprint) {
@@ -46,7 +48,7 @@ export function EditPanel({
     : undefined;
 
   return (
-    <div className="pointer-events-auto absolute right-4 top-4 bottom-4 z-10 flex w-78 flex-col rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-900 shadow-xl">
+    <div className="pointer-events-auto absolute right-4 top-4 bottom-4 z-10 flex w-[25.35rem] flex-col rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-900 shadow-xl">
       <div className="mb-4 grid grid-cols-3 gap-1 rounded-full bg-slate-100 p-1">
         <TabButton
           label="Blueprint"
@@ -69,7 +71,8 @@ export function EditPanel({
         {activeTab === "blueprint" ? (
           <BlueprintTab
             blueprint={blueprint}
-            blueprints={blueprints ?? []}
+            things={things ?? []}
+            selectedThingId={selectedThingId}
             dispatch={dispatchGame}
             gameDirectory={gameDirectory}
             imageVersion={imageVersion}
