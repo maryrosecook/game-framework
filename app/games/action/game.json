@@ -2,36 +2,48 @@
   "id": 8,
   "things": [
     {
-      "id": "81to1qneerfz",
-      "x": 684.921875,
-      "y": 342.942499999999,
-      "z": 1,
+      "id": "l1fl4fva8p74",
+      "x": 987.859375,
+      "y": 324.61328125,
+      "z": 2,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
-      "blueprintName": "blueprint-1",
+      "blueprintName": "player",
       "width": 100,
       "height": 100
     },
     {
-      "id": "lbphwie50ui7",
-      "x": 978.5,
-      "y": 789.5,
+      "id": "zer6le32nker",
+      "x": 955.5,
+      "y": 775.5,
       "z": 1,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
-      "blueprintName": "blueprint-2",
-      "width": 5,
-      "height": 5
+      "blueprintName": "bullet",
+      "width": 7,
+      "height": 7
+    },
+    {
+      "id": "prj9xo4563qy",
+      "x": 591.5,
+      "y": 290.6484375,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "enemy",
+      "width": 100,
+      "height": 100
     }
   ],
   "blueprints": [
     {
-      "name": "blueprint-1",
+      "name": "player",
       "width": 100,
       "height": 100,
-      "color": "#000000",
+      "color": "#ffd700",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
@@ -39,39 +51,34 @@
       "behaviors": [
         {
           "trigger": "input",
-          "key": "arrowLeft",
-          "actions": [
-            {
-              "action": "turn",
-              "settings": {
-                "direction": "left",
-                "speed": 2
-              }
-            }
-          ]
-        },
-        {
-          "trigger": "input",
-          "key": "arrowRight",
-          "actions": [
-            {
-              "action": "turn",
-              "settings": {
-                "direction": "right",
-                "speed": 2
-              }
-            }
-          ]
-        },
-        {
-          "trigger": "input",
           "key": "space",
+          "stage": "press",
           "actions": [
             {
               "action": "spawnObject",
               "settings": {
-                "blueprint": "blueprint-2",
-                "initialVars": []
+                "blueprint": "bullet",
+                "initialVars": [
+                  {
+                    "property": "angle",
+                    "value": {
+                      "type": "source",
+                      "literal": 0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "trigger": "update",
+          "actions": [
+            {
+              "action": "moveWithArrows",
+              "settings": {
+                "speed": 2,
+                "move": "turn"
               }
             }
           ]
@@ -79,12 +86,12 @@
       ]
     },
     {
-      "name": "blueprint-2",
+      "name": "bullet",
       "width": 7,
       "height": 7,
-      "color": "#ff0000",
+      "color": "#4b0082",
       "shape": "rectangle",
-      "physicsType": "dynamic",
+      "physicsType": "ambient",
       "weight": 1,
       "bounce": 0,
       "behaviors": [
@@ -94,8 +101,31 @@
             {
               "action": "moveForward",
               "settings": {
-                "speed": 2
+                "speed": 10
               }
+            }
+          ]
+        }
+      ],
+      "image": "bullet-paint-1767209997589.png"
+    },
+    {
+      "name": "enemy",
+      "width": 100,
+      "height": 100,
+      "color": "#ffffff",
+      "shape": "rectangle",
+      "physicsType": "dynamic",
+      "weight": 1,
+      "bounce": 0,
+      "image": "enemy-paint-1767209929014.png",
+      "behaviors": [
+        {
+          "trigger": "collision",
+          "actions": [
+            {
+              "action": "destroy",
+              "settings": {}
             }
           ]
         }
