@@ -173,7 +173,6 @@ export type BlueprintData<TData = unknown> = {
   name: string;
   width: number;
   height: number;
-  z: number;
   color: string;
   image?: string;
   shape: Shape;
@@ -217,7 +216,7 @@ export type RawThing<TData = unknown> = {
   id: string;
   x: number;
   y: number;
-  z?: number;
+  z: number;
   width?: number;
   height?: number;
   angle: number;
@@ -240,7 +239,6 @@ export type RuntimeThing<TData = unknown> = RawThing<TData> &
         | "name"
         | "physicsType"
         | "image"
-        | "z"
         | "color"
         | "shape"
         | "behaviors"
@@ -453,6 +451,7 @@ export type ThingFromBlueprints<
 }[Bs[number]["name"]];
 
 const MIN_BLUEPRINT_WEIGHT = 0.0001;
+export const DEFAULT_THING_Z = 1;
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -583,6 +582,7 @@ export function isThing(value: unknown): value is PersistedThing {
     typeof value.id === "string" &&
     typeof value.x === "number" &&
     typeof value.y === "number" &&
+    typeof value.z === "number" &&
     typeof value.angle === "number" &&
     typeof value.velocityX === "number" &&
     typeof value.velocityY === "number" &&
@@ -618,11 +618,13 @@ export function isBlueprintData(value: unknown): value is BlueprintData {
   if (!isRecord(value)) {
     return false;
   }
+  if ("z" in value) {
+    return false;
+  }
   if (
     typeof value.name !== "string" ||
     typeof value.width !== "number" ||
     typeof value.height !== "number" ||
-    typeof value.z !== "number" ||
     typeof value.color !== "string" ||
     !isShape(value.shape) ||
     !isPhysicsType(value.physicsType)

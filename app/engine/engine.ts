@@ -4,6 +4,7 @@ import { renderGame } from "./render";
 import {
   Blueprint,
   BlueprintData,
+  DEFAULT_THING_Z,
   CameraController,
   GameAction,
   GameFile,
@@ -649,11 +650,7 @@ export class GameEngine {
   }
 
   private hitTestThing(worldPoint: Vector) {
-    return findTopThingAtPoint(
-      worldPoint,
-      this.gameState.things,
-      this.blueprintLookup
-    );
+    return findTopThingAtPoint(worldPoint, this.gameState.things);
   }
 
   private duplicateSelection(
@@ -1651,7 +1648,6 @@ function blueprintToBlueprintData(
     name: entry.name,
     width: entry.width,
     height: entry.height,
-    z: entry.z,
     color: entry.color,
     image: entry.image,
     shape: entry.shape,
@@ -1703,6 +1699,7 @@ function normalizeThingFromFile(
   const { image: _ignored, ...rest } = thing;
   return {
     ...rest,
+    z: rest.z ?? DEFAULT_THING_Z,
     velocityX: rest.velocityX ?? 0,
     velocityY: rest.velocityY ?? 0,
     isGrounded: false,

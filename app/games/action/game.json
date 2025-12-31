@@ -24,6 +24,18 @@
       "blueprintName": "blueprint-2",
       "width": 100,
       "height": 100
+    },
+    {
+      "id": "md7itgw1f00a",
+      "x": 690.22546875,
+      "y": 343.85546875,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-1",
+      "width": 100,
+      "height": 100
     }
   ],
   "blueprints": [
@@ -31,10 +43,9 @@
       "name": "blueprint-1",
       "width": 100,
       "height": 100,
-      "z": 1,
       "color": "#000000",
       "shape": "rectangle",
-      "physicsType": "dynamic",
+      "physicsType": "static",
       "weight": 1,
       "bounce": 0,
       "behaviors": [
@@ -82,7 +93,6 @@
       "name": "blueprint-2",
       "width": 100,
       "height": 100,
-      "z": 1,
       "color": "#ff0000",
       "shape": "rectangle",
       "physicsType": "dynamic",

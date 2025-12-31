@@ -14,7 +14,6 @@ const LANE_SWITCH_COOLDOWN_MS = 120;
 export default function createEngine(data: BlueprintData) {
   const baseSize = { width: data.width, height: data.height };
   console.log(new Error().stack, data);
-  const baseZ = data.z;
 
   return {
     ...data,
@@ -45,7 +44,7 @@ export default function createEngine(data: BlueprintData) {
     update: (thing: RuntimeThing, game: GameContext) => {
       const lane = laneByThingId.get(thing.id) ?? "center";
       laneByThingId.set(thing.id, lane);
-      positionEngine(thing, game, lane, baseSize, baseZ);
+      positionEngine(thing, game, lane, baseSize);
     },
   };
 }
@@ -54,8 +53,7 @@ function positionEngine(
   thing: RuntimeThing,
   game: GameContext,
   lane: TrackLane,
-  baseSize: { width: number; height: number },
-  baseZ?: number
+  baseSize: { width: number; height: number }
 ) {
   const screen = game.gameState.screen;
   const laneOffset = getLaneOffset(lane, screen.width);
@@ -66,7 +64,6 @@ function positionEngine(
   thing.height = baseSize.height;
   thing.x = centerX - thing.width / 2;
   thing.y = targetY - thing.height / 2;
-  thing.z = baseZ ?? thing.z;
   thing.velocityX = 0;
   thing.velocityY = 0;
 }
