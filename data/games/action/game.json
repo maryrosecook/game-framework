@@ -107,7 +107,9 @@
           ]
         }
       ],
-      "image": "bullet-paint-1767209997589.png"
+      "images": [
+        "bullet-paint-1767209997589.png"
+      ]
     },
     {
       "name": "enemy",
@@ -118,7 +120,6 @@
       "physicsType": "dynamic",
       "weight": 1,
       "bounce": 0,
-      "image": "enemy-paint-1767209929014.png",
       "behaviors": [
         {
           "trigger": "collision",
@@ -129,6 +130,9 @@
             }
           ]
         }
+      ],
+      "images": [
+        "enemy-paint-1767209929014.png"
       ]
     }
   ],

@@ -236,67 +236,79 @@
       "width": 100,
       "height": 100,
       "color": "#000000",
-      "image": "blueprint-1-1766269758478.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-1-1766269758478.png"
+      ]
     },
     {
       "name": "blueprint-2",
       "width": 100,
       "height": 100,
       "color": "#000000",
-      "image": "blueprint-2-paint-1766894767742.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
       "bounce": 0,
-      "behaviors": []
+      "behaviors": [],
+      "images": [
+        "blueprint-2-paint-1766894767742.png"
+      ]
     },
     {
       "name": "blueprint-3",
       "width": 100,
       "height": 100,
       "color": "#000000",
-      "image": "blueprint-3-paint-1766896093000.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-3-paint-1766896093000.png"
+      ]
     },
     {
       "name": "blueprint-4",
       "width": 100,
       "height": 100,
       "color": "#000000",
-      "image": "blueprint-4-paint-1766944273099.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-4-paint-1766944273099.png"
+      ]
     },
     {
       "name": "blueprint-5",
       "width": 100,
       "height": 100,
       "color": "#000000",
-      "image": "blueprint-5-paint-1766944773444.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-5-paint-1766944773444.png"
+      ]
     },
     {
       "name": "blueprint-6",
       "width": 100,
       "height": 100,
       "color": "#000000",
-      "image": "blueprint-6-paint-1766945619989.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-6-paint-1766945619989.png"
+      ]
     }
   ],
   "camera": {

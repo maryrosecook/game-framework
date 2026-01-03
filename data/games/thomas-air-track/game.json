@@ -80,44 +80,52 @@
       "width": 50,
       "height": 50,
       "color": "#b399ff",
-      "image": "blueprint-1-1764361604143.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-1-1764361604143.png"
+      ]
     },
     {
       "name": "pixel-art-1764361249653-bnf0kr6rw",
       "width": 100,
       "height": 100,
       "color": "#99b3ff",
-      "image": "pixel-art-1764361249653-bnf0kr6rw-1764361261192.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "pixel-art-1764361249653-bnf0kr6rw-1764361261192.png"
+      ]
     },
     {
       "name": "blueprint-3",
       "width": 50,
       "height": 50,
       "color": "#99d6ff",
-      "image": "blueprint-3-1764362010930.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-3-1764362010930.png"
+      ]
     },
     {
       "name": "pixel-art-1764362521477-2phtmnt7o",
       "width": 100,
       "height": 100,
       "color": "#ffcc99",
-      "image": "pixel-art-1764362521477-2phtmnt7o-1764362534432.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "pixel-art-1764362521477-2phtmnt7o-1764362534432.png"
+      ]
     },
     {
       "name": "blueprint-5",
@@ -134,22 +142,26 @@
       "width": 100,
       "height": 100,
       "color": "#99e6cc",
-      "image": "pixel-art-1764362977188-ydeaoj2m4-1764362990877.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "pixel-art-1764362977188-ydeaoj2m4-1764362990877.png"
+      ]
     },
     {
       "name": "pixel-art-1764363609520-yfak4iz2e",
       "width": 100,
       "height": 100,
       "color": "#66cc99",
-      "image": "pixel-art-1764363609520-yfak4iz2e-1764363617627.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "pixel-art-1764363609520-yfak4iz2e-1764363617627.png"
+      ]
     }
   ],
   "camera": {

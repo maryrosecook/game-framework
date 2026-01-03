@@ -18,6 +18,15 @@ export function normalizeImageFileName(
   return trimmed;
 }
 
+export function getPrimaryImageName(
+  images: string[] | undefined
+): string | undefined {
+  if (!images || images.length === 0) {
+    return undefined;
+  }
+  return images[0];
+}
+
 export function getBlueprintImageUrl(
   gameDirectory: string | undefined,
   imageName: string | undefined,

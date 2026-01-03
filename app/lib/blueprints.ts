@@ -19,13 +19,13 @@ export function blueprintTemplate() {
 
 const DEFAULTS: Pick<
   Blueprint,
-  "width" | "height" | "shape" | "physicsType" | "image" | "weight" | "bounce"
+  "width" | "height" | "shape" | "physicsType" | "images" | "weight" | "bounce"
 > = {
   width: 100,
   height: 100,
   shape: "rectangle",
   physicsType: "dynamic",
-  image: undefined,
+  images: undefined,
   weight: DEFAULT_BLUEPRINT_WEIGHT,
   bounce: DEFAULT_BLUEPRINT_BOUNCE,
 };
@@ -40,7 +40,7 @@ export function createBlueprint(
   return {
     ...DEFAULTS,
     color: values.color ?? "#888888",
-    image: values.image ?? DEFAULTS.image,
+    images: values.images ?? DEFAULTS.images,
     ...values,
     shape,
     physicsType,

@@ -30,7 +30,7 @@ import {
   sanitizeThingData,
 } from "./blueprints";
 import { createThingProxy } from "./proxy";
-import { getBlueprintImageUrl } from "@/lib/images";
+import { getBlueprintImageUrl, getPrimaryImageName } from "@/lib/images";
 import { loadImages } from "./imageLoader";
 import {
   EditableImageRecord,
@@ -725,9 +725,10 @@ export class GameEngine {
     if (!blueprint) {
       return null;
     }
+    const imageName = getPrimaryImageName(blueprint.images);
     const existingSrc = getBlueprintImageUrl(
       this.gameDirectory,
-      blueprint.image
+      imageName
     );
     if (!existingSrc) {
       return null;
@@ -896,19 +897,20 @@ export class GameEngine {
   private ensureEditableImageRecordForBlueprint(
     blueprint: Blueprint
   ): EditableImageRecord | null {
+    const imageName = getPrimaryImageName(blueprint.images);
     const existingSrc = getBlueprintImageUrl(
       this.gameDirectory,
-      blueprint.image
+      imageName
     );
 
-    // Case 1: Blueprint already references an image. Wrap it in a 16x16 canvas so we can paint directly.
+    // Case 1: Blueprint already references a primary image. Wrap it in a 16x16 canvas so we can paint directly.
     if (existingSrc) {
       const record = this.getOrCreateImageRecord(existingSrc);
       if (record) return record;
       return null;
     }
 
-    // Case 2: Blueprint has no image yet. Create a new 16x16 blank, wire it up, and assign it to the blueprint.
+    // Case 2: Blueprint has no image yet. Create a new 16x16 blank, wire it up, and assign it as the primary image.
     if (!this.gameDirectory) {
       return null;
     }
@@ -929,8 +931,8 @@ export class GameEngine {
     this.dispatch({
       type: "setBlueprintProperty",
       blueprintName: blueprint.name,
-      property: "image",
-      value: fileName,
+      property: "images",
+      value: [fileName],
     });
 
     this.markImageDirty(record);
@@ -1253,7 +1255,9 @@ export class GameEngine {
     thing: RuntimeThing,
     blueprint?: Blueprint
   ): CanvasImageSource | null {
-    const imageName = blueprint?.image;
+    const imageName = blueprint
+      ? getPrimaryImageName(blueprint.images)
+      : undefined;
     const src = getBlueprintImageUrl(this.gameDirectory, imageName);
     if (!src) {
       return null;
@@ -1264,7 +1268,8 @@ export class GameEngine {
   private sourcesForBlueprints(blueprints: Blueprint[]) {
     const sources = new Set<string>();
     for (const blueprint of blueprints) {
-      const src = getBlueprintImageUrl(this.gameDirectory, blueprint.image);
+      const imageName = getPrimaryImageName(blueprint.images);
+      const src = getBlueprintImageUrl(this.gameDirectory, imageName);
       if (src) {
         sources.add(src);
       }
@@ -1688,7 +1693,7 @@ function blueprintToBlueprintData(
     width: entry.width,
     height: entry.height,
     color: entry.color,
-    image: entry.image,
+    images: entry.images,
     shape: entry.shape,
     physicsType: entry.physicsType,
     weight: entry.weight,
