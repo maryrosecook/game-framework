@@ -20,6 +20,8 @@ type DragAndDropProps = PropsWithChildren<{
   engine: GameEngine;
   gameDirectory: string;
   onSelectBlueprint?: (name: string) => void;
+  isReadOnly?: boolean;
+  editKey?: string | null;
 }>;
 
 export function DragAndDrop({
@@ -28,6 +30,8 @@ export function DragAndDrop({
   engine,
   gameDirectory,
   onSelectBlueprint,
+  isReadOnly = false,
+  editKey,
   children,
 }: DragAndDropProps) {
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
@@ -36,6 +40,9 @@ export function DragAndDrop({
   const importingRef = useRef(false);
 
   const handleDragOver = (event: DragEvent<HTMLElement>) => {
+    if (isReadOnly) {
+      return;
+    }
     const isFile = event.dataTransfer?.types?.includes("Files");
     const isBlueprint =
       event.dataTransfer?.types?.includes(BLUEPRINT_MIME) ||
@@ -48,6 +55,9 @@ export function DragAndDrop({
   };
 
   const handleDrop = async (event: DragEvent<HTMLElement>) => {
+    if (isReadOnly) {
+      return;
+    }
     const blueprintName =
       event.dataTransfer.getData(BLUEPRINT_MIME) ||
       event.dataTransfer.getData("text/plain");
@@ -100,6 +110,7 @@ export function DragAndDrop({
         gameDirectory,
         blueprintName,
         file,
+        editKey,
       });
       const colors = getColorOptions();
       const color = getRandomColorOption(colors);

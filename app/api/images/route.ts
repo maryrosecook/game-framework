@@ -4,8 +4,11 @@ import path from "node:path";
 import { blueprintSlug } from "@/lib/blueprints";
 import { gameSlug } from "@/lib/games";
 import { getErrorMessage } from "@/lib/errors";
+import { extractEditKeyFromUrl } from "@/lib/editKey";
+import { requireEditAccess } from "@/lib/editAccess";
 
 const ROOT = process.cwd();
+const GAMES_ROOT = path.join(ROOT, "data", "games");
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -40,6 +43,11 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+  const editKey = extractEditKeyFromUrl(request);
+  const accessResponse = await requireEditAccess(normalizedDirectory, editKey);
+  if (accessResponse) {
+    return accessResponse;
+  }
 
   const extension = path.extname(getFileName(file)).toLowerCase();
   const type = getFileType(file);
@@ -55,13 +63,7 @@ export async function POST(request: Request) {
       ? blueprintSlug(blueprintName)
       : blueprintSlug(path.basename(getFileName(file), extension)) || "image";
   const fileName = `${baseName}-${Date.now()}.png`;
-  const imagesDir = path.join(
-    ROOT,
-    "app",
-    "games",
-    normalizedDirectory,
-    "images"
-  );
+  const imagesDir = path.join(GAMES_ROOT, normalizedDirectory, "images");
   const filePath = path.join(imagesDir, fileName);
 
   try {

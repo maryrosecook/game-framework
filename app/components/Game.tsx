@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Toolbar } from "@/components/Toolbar";
 import { EditPanel } from "@/components/EditPanel";
 import { GameCanvas } from "@/components/GameCanvas";
 import { DragAndDrop } from "@/components/DragAndDrop";
+import { Toast } from "@/components/Toast";
 import { useGame } from "@/engine/useGame";
 import { Blueprint, RawThing, RuntimeGameState, Vector } from "@/engine/types";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
@@ -17,8 +19,19 @@ type GameProps = {
 };
 
 export function Game({ gameDirectory }: GameProps) {
+  const searchParams = useSearchParams();
+  const rawEditKey = searchParams.get("edit");
+  const editKey = rawEditKey ? rawEditKey.trim() : null;
+  const normalizedEditKey = editKey && editKey.length > 0 ? editKey : null;
+  const [serverCanEdit, setServerCanEdit] = useState(false);
+  const canEdit = normalizedEditKey ? serverCanEdit : false;
+  const isReadOnly = !canEdit;
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const { subscribe, engine } = useGame(canvasRef, gameDirectory);
+  const { subscribe, engine } = useGame(canvasRef, gameDirectory, {
+    editKey: normalizedEditKey,
+    onEditAccess: setServerCanEdit,
+    isReadOnly,
+  });
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
   const [things] = subscribe<RawThing[]>(["things"]);
   const [camera] = subscribe<RuntimeGameState["camera"]>(["camera"]);
@@ -32,6 +45,7 @@ export function Game({ gameDirectory }: GameProps) {
   const [imageVersions, setImageVersions] = useState<Record<string, number>>(
     {}
   );
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!blueprints || blueprints.length === 0) {
@@ -69,14 +83,20 @@ export function Game({ gameDirectory }: GameProps) {
     });
   }, [engine]);
 
-  useKeyboardShortcuts({ engine, selectedThingIds });
+  useKeyboardShortcuts({ engine, selectedThingIds, isReadOnly });
 
   const handleSelectBlueprint = (name: string) => {
+    if (!canEdit) {
+      return;
+    }
     setActiveBlueprintName(name);
     engine.dispatch({ type: "setSelectedThingId", thingId: null });
   };
 
   const handleAddBlueprint = () => {
+    if (!canEdit) {
+      return;
+    }
     const name = getNextBlueprintName(blueprints ?? []);
     const color = getRandomColorOption(palette);
     const newBlueprint: Blueprint = createBlueprint({ name, color });
@@ -85,6 +105,9 @@ export function Game({ gameDirectory }: GameProps) {
   };
 
   const handleCloneSelection = () => {
+    if (!canEdit) {
+      return;
+    }
     if (selectedThingIds.length === 0) {
       return;
     }
@@ -107,6 +130,9 @@ export function Game({ gameDirectory }: GameProps) {
   };
 
   const handleCreateThing = () => {
+    if (!canEdit) {
+      return;
+    }
     if (!activeBlueprintName) {
       return;
     }
@@ -125,6 +151,29 @@ export function Game({ gameDirectory }: GameProps) {
     engine.dispatch({ type: "setSelectedThingId", thingId: thing.id });
   };
 
+  async function handleShare() {
+    const base = window.location.origin;
+    const shareUrl = `${base}/games/${gameDirectory}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+    } catch (error) {
+      console.warn("Failed to copy game link", error);
+    }
+    setToastMessage("Game link copied to clipboard.");
+  }
+
+  useEffect(() => {
+    if (!toastMessage) {
+      return;
+    }
+    const handle = window.setTimeout(() => {
+      setToastMessage(null);
+    }, 2200);
+    return () => {
+      window.clearTimeout(handle);
+    };
+  }, [toastMessage]);
+
   return (
     <div className="relative h-full min-h-screen w-full overflow-hidden bg-white text-slate-900">
       <DragAndDrop
@@ -133,10 +182,12 @@ export function Game({ gameDirectory }: GameProps) {
         engine={engine}
         gameDirectory={gameDirectory}
         onSelectBlueprint={setActiveBlueprintName}
+        isReadOnly={isReadOnly}
+        editKey={normalizedEditKey}
       >
         <GameCanvas canvasRef={canvasRef} />
       </DragAndDrop>
-      {activeBlueprintName ? (
+      {activeBlueprintName && canEdit ? (
         <EditPanel
           blueprintName={activeBlueprintName}
           subscribe={subscribe}
@@ -149,6 +200,7 @@ export function Game({ gameDirectory }: GameProps) {
           onCreate={handleCreateThing}
         />
       ) : null}
+      <Toast message={toastMessage} />
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex justify-center px-6 pb-4">
         <div className="pointer-events-auto">
           <Toolbar
@@ -159,6 +211,8 @@ export function Game({ gameDirectory }: GameProps) {
             gameDirectory={gameDirectory}
             imageVersions={imageVersions}
             subscribe={subscribe}
+            canEdit={canEdit}
+            onShare={handleShare}
           />
         </div>
       </div>

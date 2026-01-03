@@ -19,7 +19,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const ROOT_DIR = path.resolve(__dirname, "..");
-const GAMES_DIR = path.join(ROOT_DIR, "app", "games");
+const GAMES_DIR = path.join(ROOT_DIR, "data", "games");
 const INDEX_PATH = path.join(GAMES_DIR, "blueprint-manifest-index.ts");
 
 const environment = process.env.NODE_ENV ?? "development";
@@ -334,7 +334,7 @@ async function main() {
   await generateIndex(games);
 
   if (games.length === 0) {
-    console.warn("watch-blueprints: no games found under app/games");
+    console.warn("watch-blueprints: no games found under data/games");
     return;
   }
 

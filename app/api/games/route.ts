@@ -6,6 +6,7 @@ import {
   listGames,
 } from "@/lib/games";
 import { getErrorMessage } from "@/lib/errors";
+import { isRecord } from "@/engine/types";
 
 export async function GET() {
   try {
@@ -21,11 +22,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const payload = (await request.json()) as unknown;
-  const name =
-    payload && typeof payload === "object" && "name" in payload
-      ? (payload as { name: unknown }).name
-      : null;
+  const payload = await request.json().catch(() => null);
+  const name = isRecord(payload) ? payload.name : null;
   if (typeof name !== "string") {
     return NextResponse.json(
       { error: "Provide a game name" },
@@ -38,6 +36,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       gameDirectory: result.gameDirectory,
+      editKey: result.editKey,
     });
   } catch (error) {
     if (error instanceof InvalidGameNameError) {

@@ -11,20 +11,31 @@ import {
 import { GameEngine, GameEngineDependencies } from "./engine";
 import { GameAction, SubscriptionPath } from "./types";
 import { createGameEngineDependencies } from "@/lib/gameApiClient";
-import { getBlueprintManifestVersion } from "@/games/blueprint-manifest-index";
+import { getBlueprintManifestVersion } from "@games/blueprint-manifest-index";
 
 export type GameSubscribe = <T = unknown>(
   path: SubscriptionPath
 ) => readonly [T, (action: GameAction) => void];
 
+type UseGameOptions = {
+  editKey?: string | null;
+  onEditAccess?: (canEdit: boolean) => void;
+  isReadOnly?: boolean;
+};
+
 export function useGame(
   canvasRef: RefObject<HTMLCanvasElement | null>,
-  gameDirectory: string
+  gameDirectory: string,
+  options: UseGameOptions = {}
 ): { isPaused: boolean; subscribe: GameSubscribe; engine: GameEngine } {
+  const { editKey, onEditAccess, isReadOnly } = options;
   const dependenciesRef = useRef<GameEngineDependencies | null>(null);
   const dependencies =
     dependenciesRef.current ??
-    (dependenciesRef.current = createGameEngineDependencies());
+    (dependenciesRef.current = createGameEngineDependencies({
+      editKey,
+      onEditAccess,
+    }));
   const engineRef = useRef<GameEngine | null>(null);
   if (!engineRef.current) {
     engineRef.current = new GameEngine(dependencies);
@@ -45,6 +56,10 @@ export function useGame(
   useEffect(() => {
     void engine.hotReloadBlueprints(manifestVersion);
   }, [engine, manifestVersion]);
+
+  useEffect(() => {
+    engine.setIsReadOnly(!!isReadOnly);
+  }, [engine, isReadOnly]);
 
   useEffect(() => {
     const handler = (event: Event) => {

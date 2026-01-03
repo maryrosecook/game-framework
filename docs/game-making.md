@@ -14,7 +14,7 @@
 - Blueprints specify image, shape, color, physics type, weight, bounce, and
   behavior.
 - A blueprint's behavior is implemented in
-  `app/games/[game-name]/blueprints/[blueprint-name].ts`.
+  `data/games/[game-name]/blueprints/[blueprint-name].ts`.
 - Every blueprint must have a [blueprint-name].ts file. However, it can be
   empty.
 - Things have x, y. They can override x, y, width, height, angle of their
@@ -83,8 +83,8 @@ export default function createBlueprint(data: BlueprintData<BlueprintData>) {
 
 ## Data storage
 
-- Game state is stored in the `app/games/[game-name]/game.json`.
-- Blueprints are stored in the `app/games/[game-name]/blueprints`.
+- Game state is stored in the `data/games/[game-name]/game.json`.
+- Blueprints are stored in the `data/games/[game-name]/blueprints`.
 
 ## Expression
 

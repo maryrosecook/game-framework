@@ -6,9 +6,14 @@ export type EditableImageRecord = {
   canvas: HTMLCanvasElement;
 };
 
+export type PersistEditableImage = (
+  record: EditableImageRecord
+) => Promise<boolean>;
+
 export class EditableImageStore {
   constructor(
-    private readonly onPersist?: (record: EditableImageRecord) => void
+    private readonly onPersist?: (record: EditableImageRecord) => void,
+    private readonly persistImage: PersistEditableImage = persistEditableImage
   ) {}
 
   private records = new Map<string, EditableImageRecord>();
@@ -73,7 +78,7 @@ export class EditableImageStore {
     for (const src of sources) {
       const record = this.records.get(src);
       if (!record) continue;
-      const persisted = await persistEditableImage(record);
+      const persisted = await this.persistImage(record);
       if (persisted) {
         try {
           this.onPersist?.(record);

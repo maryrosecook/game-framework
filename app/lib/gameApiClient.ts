@@ -1,71 +1,95 @@
 import { GameEngineDependencies, LoadedGame } from "@/engine/engine";
 import { createTimeWitnessDrive } from "@/engine/timeWitnessDrive";
-import { GameFile } from "@/engine/types";
+import { GameFile, isGameFile, isRecord } from "@/engine/types";
+import {
+  EditableImageRecord,
+  persistEditableImage,
+} from "@/engine/editableImages";
 
 type GameApiPayload = {
   game?: unknown;
   gameDirectory?: unknown;
+  canEdit?: unknown;
   error?: unknown;
 };
 
-export function createGameEngineDependencies(): GameEngineDependencies {
+type GameApiClientOptions = {
+  editKey?: string | null;
+  onEditAccess?: (canEdit: boolean) => void;
+};
+
+export function createGameEngineDependencies(
+  options: GameApiClientOptions = {}
+): GameEngineDependencies {
+  const { editKey, onEditAccess } = options;
   return {
     dataSource: {
-      loadGame,
-      persistGame,
+      loadGame: (gameDirectory) =>
+        loadGame(gameDirectory, editKey, onEditAccess),
+      persistGame: (gameDirectory, game) =>
+        persistGame(gameDirectory, game, editKey),
     },
     sideEffects: {
-      onBlueprintCreated: scaffoldBlueprintFile,
-      onBlueprintRenamed: renameBlueprintFile,
+      onBlueprintCreated: (input) => scaffoldBlueprintFile(input, editKey),
+      onBlueprintRenamed: (input) => renameBlueprintFile(input, editKey),
     },
+    persistImage: (record) => persistImage(record, editKey),
     timeWitnessDrive: createTimeWitnessDrive(),
   };
 }
 
-async function loadGame(gameDirectory: string): Promise<LoadedGame> {
-  console.log(gameDirectory);
-  const response = await fetch(
-    `/api/games/${encodeURIComponent(gameDirectory)}`
+async function loadGame(
+  gameDirectory: string,
+  editKey: string | null | undefined,
+  onEditAccess?: (canEdit: boolean) => void
+): Promise<LoadedGame> {
+  const url = withEditKey(
+    `/api/games/${encodeURIComponent(gameDirectory)}`,
+    editKey
   );
-  const payload = (await response
-    .json()
-    .catch(() => null)) as GameApiPayload | null;
+  const response = await fetch(url);
+  const payload = await readJson(response);
+  const canEdit = getCanEdit(payload);
+  onEditAccess?.(canEdit);
   if (!response.ok) {
     const message =
-      payload && typeof payload.error === "string"
-        ? payload.error
-        : "Failed to load game";
+      getPayloadError(payload) ?? "Failed to load game";
     throw new Error(message);
   }
   return parseLoadedGame(payload);
 }
 
-async function persistGame(gameDirectory: string, game: GameFile) {
-  const response = await fetch(
+async function persistGame(
+  gameDirectory: string,
+  game: GameFile,
+  editKey: string | null | undefined
+) {
+  const url = withEditKey(
     `/api/games/${encodeURIComponent(gameDirectory)}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ game }),
-    }
+    editKey
   );
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ game }),
+  });
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as {
-      error?: string;
-    } | null;
+    const payload = await readJson(response);
     const message =
-      payload && typeof payload.error === "string"
-        ? payload.error
-        : "Failed to save game";
+      getPayloadError(payload) ?? "Failed to save game";
     throw new Error(message);
   }
 }
 
-async function scaffoldBlueprintFile(input: {
-  gameDirectory: string;
-  blueprintName: string;
-}) {
-  const response = await fetch("/api/blueprints", {
+async function scaffoldBlueprintFile(
+  input: {
+    gameDirectory: string;
+    blueprintName: string;
+  },
+  editKey: string | null | undefined
+) {
+  const url = withEditKey("/api/blueprints", editKey);
+  const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
@@ -75,12 +99,16 @@ async function scaffoldBlueprintFile(input: {
   }
 }
 
-async function renameBlueprintFile(input: {
-  gameDirectory: string;
-  previousName: string;
-  nextName: string;
-}) {
-  const response = await fetch("/api/blueprints", {
+async function renameBlueprintFile(
+  input: {
+    gameDirectory: string;
+    previousName: string;
+    nextName: string;
+  },
+  editKey: string | null | undefined
+) {
+  const url = withEditKey("/api/blueprints", editKey);
+  const response = await fetch(url, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
@@ -90,12 +118,59 @@ async function renameBlueprintFile(input: {
   }
 }
 
-function parseLoadedGame(payload: GameApiPayload | null): LoadedGame {
-  if (!payload || !payload.game || typeof payload.gameDirectory !== "string") {
+async function persistImage(
+  record: EditableImageRecord,
+  editKey: string | null | undefined
+): Promise<boolean> {
+  if (!editKey) {
+    return false;
+  }
+  const src = withEditKey(record.src, editKey);
+  return persistEditableImage({ ...record, src });
+}
+
+function parseLoadedGame(payload: unknown): LoadedGame {
+  if (!isRecord(payload)) {
+    throw new Error("Invalid game response");
+  }
+  if (!isGameFile(payload.game)) {
+    throw new Error("Invalid game response");
+  }
+  if (typeof payload.gameDirectory !== "string") {
     throw new Error("Invalid game response");
   }
   return {
     gameDirectory: payload.gameDirectory,
-    game: payload.game as GameFile,
+    game: payload.game,
   };
+}
+
+async function readJson(response: Response): Promise<unknown> {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+function getPayloadError(payload: unknown): string | null {
+  if (!isRecord(payload)) {
+    return null;
+  }
+  return typeof payload.error === "string" ? payload.error : null;
+}
+
+function getCanEdit(payload: unknown): boolean {
+  if (!isRecord(payload)) {
+    return false;
+  }
+  return payload.canEdit === true;
+}
+
+function withEditKey(path: string, editKey: string | null | undefined): string {
+  if (!editKey) {
+    return path;
+  }
+  const divider = path.includes("?") ? "&" : "?";
+  return `${path}${divider}edit=${encodeURIComponent(editKey)}`;
 }

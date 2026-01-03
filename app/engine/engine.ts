@@ -36,6 +36,7 @@ import {
   EditableImageRecord,
   extractFileName,
   EditableImageStore,
+  PersistEditableImage,
 } from "./editableImages";
 import { CameraPauseReason, TimeWitnessDrive } from "./timeWitnessDrive";
 import {
@@ -74,6 +75,7 @@ export type GameEngineDependencies = {
   dataSource: GameEngineDataSource;
   sideEffects?: GameEngineSideEffects;
   timeWitnessDrive?: TimeWitnessDrive;
+  persistImage?: PersistEditableImage;
 };
 
 type BlueprintJsModule = Record<string, unknown>;
@@ -145,16 +147,20 @@ export class GameEngine {
   private imagePersistListeners = new Set<
     (payload: { src: string; fileName: string }) => void
   >();
-  private editableImageStore = new EditableImageStore((record) =>
-    this.notifyImagePersistListeners(record)
-  );
+  private editableImageStore: EditableImageStore;
   private editingThingIds = new Set<string>();
   private cameraPauseReasons = new Set<CameraPauseReason>();
   private pointerInterpreter = createPointerInterpreter();
   private blueprintManifestVersion: string | null = null;
   private createdThingIds = new Set<string>();
+  private isReadOnly = false;
 
-  constructor(private readonly dependencies: GameEngineDependencies) {}
+  constructor(private readonly dependencies: GameEngineDependencies) {
+    this.editableImageStore = new EditableImageStore(
+      (record) => this.notifyImagePersistListeners(record),
+      dependencies.persistImage
+    );
+  }
 
   async initialize(canvas: HTMLCanvasElement, gameDirectory: string) {
     const isNewGame = this.gameDirectory !== gameDirectory;
@@ -240,6 +246,9 @@ export class GameEngine {
   }
 
   duplicateThingsWithIds(selectedIds: string[], worldPoint: Vector): string[] {
+    if (this.isReadOnly) {
+      return [];
+    }
     const duplicates = this.duplicateSelection(selectedIds, worldPoint);
     if (duplicates.length === 0) {
       return [];
@@ -280,6 +289,7 @@ export class GameEngine {
     this.gameDirectory = "";
     this.listeners.clear();
     this.cameraModule = null;
+    this.isReadOnly = false;
     if (this.persistHandle) {
       clearTimeout(this.persistHandle);
       this.persistHandle = null;
@@ -287,7 +297,21 @@ export class GameEngine {
     this.ready = false;
   }
 
+  setIsReadOnly(isReadOnly: boolean) {
+    if (this.isReadOnly === isReadOnly) {
+      return;
+    }
+    this.isReadOnly = isReadOnly;
+    if (isReadOnly) {
+      this.pointerInterpreter.reset();
+      this.endEditingThings();
+    }
+  }
+
   dispatch(action: GameAction) {
+    if (this.isReadOnly) {
+      return;
+    }
     this.rawGameState = reduceState(this.rawGameState, action);
     this.rebuildBlueprintLookup();
     this.updateRuntimeState();
@@ -513,7 +537,7 @@ export class GameEngine {
     slug: string
   ): Promise<BlueprintJsModule> {
     const moduleExports: BlueprintJsModule = await import(
-      /* webpackMode: "lazy" */ `@/games/${directory}/blueprints/${slug}.ts`
+      /* webpackMode: "lazy" */ `@games/${directory}/blueprints/${slug}.ts`
     );
     return moduleExports;
   }
@@ -523,7 +547,7 @@ export class GameEngine {
   ): Promise<BlueprintJsModuleManifest | null> {
     try {
       const manifestModule: BlueprintJsModuleManifestJsModule = await import(
-        /* webpackMode: "eager" */ `@/games/${directory}/blueprint-manifest`
+        /* webpackMode: "eager" */ `@games/${directory}/blueprint-manifest`
       );
 
       if (isBlueprintManifestModule(manifestModule)) {
@@ -547,7 +571,7 @@ export class GameEngine {
   private async loadCamera(directory: string) {
     try {
       const cameraModule = await import(
-        /* webpackMode: "lazy" */ `@/games/${directory}/camera.ts`
+      /* webpackMode: "lazy" */ `@games/${directory}/camera.ts`
       );
       return resolveCameraModule(cameraModule);
     } catch (error) {
@@ -611,6 +635,7 @@ export class GameEngine {
 
   private processPointerEvents() {
     if (!this.inputManager) return;
+    if (this.isReadOnly) return;
     const events = this.inputManager.consumePointerEvents();
     if (events.length === 0) {
       return;
@@ -713,6 +738,9 @@ export class GameEngine {
   ensureEditableImageForBlueprint(
     blueprintName: string
   ): EditableImageRecord | null {
+    if (this.isReadOnly) {
+      return null;
+    }
     const blueprint = this.blueprintLookup.get(blueprintName);
     if (!blueprint) {
       return null;
@@ -726,6 +754,9 @@ export class GameEngine {
     end: { x: number; y: number },
     color: string
   ) {
+    if (this.isReadOnly) {
+      return;
+    }
     const record = this.ensureEditableImageForBlueprint(blueprintName);
     if (!record) {
       return;
@@ -749,6 +780,9 @@ export class GameEngine {
     start: { x: number; y: number },
     color: string
   ) {
+    if (this.isReadOnly) {
+      return;
+    }
     const record = this.ensureEditableImageForBlueprint(blueprintName);
     if (!record) {
       return;
