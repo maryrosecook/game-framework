@@ -24,10 +24,12 @@ export async function uploadImageFile({
   gameDirectory,
   file,
   blueprintName,
+  editKey,
 }: {
   gameDirectory: string;
   file: File;
   blueprintName?: string;
+  editKey?: string | null;
 }): Promise<{ fileName: string; imagePath: string | null }> {
   const formData = new FormData();
   formData.append("gameDirectory", gameDirectory);
@@ -35,7 +37,7 @@ export async function uploadImageFile({
     formData.append("blueprintName", blueprintName);
   }
   formData.append("file", file);
-  const response = await fetch("/api/images", {
+  const response = await fetch(withEditKey("/api/images", editKey), {
     method: "POST",
     body: formData,
   });
@@ -57,15 +59,18 @@ export async function uploadBlueprintImage({
   gameDirectory,
   blueprintName,
   file,
+  editKey,
 }: {
   gameDirectory: string;
   blueprintName: string;
   file: File;
+  editKey?: string | null;
 }): Promise<string> {
   const { fileName } = await uploadImageFile({
     gameDirectory,
     blueprintName,
     file,
+    editKey,
   });
   return fileName;
 }
@@ -73,14 +78,20 @@ export async function uploadBlueprintImage({
 export async function uploadGameCoverImage({
   gameDirectory,
   file,
+  editKey,
 }: {
   gameDirectory: string;
   file: File;
+  editKey?: string | null;
 }): Promise<string> {
-  const { fileName } = await uploadImageFile({ gameDirectory, file });
+  const { fileName } = await uploadImageFile({
+    gameDirectory,
+    file,
+    editKey,
+  });
 
   const response = await fetch(
-    `/api/game-settings/${encodeURIComponent(gameDirectory)}`,
+    withEditKey(`/api/game-settings/${encodeURIComponent(gameDirectory)}`, editKey),
     {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -123,4 +134,12 @@ function isPng(file: File) {
     file.type === "image/png" ||
     file.name.toLowerCase().trim().endsWith(".png")
   );
+}
+
+function withEditKey(path: string, editKey: string | null | undefined): string {
+  if (!editKey) {
+    return path;
+  }
+  const divider = path.includes("?") ? "&" : "?";
+  return `${path}${divider}edit=${encodeURIComponent(editKey)}`;
 }

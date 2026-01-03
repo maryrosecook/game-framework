@@ -4,8 +4,11 @@ import {
   readGameFile,
   writeGameFile,
 } from "@/lib/games";
-import { isNotFoundError } from "@/engine/types";
+import { isNotFoundError, isRecord } from "@/engine/types";
 import { getErrorMessage } from "@/lib/errors";
+import { extractEditKeyFromUrl } from "@/lib/editKey";
+import { normalizeImageFileName } from "@/lib/images";
+import { requireEditAccess } from "@/lib/editAccess";
 
 type RouteContext = {
   params: Promise<{ game: string }>;
@@ -15,10 +18,7 @@ export async function GET(_request: Request, context: RouteContext) {
   const params = await context.params;
   const slug = gameSlug(params.game);
   if (!slug) {
-    return NextResponse.json(
-      { error: "Invalid game name" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid game name" }, { status: 400 });
   }
 
   try {
@@ -42,17 +42,17 @@ export async function PATCH(request: Request, context: RouteContext) {
   const params = await context.params;
   const slug = gameSlug(params.game);
   if (!slug) {
-    return NextResponse.json(
-      { error: "Invalid game name" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid game name" }, { status: 400 });
   }
 
-  const payload = (await request.json().catch(() => null)) as
-    | { image?: unknown }
-    | null;
+  const editKey = extractEditKeyFromUrl(request);
+  const accessResponse = await requireEditAccess(slug, editKey);
+  if (accessResponse) {
+    return accessResponse;
+  }
 
-  if (!payload || !("image" in payload)) {
+  const payload = await request.json().catch(() => null);
+  if (!isRecord(payload) || !("image" in payload)) {
     return NextResponse.json(
       { error: "Provide an image filename or null" },
       { status: 400 }
@@ -68,11 +68,8 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   const normalizedImage =
-    typeof image === "string" && image.trim().length > 0
-      ? image.trim()
-      : null;
-
-  if (normalizedImage && hasPathTraversal(normalizedImage)) {
+    typeof image === "string" ? normalizeImageFileName(image) : null;
+  if (image !== null && normalizedImage === null) {
     return NextResponse.json(
       { error: "Invalid image filename" },
       { status: 400 }
@@ -96,8 +93,4 @@ export async function PATCH(request: Request, context: RouteContext) {
       { status: 500 }
     );
   }
-}
-
-function hasPathTraversal(fileName: string) {
-  return fileName.includes("/") || fileName.includes("\\");
 }

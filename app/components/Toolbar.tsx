@@ -22,6 +22,8 @@ type ToolbarProps = {
   selectedBlueprintName: string | null;
   onSelectBlueprint: (name: string) => void;
   onAddBlueprint: () => void;
+  onShare: () => void;
+  canEdit: boolean;
   gameDirectory: string;
   imageVersions: Record<string, number>;
   subscribe: GameSubscribe;
@@ -32,6 +34,8 @@ export function Toolbar({
   selectedBlueprintName,
   onSelectBlueprint,
   onAddBlueprint,
+  onShare,
+  canEdit,
   gameDirectory,
   imageVersions,
   subscribe,
@@ -56,6 +60,7 @@ export function Toolbar({
               variant="outline"
               size="icon"
               aria-label="Settings"
+              disabled={!canEdit}
               className="border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
             >
               <Settings className="size-4" />
@@ -77,6 +82,16 @@ export function Toolbar({
             <SettingsTab subscribe={subscribe} />
           </DialogContent>
         </Dialog>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          onClick={onShare}
+          aria-label="Share"
+          className="border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+        >
+          <ShareOutlineIcon className="size-4" />
+        </Button>
       </div>
       <div className="flex flex-1 gap-2 overflow-x-auto py-1">
         {blueprints.map((blueprint) => (
@@ -85,6 +100,7 @@ export function Toolbar({
             blueprint={blueprint}
             selected={selectedBlueprintName === blueprint.name}
             onSelect={() => onSelectBlueprint(blueprint.name)}
+            canEdit={canEdit}
             gameDirectory={gameDirectory}
             imageVersion={
               blueprint.image ? imageVersions[blueprint.image] : undefined
@@ -98,6 +114,7 @@ export function Toolbar({
         size="icon"
         onClick={onAddBlueprint}
         aria-label="Add blueprint"
+        disabled={!canEdit}
         className="border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
       >
         <Plus className="size-4" />
@@ -110,12 +127,14 @@ function BlueprintChip({
   blueprint,
   selected,
   onSelect,
+  canEdit,
   gameDirectory,
   imageVersion,
 }: {
   blueprint: Blueprint;
   selected: boolean;
   onSelect: () => void;
+  canEdit: boolean;
   gameDirectory: string;
   imageVersion?: number;
 }) {
@@ -128,8 +147,12 @@ function BlueprintChip({
   return (
     <button
       type="button"
-      draggable
+      draggable={canEdit}
+      disabled={!canEdit}
       onDragStart={(event) => {
+        if (!canEdit) {
+          return;
+        }
         event.dataTransfer.setData(BLUEPRINT_MIME, blueprint.name);
         event.dataTransfer.effectAllowed = "copy";
         event.dataTransfer.setData("text/plain", blueprint.name);
@@ -161,5 +184,24 @@ function BlueprintChip({
         </span>
       )}
     </button>
+  );
+}
+
+function ShareOutlineIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 512 512"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="32"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M336 176L256 96l-80 80" />
+      <path d="M256 96v224" />
+      <rect x="96" y="240" width="320" height="176" rx="16" ry="16" />
+    </svg>
   );
 }

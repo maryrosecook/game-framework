@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import {
-  gameSlug,
   readGameFile,
+  validateEditKey,
   writeEditorSettings,
   writeGameFile,
 } from "@/lib/games";
 import { isGameFile, isNotFoundError } from "@/engine/types";
 import { getErrorMessage } from "@/lib/errors";
+import { requireEditAccess } from "@/lib/editAccess";
 
 type HandlerOptions = {
   updateEditorSettings?: boolean;
@@ -14,6 +15,7 @@ type HandlerOptions = {
 
 export async function loadGameResponse(
   gameDirectory: string,
+  editKey: string | null,
   options: HandlerOptions = {}
 ) {
   const { updateEditorSettings = true } = options;
@@ -27,7 +29,8 @@ export async function loadGameResponse(
     if (updateEditorSettings) {
       await writeEditorSettings({ currentGameDirectory: gameDirectory });
     }
-    return NextResponse.json({ game, gameDirectory });
+    const canEdit = await validateEditKey(gameDirectory, editKey);
+    return NextResponse.json({ game, gameDirectory, canEdit });
   } catch (error) {
     if (isNotFoundError(error)) {
       return NextResponse.json({ error: "Game not found" }, { status: 404 });
@@ -42,6 +45,7 @@ export async function loadGameResponse(
 export async function saveGameResponse(
   gameDirectory: string,
   rawGame: unknown,
+  editKey: string | null,
   options: HandlerOptions = {}
 ) {
   const { updateEditorSettings = true } = options;
@@ -57,6 +61,10 @@ export async function saveGameResponse(
   }
 
   try {
+    const accessResponse = await requireEditAccess(gameDirectory, editKey);
+    if (accessResponse) {
+      return accessResponse;
+    }
     await writeGameFile(gameDirectory, rawGame);
     if (updateEditorSettings) {
       await writeEditorSettings({ currentGameDirectory: gameDirectory });

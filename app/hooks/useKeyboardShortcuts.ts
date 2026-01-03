@@ -4,11 +4,16 @@ import { GameEngine } from "@/engine/engine";
 export function useKeyboardShortcuts({
   engine,
   selectedThingIds,
+  isReadOnly = false,
 }: {
   engine: GameEngine;
   selectedThingIds: string[];
+  isReadOnly?: boolean;
 }) {
   useEffect(() => {
+    if (isReadOnly) {
+      return;
+    }
     const handleKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       if (
@@ -33,5 +38,5 @@ export function useKeyboardShortcuts({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [engine, selectedThingIds]);
+  }, [engine, isReadOnly, selectedThingIds]);
 }

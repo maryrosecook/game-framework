@@ -24,7 +24,7 @@
 
 - `data/editorSettings.json` stores editor preferences such as the current game
   directory.
-- `app/games/[game-name]/` holds each game:
+- `data/games/[game-name]/` holds each game:
   - `game.json` initial state persisted from the editor when paused.
   - `blueprints/` TypeScript blueprint modules (e.g., `player.ts`, `wall.ts`).
   - `images/` PNG images for blueprints.
@@ -47,7 +47,7 @@
 - Pure TypeScript engine driven by `requestAnimationFrame` (max frame rate, no
   delta time yet); UI/editor changes go through the reducer-backed raw state.
 - Startup: load `game.json`, dynamically import each referenced blueprint module
-  from `app/games/[game-name]/blueprints`, instantiate blueprints, and set
+  from `data/games/[game-name]/blueprints`, instantiate blueprints, and set
   camera from the saved state.
 - Tick order (engine runs even when UI is idle): physics step first; then input
   handlers and blueprint `update` functions only when not paused; blueprint
@@ -62,7 +62,7 @@
 - Two state copies: `gameState` (live for rendering/logic, updated by game logic
   AND game editor edits) and `persistedGameState` (updated only by game editor
   edits). When paused, changes debounce-save to
-  `app/games/[game-name]/game.json` (~100ms cadence).
+  `data/games/[game-name]/game.json` (~100ms cadence).
 - Core shape: `{ things: Thing[]; blueprints: Blueprint[]; camera: {x,y};
 screen: {width,height}; isPaused: boolean; selectedThingId: string | null }`.
   - `screen` is runtime-only and always mirrors the current window/canvas size.

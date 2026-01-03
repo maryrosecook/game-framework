@@ -5,6 +5,7 @@
     "dev": "tsx scripts/watch-blueprints.ts & next dev",
     "watch:blueprints": "tsx scripts/watch-blueprints.ts",
     "manifest:blueprints": "tsx scripts/watch-blueprints.ts --once",
+    "games-pull": "scripts/games-pull.sh",
     "build": "npm run manifest:blueprints && next build",
     "start": "next start",
     "test": "vitest",

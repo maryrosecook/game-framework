@@ -9,6 +9,7 @@ import {
   getDroppedPngFile,
   uploadGameCoverImage,
 } from "@/lib/imageUploads";
+import { isRecord } from "@/engine/types";
 
 type HomeProps = {
   games: GameSummary[];
@@ -29,13 +30,14 @@ export function Home({ games }: HomeProps) {
     gameDirectory: string,
     event: MouseEvent<HTMLButtonElement>
   ) => {
+    const targetPath = `/games/${gameDirectory}`;
     if (event.metaKey || event.ctrlKey || event.button === 1) {
       event.preventDefault();
-      window.open(`/${gameDirectory}`, "_blank", "noopener,noreferrer");
+      window.open(targetPath, "_blank", "noopener,noreferrer");
       return;
     }
 
-    router.push(`/${gameDirectory}`);
+    router.push(targetPath);
   };
 
   const handleCreateGame = async () => {
@@ -50,14 +52,25 @@ export function Home({ games }: HomeProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
-      const payload = (await response.json()) as {
-        gameDirectory?: string;
-        error?: string;
-      };
-      if (!response.ok || !payload.gameDirectory) {
-        throw new Error(payload.error ?? "Failed to create game");
+      const payload = await response.json().catch(() => null);
+      const gameDirectory =
+        isRecord(payload) && typeof payload.gameDirectory === "string"
+          ? payload.gameDirectory
+          : null;
+      const editKey =
+        isRecord(payload) && typeof payload.editKey === "string"
+          ? payload.editKey
+          : null;
+      const errorMessage =
+        isRecord(payload) && typeof payload.error === "string"
+          ? payload.error
+          : null;
+      if (!response.ok || !gameDirectory || !editKey) {
+        throw new Error(errorMessage ?? "Failed to create game");
       }
-      router.push(`/${payload.gameDirectory}`);
+      router.push(
+        `/games/${gameDirectory}?edit=${encodeURIComponent(editKey)}`
+      );
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to create game";

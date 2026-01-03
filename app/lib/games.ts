@@ -1,18 +1,25 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { randomBytes } from "node:crypto";
 import {
   GameFile,
   isEditorSettings,
   isExistingFileError,
   isGameFile,
   isNotFoundError,
+  isRecord,
 } from "@/engine/types";
 
 const ROOT = process.cwd();
-const GAMES_ROOT = path.join(ROOT, "app", "games");
+const GAMES_ROOT = path.join(ROOT, "data", "games");
 const EDITOR_SETTINGS_PATH = path.join(ROOT, "data", "editorSettings.json");
 const DEFAULT_BACKGROUND_COLOR = "#f8fafc";
 const GAME_NAME_PATTERN = /[^a-z0-9]+/g;
+const GAME_EDIT_FILE_NAME = "game-edit.json";
+
+type GameEditFile = {
+  editKey: string;
+};
 
 export type EditorSettings = { currentGameDirectory: string };
 export type GameSummary = {
@@ -31,6 +38,14 @@ function createDefaultGameFile(id: number): GameFile {
     isGravityEnabled: false,
     image: null,
   };
+}
+
+function createEditKey(): string {
+  return randomBytes(24).toString("base64url");
+}
+
+function isGameEditFile(value: unknown): value is GameEditFile {
+  return isRecord(value) && typeof value.editKey === "string";
 }
 
 const DEFAULT_CAMERA_TEMPLATE = `import { RuntimeGameState } from "@/engine/types";
@@ -130,6 +145,8 @@ export async function createGameDirectory(name: string) {
   await fs.mkdir(directoryPath, { recursive: true });
   await fs.mkdir(path.join(directoryPath, "blueprints"), { recursive: true });
   await writeGameFile(slug, createDefaultGameFile(id));
+  const editKey = createEditKey();
+  await writeGameEditFile(slug, { editKey });
 
   const cameraPath = path.join(directoryPath, "camera.ts");
   await fs
@@ -141,7 +158,7 @@ export async function createGameDirectory(name: string) {
     });
 
   await writeEditorSettings({ currentGameDirectory: slug });
-  return { gameDirectory: slug };
+  return { gameDirectory: slug, editKey };
 }
 
 async function getNextGameId() {
@@ -156,6 +173,43 @@ function getGameDirectoryPath(name: string) {
 
 function getGameFilePath(name: string) {
   return path.join(getGameDirectoryPath(name), "game.json");
+}
+
+function getGameEditFilePath(name: string) {
+  return path.join(getGameDirectoryPath(name), GAME_EDIT_FILE_NAME);
+}
+
+async function writeGameEditFile(gameDirectory: string, data: GameEditFile) {
+  const editPath = getGameEditFilePath(gameDirectory);
+  await fs.writeFile(editPath, JSON.stringify(data, null, 2));
+}
+
+async function readGameEditFile(gameDirectory: string): Promise<GameEditFile> {
+  const editPath = getGameEditFilePath(gameDirectory);
+  const raw = await fs.readFile(editPath, "utf-8");
+  const parsed: unknown = JSON.parse(raw);
+  if (!isGameEditFile(parsed)) {
+    throw new Error("Invalid game edit file");
+  }
+  return parsed;
+}
+
+export async function validateEditKey(
+  gameDirectory: string,
+  editKey: string | null
+): Promise<boolean> {
+  if (!editKey) {
+    return false;
+  }
+  try {
+    const editFile = await readGameEditFile(gameDirectory);
+    return editFile.editKey === editKey;
+  } catch (error: unknown) {
+    if (isNotFoundError(error)) {
+      return false;
+    }
+    throw error;
+  }
 }
 
 async function fileExists(filePath: string) {

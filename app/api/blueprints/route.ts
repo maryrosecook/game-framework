@@ -3,11 +3,18 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { blueprintSlug, blueprintTemplate } from "@/lib/blueprints";
 import { getErrorMessage } from "@/lib/errors";
-import { readGameFile, writeGameFile } from "@/lib/games";
+import {
+  gameSlug,
+  readGameFile,
+  writeGameFile,
+} from "@/lib/games";
 import type { GameFile } from "@/engine/types";
 import { z, type ZodType } from "zod";
+import { extractEditKeyFromUrl } from "@/lib/editKey";
+import { requireEditAccess } from "@/lib/editAccess";
 
 const ROOT = process.cwd();
+const GAMES_ROOT = path.join(ROOT, "data", "games");
 
 const blueprintCreateSchema = z.object({
   gameDirectory: z.string(),
@@ -99,15 +106,21 @@ export async function POST(request: Request) {
   }
 
   const { gameDirectory, blueprintName } = payload;
+  const normalizedDirectory = gameSlug(gameDirectory);
+  if (!normalizedDirectory) {
+    return NextResponse.json(
+      { error: "Invalid game directory" },
+      { status: 400 }
+    );
+  }
+  const editKey = extractEditKeyFromUrl(request);
+  const accessResponse = await requireEditAccess(normalizedDirectory, editKey);
+  if (accessResponse) {
+    return accessResponse;
+  }
 
   const slug = blueprintSlug(blueprintName || "blueprint");
-  const blueprintDir = path.join(
-    ROOT,
-    "app",
-    "games",
-    gameDirectory,
-    "blueprints"
-  );
+  const blueprintDir = path.join(GAMES_ROOT, normalizedDirectory, "blueprints");
   const filePath = path.join(blueprintDir, `${slug}.ts`);
   try {
     await fs.access(filePath);
@@ -141,17 +154,23 @@ export async function PUT(request: Request) {
   }
 
   const { gameDirectory, previousName, nextName } = payload;
+  const normalizedDirectory = gameSlug(gameDirectory);
+  if (!normalizedDirectory) {
+    return NextResponse.json(
+      { error: "Invalid game directory" },
+      { status: 400 }
+    );
+  }
+  const editKey = extractEditKeyFromUrl(request);
+  const accessResponse = await requireEditAccess(normalizedDirectory, editKey);
+  if (accessResponse) {
+    return accessResponse;
+  }
   if (previousName === nextName) {
     return NextResponse.json({ ok: true, renamed: false, updatedGame: false });
   }
 
-  const blueprintDir = path.join(
-    ROOT,
-    "app",
-    "games",
-    gameDirectory,
-    "blueprints"
-  );
+  const blueprintDir = path.join(GAMES_ROOT, normalizedDirectory, "blueprints");
   const prevSlug = blueprintSlug(previousName);
   const nextSlug = blueprintSlug(nextName);
 
@@ -167,7 +186,7 @@ export async function PUT(request: Request) {
     let updatedGame = false;
     try {
       updatedGame = await renameBlueprintInGameFile(
-        gameDirectory,
+        normalizedDirectory,
         previousName,
         nextName
       );
