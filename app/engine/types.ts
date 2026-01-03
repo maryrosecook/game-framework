@@ -216,7 +216,7 @@ export type BlueprintData<TData = unknown> = {
   width: number;
   height: number;
   color: string;
-  image?: string;
+  images?: string[];
   shape: Shape;
   physicsType: PhysicsType;
   weight: number;
@@ -280,7 +280,7 @@ export type RuntimeThing<TData = unknown> = RawThing<TData> &
         BlueprintData,
         | "name"
         | "physicsType"
-        | "image"
+        | "images"
         | "color"
         | "shape"
         | "behaviors"
@@ -717,6 +717,9 @@ export function isBlueprintData(value: unknown): value is BlueprintData {
   if ("z" in value) {
     return false;
   }
+  if ("image" in value) {
+    return false;
+  }
   if (
     typeof value.name !== "string" ||
     typeof value.width !== "number" ||
@@ -727,8 +730,13 @@ export function isBlueprintData(value: unknown): value is BlueprintData {
   ) {
     return false;
   }
-  if (value.image !== undefined && typeof value.image !== "string") {
-    return false;
+  if (value.images !== undefined) {
+    if (!Array.isArray(value.images)) {
+      return false;
+    }
+    if (!value.images.every((entry) => typeof entry === "string")) {
+      return false;
+    }
   }
   if (
     typeof value.weight !== "number" ||

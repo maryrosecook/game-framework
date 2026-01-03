@@ -11,7 +11,8 @@
 - 2D game framework with basic SAT physics.
 - Game objects are called things.
 - Things inherit from a blueprint.
-- Blueprints specify image, shape, color, physics type, weight, bounce, and
+- Blueprints specify images (array of image names), shape, color, physics type,
+  weight, bounce, and
   behavior.
 - A blueprint's behavior is implemented in
   `data/games/[game-name]/blueprints/[blueprint-name].ts`.
@@ -29,8 +30,8 @@
 - If not overridden, input/update/collision are no-ops.
 - Handler functions return `void`; use `game.spawn`/`game.destroy` to add or
   remove things during a frame.
-- If not overridden, render will render an image if set on the blueprint data,
-  or a rectangle with the blueprint's color if not.
+- If not overridden, render will render the first image if set on the blueprint
+  data, or a rectangle with the blueprint's color if not.
 
 ```ts
 const DataSchema = z.object({
@@ -90,7 +91,7 @@ export default function createBlueprint(data: BlueprintData<BlueprintData>) {
 
 - A blueprint can have
   - width, height
-  - An image to render
+  - Images to render (uses the first image by default)
   - A physics type
   - A weight (mass) and bounce (restitution)
 - Blueprint API

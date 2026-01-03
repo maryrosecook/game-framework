@@ -413,9 +413,11 @@
       "color": "#ff6699",
       "shape": "circle",
       "physicsType": "dynamic",
-      "image": "enemy-paint-1765091410453.png",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "enemy-paint-1765091410453.png"
+      ]
     },
     {
       "name": "exit",

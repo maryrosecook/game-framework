@@ -9,7 +9,7 @@ import {
 } from "@/engine/types";
 import { SelectField } from "@/components/SelectField";
 import { ArrangeButton } from "@/components/ArrangeButton";
-import { getBlueprintImageUrl } from "@/lib/images";
+import { getBlueprintImageUrl, getPrimaryImageName } from "@/lib/images";
 
 type BlueprintTabProps = {
   blueprint: Blueprint;
@@ -36,9 +36,10 @@ export function BlueprintTab({
   canClone,
   onCreate,
 }: BlueprintTabProps) {
+  const primaryImage = getPrimaryImageName(blueprint.images);
   const imageUrl = getBlueprintImageUrl(
     gameDirectory,
-    blueprint.image,
+    primaryImage,
     imageVersion
   );
   const orderedThings = getOrderedThings(things);
@@ -319,6 +320,10 @@ function getOrderedThings(things: RawThing[]): OrderedThing[] {
     });
 }
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((entry) => typeof entry === "string");
+}
+
 function buildBlueprintPropertyAction(
   name: string,
   property: keyof BlueprintData,
@@ -393,9 +398,11 @@ function buildBlueprintPropertyAction(
         property,
         value,
       };
-    case "image":
-      if (value !== undefined && typeof value !== "string") {
-        throw new Error("Blueprint image must be a string filename.");
+    case "images":
+      if (value !== undefined) {
+        if (!isStringArray(value)) {
+          throw new Error("Blueprint images must be an array of filenames.");
+        }
       }
       return {
         type: "setBlueprintProperty",

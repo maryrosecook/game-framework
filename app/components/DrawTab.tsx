@@ -17,7 +17,7 @@ import {
   type EditableImageRecord,
 } from "@/engine/editableImages";
 import { Blueprint } from "@/engine/types";
-import { getBlueprintImageUrl } from "@/lib/images";
+import { getBlueprintImageUrl, getPrimaryImageName } from "@/lib/images";
 
 const STORAGE_KEY = "bangui:draw:paint-colors";
 const DISPLAY_PIXEL_SIZE = 14;
@@ -58,6 +58,7 @@ export function DrawTab({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const isDrawingRef = useRef(false);
   const lastPixelRef = useRef<Pixel | null>(null);
+  const primaryImage = getPrimaryImageName(blueprint.images);
 
   useEffect(() => {
     setSelectedColor(getStoredColor(blueprint.name, defaultColor));
@@ -74,7 +75,7 @@ export function DrawTab({
     if (typeof Image === "undefined") {
       return;
     }
-    if (!blueprint.image) {
+    if (!primaryImage) {
       setFallbackImage(null);
       return () => {
         active = false;
@@ -87,11 +88,7 @@ export function DrawTab({
         active = false;
       };
     }
-    const url = getBlueprintImageUrl(
-      gameDirectory,
-      blueprint.image,
-      imageVersion
-    );
+    const url = getBlueprintImageUrl(gameDirectory, primaryImage, imageVersion);
     if (!url) {
       setFallbackImage(null);
       return () => {
@@ -114,7 +111,7 @@ export function DrawTab({
     return () => {
       active = false;
     };
-  }, [blueprint.image, blueprint.name, engine, gameDirectory, imageVersion]);
+  }, [blueprint.name, engine, gameDirectory, imageVersion, primaryImage]);
 
   const renderCanvas = useCallback(() => {
     const canvas = canvasRef.current;

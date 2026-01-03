@@ -44,9 +44,11 @@
       "color": "#ffd700",
       "shape": "rectangle",
       "physicsType": "ambient",
-      "image": "target-1765948277594.png",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "target-1765948277594.png"
+      ]
     },
     {
       "name": "crosshair",

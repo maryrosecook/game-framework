@@ -119,7 +119,7 @@ export function DragAndDrop({
       const blueprint = createBlueprint({
         name: blueprintName,
         color,
-        image: imageName,
+        images: [imageName],
         width,
         height,
       });

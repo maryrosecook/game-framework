@@ -6,6 +6,7 @@ import { DrawTab } from "@/components/DrawTab";
 import { ActionTab } from "@/components/ActionTab";
 import { TabButton } from "@/components/TabButton";
 import type { GameEngine } from "@/engine/engine";
+import { getPrimaryImageName } from "@/lib/images";
 
 type PanelTab = "blueprint" | "draw" | "action";
 
@@ -43,9 +44,8 @@ export function EditPanel({
     return null;
   }
 
-  const imageVersion = blueprint.image
-    ? imageVersions[blueprint.image]
-    : undefined;
+  const primaryImage = getPrimaryImageName(blueprint.images);
+  const imageVersion = primaryImage ? imageVersions[primaryImage] : undefined;
 
   return (
     <div className="pointer-events-auto absolute right-4 top-4 bottom-4 z-10 flex w-[25.35rem] flex-col rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-900 shadow-xl">

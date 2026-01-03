@@ -4561,251 +4561,297 @@
       "color": "#b399ff",
       "shape": "rectangle",
       "physicsType": "dynamic",
-      "image": "blueprint-1-1764031773945.png",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-1-1764031773945.png"
+      ]
     },
     {
       "name": "shadow-minion",
       "width": 50,
       "height": 50,
       "color": "#99b3ff",
-      "image": "blueprint-2-1764032226327.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-2-1764032226327.png"
+      ]
     },
     {
       "name": "player",
       "width": 50,
       "height": 50,
       "color": "#99d6ff",
-      "image": "blueprint-3-1764032366437.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-3-1764032366437.png"
+      ]
     },
     {
       "name": "fireman",
       "width": 50,
       "height": 50,
       "color": "#ffcc99",
-      "image": "blueprint-4-1764032425102.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-4-1764032425102.png"
+      ]
     },
     {
       "name": "get-pac",
       "width": 50,
       "height": 50,
       "color": "#ff9966",
-      "image": "blueprint-5-1764032466638.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-5-1764032466638.png"
+      ]
     },
     {
       "name": "trick-to-death",
       "width": 50,
       "height": 50,
       "color": "#99e6cc",
-      "image": "blueprint-6-1764032488723.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-6-1764032488723.png"
+      ]
     },
     {
       "name": "boss-shadow-minion",
       "width": 50,
       "height": 50,
       "color": "#66cc99",
-      "image": "blueprint-7-1764032510862.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-7-1764032510862.png"
+      ]
     },
     {
       "name": "treasure-chest",
       "width": 50,
       "height": 50,
       "color": "#ffb3cc",
-      "image": "blueprint-8-1764032541998.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-8-1764032541998.png"
+      ]
     },
     {
       "name": "mushroom",
       "width": 50,
       "height": 50,
       "color": "#ff6699",
-      "image": "blueprint-9-1764032575904.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-9-1764032575904.png"
+      ]
     },
     {
       "name": "house",
       "width": 50,
       "height": 50,
       "color": "#f5f5f5",
-      "image": "blueprint-10-1764032589778.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-10-1764032589778.png"
+      ]
     },
     {
       "name": "crafting-table",
       "width": 50,
       "height": 50,
       "color": "#d9d9d9",
-      "image": "blueprint-11-1764033053756.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-11-1764033053756.png"
+      ]
     },
     {
       "name": "tree",
       "width": 50,
       "height": 50,
       "color": "#b3b3b3",
-      "image": "blueprint-12-1764033090774.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-12-1764033090774.png"
+      ]
     },
     {
       "name": "rock",
       "width": 50,
       "height": 50,
       "color": "#4d4d4d",
-      "image": "blueprint-13-1764033137887.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-13-1764033137887.png"
+      ]
     },
     {
       "name": "grass",
       "width": 50,
       "height": 50,
       "color": "#b399ff",
-      "image": "blueprint-14-1764033196093.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-14-1764033196093.png"
+      ]
     },
     {
       "name": "heart-stand",
       "width": 50,
       "height": 50,
       "color": "#99b3ff",
-      "image": "blueprint-15-1764033217809.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-15-1764033217809.png"
+      ]
     },
     {
       "name": "food-stand",
       "width": 50,
       "height": 50,
       "color": "#99d6ff",
-      "image": "blueprint-16-1764033240460.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-16-1764033240460.png"
+      ]
     },
     {
       "name": "house2",
       "width": 50,
       "height": 50,
       "color": "#ffcc99",
-      "image": "blueprint-17-1764033298621.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-17-1764033298621.png"
+      ]
     },
     {
       "name": "lighthouse",
       "width": 50,
       "height": 50,
       "color": "#ff9966",
-      "image": "blueprint-18-1764033308890.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-18-1764033308890.png"
+      ]
     },
     {
       "name": "boat",
       "width": 50,
       "height": 50,
       "color": "#99e6cc",
-      "image": "boat-1764263081532.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "boat-1764263081532.png"
+      ]
     },
     {
       "name": "castle",
       "width": 50,
       "height": 50,
       "color": "#66cc99",
-      "image": "blueprint-20-1764033368660.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-20-1764033368660.png"
+      ]
     },
     {
       "name": "villager",
       "width": 50,
       "height": 50,
       "color": "#ffb3cc",
-      "image": "blueprint-21-1764033407996.png",
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-21-1764033407996.png"
+      ]
     },
     {
       "name": "wolf",
       "width": 50,
       "height": 50,
       "color": "#ff6699",
-      "image": "blueprint-22-1764034687645.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-22-1764034687645.png"
+      ]
     },
     {
       "name": "sea-monster",
       "width": 50,
       "height": 50,
       "color": "#f5f5f5",
-      "image": "blueprint-23-1764035278865.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-23-1764035278865.png"
+      ]
     },
     {
       "name": "bullet-1",
@@ -4814,20 +4860,24 @@
       "color": "#ff6699",
       "shape": "rectangle",
       "physicsType": "ambient",
-      "image": "bullet-1-1764108797508.png",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "bullet-1-1764108797508.png"
+      ]
     },
     {
       "name": "water",
       "width": 50,
       "height": 50,
       "color": "#b3b3b3",
-      "image": "blueprint-25-1764104558304.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-25-1764104558304.png"
+      ]
     },
     {
       "name": "bullet-2",
@@ -4836,75 +4886,89 @@
       "color": "#b399ff",
       "shape": "rectangle",
       "physicsType": "ambient",
-      "image": "bullet-2-1764105354845.png",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "bullet-2-1764105354845.png"
+      ]
     },
     {
       "name": "blueprint-27",
       "width": 50,
       "height": 50,
       "color": "#b399ff",
-      "image": "blueprint-27-1764185953297.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-27-1764185953297.png"
+      ]
     },
     {
       "name": "blueprint-28",
       "width": 50,
       "height": 50,
       "color": "#99b3ff",
-      "image": "blueprint-28-1764186326717.png",
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-28-1764186326717.png"
+      ]
     },
     {
       "name": "blueprint-29",
       "width": 50,
       "height": 50,
       "color": "#99d6ff",
-      "image": "blueprint-29-1764263371137.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-29-1764263371137.png"
+      ]
     },
     {
       "name": "blueprint-30",
       "width": 50,
       "height": 50,
       "color": "#ffcc99",
-      "image": "blueprint-30-1764263424337.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-30-1764263424337.png"
+      ]
     },
     {
       "name": "blueprint-31",
       "width": 50,
       "height": 50,
       "color": "#ff9966",
-      "image": "blueprint-31-1764263506339.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-31-1764263506339.png"
+      ]
     },
     {
       "name": "blueprint-32",
       "width": 50,
       "height": 50,
       "color": "#99e6cc",
-      "image": "blueprint-32-1764263541460.png",
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
-      "bounce": 0
+      "bounce": 0,
+      "images": [
+        "blueprint-32-1764263541460.png"
+      ]
     }
   ],
   "camera": {

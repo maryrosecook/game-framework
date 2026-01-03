@@ -3,7 +3,7 @@
 import { Blueprint } from "@/engine/types";
 import { Button } from "@/components/ui/button";
 import { Plus, RotateCw, Settings, X } from "lucide-react";
-import { getBlueprintImageUrl } from "@/lib/images";
+import { getBlueprintImageUrl, getPrimaryImageName } from "@/lib/images";
 import {
   Dialog,
   DialogClose,
@@ -94,19 +94,23 @@ export function Toolbar({
         </Button>
       </div>
       <div className="flex flex-1 gap-2 overflow-x-auto py-1">
-        {blueprints.map((blueprint) => (
-          <BlueprintChip
-            key={blueprint.name}
-            blueprint={blueprint}
-            selected={selectedBlueprintName === blueprint.name}
-            onSelect={() => onSelectBlueprint(blueprint.name)}
-            canEdit={canEdit}
-            gameDirectory={gameDirectory}
-            imageVersion={
-              blueprint.image ? imageVersions[blueprint.image] : undefined
-            }
-          />
-        ))}
+        {blueprints.map((blueprint) => {
+          const primaryImage = getPrimaryImageName(blueprint.images);
+          return (
+            <BlueprintChip
+              key={blueprint.name}
+              blueprint={blueprint}
+              selected={selectedBlueprintName === blueprint.name}
+              onSelect={() => onSelectBlueprint(blueprint.name)}
+              canEdit={canEdit}
+              gameDirectory={gameDirectory}
+              primaryImage={primaryImage}
+              imageVersion={
+                primaryImage ? imageVersions[primaryImage] : undefined
+              }
+            />
+          );
+        })}
       </div>
       <Button
         type="button"
@@ -130,6 +134,7 @@ function BlueprintChip({
   canEdit,
   gameDirectory,
   imageVersion,
+  primaryImage,
 }: {
   blueprint: Blueprint;
   selected: boolean;
@@ -137,10 +142,11 @@ function BlueprintChip({
   canEdit: boolean;
   gameDirectory: string;
   imageVersion?: number;
+  primaryImage?: string;
 }) {
   const imageUrl = getBlueprintImageUrl(
     gameDirectory,
-    blueprint.image,
+    primaryImage,
     imageVersion
   );
   const fallbackLabel = blueprint.name.slice(0, 3).toUpperCase();

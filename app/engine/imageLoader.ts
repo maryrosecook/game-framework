@@ -1,4 +1,4 @@
-import { getBlueprintImageUrl } from "@/lib/images";
+import { getBlueprintImageUrl, getPrimaryImageName } from "@/lib/images";
 import { Blueprint } from "./types";
 
 export async function loadBlueprintImages(
@@ -37,7 +37,8 @@ export async function loadImages(
 function uniqueSources(gameDirectory: string, blueprints: Blueprint[]) {
   const sources = new Set<string>();
   for (const blueprint of blueprints) {
-    const src = getBlueprintImageUrl(gameDirectory, blueprint.image);
+    const imageName = getPrimaryImageName(blueprint.images);
+    const src = getBlueprintImageUrl(gameDirectory, imageName);
     if (src) {
       sources.add(src);
     }
