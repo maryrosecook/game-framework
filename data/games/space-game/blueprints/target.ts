@@ -1,4 +1,4 @@
-import { BlueprintData, GameContext, RuntimeThing } from "@/engine/types";
+import { BlueprintData, GameContext, KeyState, RuntimeThing } from "@/engine/types";
 import { renderImage } from "@/engine/engine";
 import { FOV_DEGREES, NEAR_CLIP, TARGET_WORLD_SIZE } from "./constants";
 import { getPlayerBasis } from "./player";
@@ -8,6 +8,28 @@ import { PlayerData, TargetData } from "./types";
 export default function createTargetBlueprint(data: BlueprintData<TargetData>) {
   return {
     ...data,
+    update: function updateTargetDepth(
+      thing: RuntimeThing<TargetData>,
+      game: GameContext,
+      _keyState: KeyState
+    ) {
+      const targetData = ensureTargetData(thing);
+      const player = game.gameState.things.find(
+        (candidate): candidate is RuntimeThing<PlayerData> =>
+          candidate.blueprintName === "player"
+      );
+      if (!player?.data) {
+        return;
+      }
+
+      const basis = getPlayerBasis(player.data);
+      const toTarget = subtract3(targetData.position, player.data.position);
+      const cameraSpace = toCameraSpace(toTarget, basis);
+      if (cameraSpace.z <= NEAR_CLIP) {
+        return;
+      }
+      thing.z = -cameraSpace.z;
+    },
     render: (
       thing: RuntimeThing<TargetData>,
       game: GameContext,
