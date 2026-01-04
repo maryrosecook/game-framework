@@ -9,6 +9,7 @@ import {
   isNotFoundError,
   isRecord,
 } from "@/engine/types";
+import { shouldIncludeEditKeyInHomeURL } from "@/lib/homeUrl";
 
 const ROOT = process.cwd();
 const GAMES_ROOT = path.join(ROOT, "data", "games");
@@ -26,6 +27,7 @@ export type GameSummary = {
   id: number;
   directory: string;
   image: string | null;
+  editKey: string | null;
 };
 
 function createDefaultGameFile(id: number): GameFile {
@@ -77,6 +79,7 @@ export function gameSlug(name: string) {
 
 export async function listGames(): Promise<GameSummary[]> {
   const entries = await fs.readdir(GAMES_ROOT, { withFileTypes: true });
+  const includeEditKeys = shouldIncludeEditKeyInHomeURL();
   const candidates: GameSummary[] = [];
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
@@ -86,7 +89,15 @@ export async function listGames(): Promise<GameSummary[]> {
       try {
         const game = await readGameFile(entry.name);
         const image = game.image ?? null;
-        candidates.push({ id: game.id, directory: entry.name, image });
+        const editKey = includeEditKeys
+          ? await readGameEditKeyForListing(entry.name)
+          : null;
+        candidates.push({
+          id: game.id,
+          directory: entry.name,
+          image,
+          editKey,
+        });
       } catch (error) {
         console.warn("Failed to read game file for listing", error);
       }
@@ -192,6 +203,18 @@ async function readGameEditFile(gameDirectory: string): Promise<GameEditFile> {
     throw new Error("Invalid game edit file");
   }
   return parsed;
+}
+
+async function readGameEditKeyForListing(
+  gameDirectory: string
+): Promise<string | null> {
+  try {
+    const editFile = await readGameEditFile(gameDirectory);
+    return editFile.editKey;
+  } catch (error) {
+    console.warn("Failed to read game edit key for listing", error);
+    return null;
+  }
 }
 
 export async function validateEditKey(

@@ -10,6 +10,7 @@ import {
   uploadGameCoverImage,
 } from "@/lib/imageUploads";
 import { isRecord } from "@/engine/types";
+import { shouldIncludeEditKeyInHomeURL } from "@/lib/homeUrl";
 
 type HomeProps = {
   games: GameSummary[];
@@ -25,12 +26,13 @@ export function Home({ games }: HomeProps) {
   const [uploadErrors, setUploadErrors] = useState<
     Record<string, string | null>
   >({});
+  const includeEditKeyInHomeURL = shouldIncludeEditKeyInHomeURL();
 
-  const handleNavigate = (
-    gameDirectory: string,
+  function handleNavigate(
+    game: GameSummary,
     event: MouseEvent<HTMLButtonElement>
-  ) => {
-    const targetPath = `/games/${gameDirectory}`;
+  ) {
+    const targetPath = buildGamePath(game, includeEditKeyInHomeURL);
     if (event.metaKey || event.ctrlKey || event.button === 1) {
       event.preventDefault();
       window.open(targetPath, "_blank", "noopener,noreferrer");
@@ -38,7 +40,7 @@ export function Home({ games }: HomeProps) {
     }
 
     router.push(targetPath);
-  };
+  }
 
   const handleCreateGame = async () => {
     const name = window.prompt("Name your new game");
@@ -143,7 +145,7 @@ export function Home({ games }: HomeProps) {
                     handleDropImage(game.directory, event)
                   }
                   onNavigate={(event) =>
-                    handleNavigate(game.directory, event)
+                    handleNavigate(game, event)
                   }
                   onDragEnter={() => setActiveDrop(game.directory)}
                   onDragLeave={() => setActiveDrop(null)}
@@ -167,6 +169,20 @@ export function Home({ games }: HomeProps) {
       </div>
     </div>
   );
+}
+
+function buildGamePath(
+  game: GameSummary,
+  includeEditKeyInHomeURL: boolean
+): string {
+  const base = `/games/${game.directory}`;
+  if (!includeEditKeyInHomeURL) {
+    return base;
+  }
+  if (!game.editKey) {
+    throw new Error(`Missing edit key for ${game.directory}`);
+  }
+  return `${base}?edit=${encodeURIComponent(game.editKey)}`;
 }
 
 function NewGameTile({
