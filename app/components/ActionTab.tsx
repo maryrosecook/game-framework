@@ -646,7 +646,7 @@ function SpawnInitSettingField({
               className="flex items-center gap-2"
             >
               <select
-                className={INPUT_SELECT_CLASS}
+                className={`${INPUT_SELECT_CLASS} flex-1 basis-0 min-w-0`}
                 value={assignment.property}
                 aria-label="Spawn property"
                 onChange={(event) => {
@@ -663,7 +663,7 @@ function SpawnInitSettingField({
                 ))}
               </select>
               <select
-                className={INPUT_SELECT_CLASS}
+                className={`${INPUT_SELECT_CLASS} flex-1 basis-0 min-w-0`}
                 value={assignment.value.type}
                 aria-label="Spawn value type"
                 onChange={(event) => {
@@ -682,7 +682,7 @@ function SpawnInitSettingField({
               {assignment.value.type === "literal" ? (
                 <input
                   type="number"
-                  className={`${INLINE_INPUT_CLASS} w-24`}
+                  className={`${INLINE_INPUT_CLASS} flex-1 basis-0 min-w-0`}
                   value={assignment.value.literal ?? 0}
                   aria-label="Spawn number value"
                   onChange={(event) => {
@@ -696,7 +696,7 @@ function SpawnInitSettingField({
               ) : null}
               <button
                 type="button"
-                className="flex h-6 w-6 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 cursor-pointer"
+                className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 cursor-pointer"
                 aria-label="Remove spawn init"
                 onClick={() => handleRemove(index)}
               >
