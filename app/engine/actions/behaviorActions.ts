@@ -1,4 +1,29 @@
-import { BlueprintBehaviors } from "@/engine/types";
+import {
+  BehaviorAction,
+  BlueprintBehavior,
+  BlueprintBehaviors,
+  InputTriggerKey,
+  InputTriggerStage,
+  TriggerName,
+} from "@/engine/types";
+
+const DEFAULT_INPUT_TRIGGER_KEY: InputTriggerKey = "any";
+const DEFAULT_INPUT_TRIGGER_STAGE: InputTriggerStage = "press";
+
+export function createBehaviorForTrigger(
+  trigger: TriggerName,
+  actions: BehaviorAction[]
+): BlueprintBehavior {
+  if (trigger === "input") {
+    return {
+      trigger,
+      key: DEFAULT_INPUT_TRIGGER_KEY,
+      stage: DEFAULT_INPUT_TRIGGER_STAGE,
+      actions,
+    };
+  }
+  return { trigger, actions };
+}
 
 export function renameSpawnObjectBlueprints(
   behaviors: BlueprintBehaviors | undefined,

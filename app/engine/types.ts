@@ -63,6 +63,7 @@ export type ActionSettingNumber = {
 export type ActionSettingString = {
   kind: "string";
   default: string;
+  isSingleLine: boolean;
   maxLength?: number;
   placeholder?: string;
 };
