@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { actions } from "@/engine/actions";
+import { createBehaviorForTrigger } from "@/engine/actions/behaviorActions";
 import {
   ActionSetting,
   ActionSettingEnum,
@@ -76,9 +77,6 @@ const INPUT_STAGE_OPTIONS: Array<{
   { value: "hold", label: "Hold" },
 ];
 
-const DEFAULT_INPUT_TRIGGER_KEY: InputTriggerKey = "any";
-const DEFAULT_INPUT_TRIGGER_STAGE: InputTriggerStage = "press";
-
 const SPAWN_INIT_PROPERTY_OPTIONS = SPAWN_INIT_PROPERTIES.map((property) => ({
   value: property,
   label: humanizeKey(property),
@@ -113,16 +111,16 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
     [blueprints]
   );
 
-  const handleAddTrigger = (trigger: TriggerName) => {
-    const nextBehavior =
-      trigger === "input"
-        ? {
-            trigger,
-            key: DEFAULT_INPUT_TRIGGER_KEY,
-            stage: DEFAULT_INPUT_TRIGGER_STAGE,
-            actions: [],
-          }
-        : { trigger, actions: [] };
+  function handleAddActionTrigger() {
+    const definition = actions.ai;
+    if (!definition) {
+      throw new Error("AI action definition missing from registry.");
+    }
+    const aiAction: BehaviorAction = {
+      action: "ai",
+      settings: getDefaultActionSettings(definition.settings),
+    };
+    const nextBehavior = createBehaviorForTrigger("update", [aiAction]);
     const nextBehaviors: BlueprintBehaviors = [
       ...behaviors,
       nextBehavior,
@@ -134,9 +132,26 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
       property: "behaviors",
       value: nextBehaviors,
     });
-  };
+  }
 
-  const handleRemoveTrigger = (index: number) => {
+  function handleTriggerChange(index: number, trigger: TriggerName) {
+    const target = behaviors[index];
+    if (!target || target.trigger === trigger) {
+      return;
+    }
+    const nextBehavior = createBehaviorForTrigger(trigger, target.actions);
+    const nextBehaviors = behaviors.map((behavior, idx) =>
+      idx === index ? nextBehavior : behavior
+    );
+    dispatch({
+      type: "setBlueprintProperty",
+      blueprintName: blueprint.name,
+      property: "behaviors",
+      value: nextBehaviors,
+    });
+  }
+
+  function handleRemoveTrigger(index: number) {
     if (!behaviors[index]) {
       return;
     }
@@ -147,9 +162,9 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
       property: "behaviors",
       value: nextBehaviors,
     });
-  };
+  }
 
-  const handleAddAction = (index: number, actionKey: string) => {
+  function handleAddAction(index: number, actionKey: string) {
     const definition = actions[actionKey];
     if (!definition) {
       return;
@@ -175,9 +190,9 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
       property: "behaviors",
       value: nextBehaviors,
     });
-  };
+  }
 
-  const handleRemoveAction = (behaviorIndex: number, actionIndex: number) => {
+  function handleRemoveAction(behaviorIndex: number, actionIndex: number) {
     const target = behaviors[behaviorIndex];
     if (!target) {
       return;
@@ -193,14 +208,14 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
       property: "behaviors",
       value: nextBehaviors,
     });
-  };
+  }
 
-  const handleSettingChange = (
+  function handleSettingChange(
     behaviorIndex: number,
     actionIndex: number,
     key: string,
     value: ActionSettings[string]
-  ) => {
+  ) {
     const existing = behaviors[behaviorIndex]?.actions ?? [];
     const target = existing[actionIndex];
     if (!target) {
@@ -219,9 +234,9 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
       property: "behaviors",
       value: nextBehaviors,
     });
-  };
+  }
 
-  const handleInputKeyChange = (index: number, key: InputTriggerKey) => {
+  function handleInputKeyChange(index: number, key: InputTriggerKey) {
     const target = behaviors[index];
     if (!target || target.trigger !== "input") {
       return;
@@ -235,9 +250,9 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
       property: "behaviors",
       value: nextBehaviors,
     });
-  };
+  }
 
-  const handleInputStageChange = (index: number, stage: InputTriggerStage) => {
+  function handleInputStageChange(index: number, stage: InputTriggerStage) {
     const target = behaviors[index];
     if (!target || target.trigger !== "input") {
       return;
@@ -251,32 +266,18 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
       property: "behaviors",
       value: nextBehaviors,
     });
-  };
+  }
 
   return (
     <div className="flex h-full flex-col gap-4">
       <div>
-        <select
-          className={`mt-1 ${SELECT_CLASS}`}
-          aria-label="When"
-          defaultValue=""
-          onChange={(event) => {
-            const selected = event.target.value;
-            if (selected && isTriggerName(selected)) {
-              handleAddTrigger(selected);
-            }
-            event.currentTarget.value = "";
-          }}
+        <button
+          type="button"
+          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          onClick={handleAddActionTrigger}
         >
-          <option value="" disabled>
-            When...
-          </option>
-          {TRIGGERS.map((trigger) => (
-            <option key={trigger} value={trigger}>
-              {TRIGGER_LABELS[trigger]}
-            </option>
-          ))}
-        </select>
+          Add Action
+        </button>
       </div>
 
       <div
@@ -291,7 +292,23 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
           >
             <div className="flex items-center justify-between text-xs uppercase tracking-wide text-slate-500">
               <div className="flex items-center gap-2">
-                <span>{TRIGGER_LABELS[behavior.trigger]}</span>
+                <select
+                  className={INPUT_SELECT_CLASS}
+                  value={behavior.trigger}
+                  aria-label="Trigger"
+                  onChange={(event) => {
+                    const selected = event.target.value;
+                    if (isTriggerName(selected)) {
+                      handleTriggerChange(index, selected);
+                    }
+                  }}
+                >
+                  {TRIGGERS.map((trigger) => (
+                    <option key={trigger} value={trigger}>
+                      {TRIGGER_LABELS[trigger]}
+                    </option>
+                  ))}
+                </select>
                 {behavior.trigger === "input" ? (
                   <>
                     <select
@@ -505,14 +522,24 @@ function ActionSettingField({
     return (
       <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
         {humanizeKey(settingKey)}
-        <input
-          type="text"
-          className={`w-full ${INLINE_INPUT_CLASS}`}
-          value={value}
-          maxLength={setting.maxLength}
-          placeholder={setting.placeholder}
-          onChange={(event) => onChange(event.target.value)}
-        />
+        {setting.isSingleLine ? (
+          <input
+            type="text"
+            className={`w-full ${INLINE_INPUT_CLASS}`}
+            value={value}
+            maxLength={setting.maxLength}
+            placeholder={setting.placeholder}
+            onChange={(event) => onChange(event.target.value)}
+          />
+        ) : (
+          <textarea
+            className={`w-full ${INLINE_INPUT_CLASS} min-h-[96px] resize-y`}
+            value={value}
+            maxLength={setting.maxLength}
+            placeholder={setting.placeholder}
+            onChange={(event) => onChange(event.target.value)}
+          />
+        )}
       </label>
     );
   }
@@ -750,6 +777,9 @@ function getActionOptions(trigger: TriggerName) {
 }
 
 function actionLabelFromKey(key: string) {
+  if (key === "ai") {
+    return "AI Action";
+  }
   return humanizeKey(key);
 }
 
