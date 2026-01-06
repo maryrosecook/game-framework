@@ -335,7 +335,9 @@ export function DrawTab({
             ref={canvasRef}
             width={DISPLAY_SIZE}
             height={DISPLAY_SIZE}
-            className="block w-full h-auto cursor-crosshair touch-none"
+            className={`block w-full h-auto touch-none ${
+              selectedTool === "fill" ? "cursor-cell" : "cursor-crosshair"
+            }`}
             style={{ imageRendering: "pixelated" }}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
