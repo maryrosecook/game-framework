@@ -4,6 +4,7 @@ import destroy from "./definitions/destroy";
 import moveForward from "./definitions/moveForward";
 import turn from "./definitions/turn";
 import ai from "./definitions/ai";
+import cameraFollow from "./definitions/cameraFollow";
 import type { ActionDefinition } from "@/engine/types";
 
 export type ActionRegistry = Record<string, ActionDefinition>;
@@ -15,4 +16,5 @@ export const actions: ActionRegistry = {
   moveForward,
   turn,
   ai,
+  cameraFollow,
 };
