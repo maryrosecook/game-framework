@@ -213,14 +213,14 @@ export function DrawTab({
       if (!pixel) {
         return;
       }
+      isDrawingRef.current = true;
+      lastPixelRef.current = pixel;
+      canvasRef.current?.setPointerCapture(event.pointerId);
       if (selectedTool === "fill") {
         fillPixels(pixel);
         setHoverPixel(pixel);
         return;
       }
-      isDrawingRef.current = true;
-      lastPixelRef.current = pixel;
-      canvasRef.current?.setPointerCapture(event.pointerId);
       paintPixel(pixel, null);
       setHoverPixel(pixel);
     },
@@ -231,14 +231,24 @@ export function DrawTab({
     (event: PointerEvent<HTMLCanvasElement>) => {
       const pixel = getPixelFromEvent(event);
       setHoverPixel(pixel);
-      if (selectedTool !== "pen" || !isDrawingRef.current || !pixel) {
+      if (!isDrawingRef.current || !pixel) {
         return;
       }
-      const previous = lastPixelRef.current;
-      paintPixel(pixel, previous);
-      lastPixelRef.current = pixel;
+      if (selectedTool === "pen") {
+        const previous = lastPixelRef.current;
+        paintPixel(pixel, previous);
+        lastPixelRef.current = pixel;
+        return;
+      }
+      if (selectedTool === "fill") {
+        const previous = lastPixelRef.current;
+        if (!previous || previous.x !== pixel.x || previous.y !== pixel.y) {
+          fillPixels(pixel);
+          lastPixelRef.current = pixel;
+        }
+      }
     },
-    [getPixelFromEvent, paintPixel, selectedTool]
+    [fillPixels, getPixelFromEvent, paintPixel, selectedTool]
   );
 
   const stopDrawing = useCallback((event?: PointerEvent) => {
