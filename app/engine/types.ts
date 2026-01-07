@@ -202,12 +202,19 @@ export type SpawnRequest = {
   overrides?: Partial<RawThing>;
 };
 
+export type ParticleSpawnRequest = {
+  position: Vector;
+  velocity: Vector;
+  color: string;
+};
+
 export type CollisionMap = Map<string, string[]>;
 
 export type GameContext = {
   gameState: RuntimeGameState;
   collidingThingIds: CollisionMap;
   spawn: (request: SpawnRequest) => RuntimeThing | null;
+  spawnParticle: (request: ParticleSpawnRequest) => void;
   destroy: (target: RuntimeThing | string) => void;
   getImageForThing: (thing: RuntimeThing) => CanvasImageSource | null;
 };
