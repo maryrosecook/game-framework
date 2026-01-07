@@ -36,6 +36,18 @@
       "blueprintName": "enemy",
       "width": 100,
       "height": 100
+    },
+    {
+      "id": "epkq1meietai",
+      "x": 640,
+      "y": 484.25,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "enemy",
+      "width": 100,
+      "height": 100
     }
   ],
   "blueprints": [
@@ -130,6 +142,13 @@
             {
               "action": "destroy",
               "settings": {}
+            },
+            {
+              "action": "explode",
+              "settings": {
+                "speed": 2,
+                "color": "#32cd32"
+              }
             }
           ]
         }
