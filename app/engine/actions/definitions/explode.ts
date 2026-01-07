@@ -4,10 +4,6 @@ import {
   TriggerName,
   Vector,
 } from "@/engine/types";
-import {
-  EXPLODED_PIXEL_BLUEPRINT_NAME,
-  ExplodedPixelData,
-} from "@/engine/internal/explodedPixel";
 import { getColorOptions } from "@/lib/colors";
 
 type Rotation = {
@@ -76,6 +72,7 @@ const explode: ActionDefinition<
     const colorChoice =
       typeof settings.color === "string" ? settings.color : COLOR_OPTION_BLUEPRINT;
     const overrideColor = resolveOverrideColor(colorChoice);
+    const particleColor = resolveParticleColor(thing, overrideColor);
     const rotation = getRotation(thing.angle);
     const center = getThingCenter(thing);
 
@@ -90,45 +87,31 @@ const explode: ActionDefinition<
           center,
           rotation
         );
-        const data = createExplodedPixelData(thing, overrideColor);
-        const spawned = game.spawn({
-          blueprint: EXPLODED_PIXEL_BLUEPRINT_NAME,
-          position,
-          overrides: {
-            width: pixelWidth,
-            height: pixelHeight,
-            angle: thing.angle,
-            z: thing.z,
-            data,
-          },
-        });
-        if (!spawned) {
-          continue;
-        }
-
         const velocity = getExplosionVelocity(position, center, speed);
-        spawned.velocityX = velocity.x;
-        spawned.velocityY = velocity.y;
+        game.spawnParticle({ position, velocity, color: particleColor });
       }
     }
   },
 };
-
-function createExplodedPixelData(
-  thing: RuntimeThing,
-  overrideColor: string | undefined
-): ExplodedPixelData {
-  if (!overrideColor) {
-    return { sourceBlueprintName: thing.blueprintName };
-  }
-  return { sourceBlueprintName: thing.blueprintName, overrideColor };
-}
 
 function resolveOverrideColor(colorChoice: string): string | undefined {
   if (colorChoice === COLOR_OPTION_BLUEPRINT) {
     return undefined;
   }
   return colorChoice;
+}
+
+function resolveParticleColor(
+  thing: RuntimeThing,
+  overrideColor: string | undefined
+): string {
+  if (overrideColor) {
+    return overrideColor;
+  }
+  if (typeof thing.color === "string" && thing.color.length > 0) {
+    return thing.color;
+  }
+  return "#888";
 }
 
 function getImageDimensions(
