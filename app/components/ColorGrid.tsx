@@ -15,7 +15,7 @@ export function ColorGrid({
 }) {
   return (
     <div
-      className={`grid grid-cols-5 gap-1.5 rounded-xl border border-slate-200 bg-white p-3 ${
+      className={`grid w-full grid-cols-6 gap-2 rounded-xl border border-slate-200 bg-white p-3 ${
         disabled ? "pointer-events-none opacity-60" : ""
       }`}
     >
@@ -23,7 +23,7 @@ export function ColorGrid({
         <button
           key={color}
           type="button"
-          className={`relative h-10 w-10 cursor-pointer overflow-hidden rounded-lg border transition ${
+          className={`relative aspect-square w-full cursor-pointer overflow-hidden rounded-lg border transition ${
             selected === color
               ? "border-2 border-blue-600 ring-2 ring-blue-300"
               : "border-slate-200 hover:border-slate-400"

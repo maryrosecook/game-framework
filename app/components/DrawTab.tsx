@@ -423,44 +423,46 @@ function ColorPalette({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="grid grid-cols-5 gap-1.5 rounded-xl border border-slate-200 bg-white p-3">
-        {colors.map((color) => {
-          const isSelected = color === selectedColor;
-          return (
-            <button
-              key={color}
-              type="button"
-              className={`relative h-10 w-10 cursor-pointer overflow-hidden rounded-lg border transition ${
-                isSelected
-                  ? "border-2 border-blue-600 ring-2 ring-blue-300"
-                  : "border-slate-200 hover:border-slate-400"
-              }`}
-              style={{ backgroundColor: color }}
-              onClick={() => onColorSelect(color)}
-              aria-label={`Select color ${color}`}
-            >
-            </button>
-          );
-        })}
-        <button
-          type="button"
-          className={`relative h-10 w-10 cursor-pointer overflow-hidden rounded-lg border transition ${
-            selectedColor === "transparent"
-              ? "border-2 border-blue-600 ring-2 ring-blue-300"
-              : "border-slate-200 hover:border-slate-400"
-          }`}
-          style={{ backgroundColor: "#e5e7eb" }}
-          onClick={() => onColorSelect("transparent")}
-          aria-label="Select eraser"
-        >
-          <span
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to bottom right, transparent calc(50% - 1px), #374151 calc(50% - 1px), #374151 calc(50% + 1px), transparent calc(50% + 1px))",
-            }}
-          />
-        </button>
+      <div className="rounded-xl border border-slate-200 bg-white p-3">
+        <div className="grid w-full grid-cols-6 gap-2">
+          {colors.map((color) => {
+            const isSelected = color === selectedColor;
+            return (
+              <button
+                key={color}
+                type="button"
+                className={`relative aspect-square w-full cursor-pointer overflow-hidden rounded-lg border transition ${
+                  isSelected
+                    ? "border-2 border-blue-600 ring-2 ring-blue-300"
+                    : "border-slate-200 hover:border-slate-400"
+                }`}
+                style={{ backgroundColor: color }}
+                onClick={() => onColorSelect(color)}
+                aria-label={`Select color ${color}`}
+              >
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            className={`relative aspect-square w-full cursor-pointer overflow-hidden rounded-lg border transition ${
+              selectedColor === "transparent"
+                ? "border-2 border-blue-600 ring-2 ring-blue-300"
+                : "border-slate-200 hover:border-slate-400"
+            }`}
+            style={{ backgroundColor: "#e5e7eb" }}
+            onClick={() => onColorSelect("transparent")}
+            aria-label="Select eraser"
+          >
+            <span
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to bottom right, transparent calc(50% - 1px), #374151 calc(50% - 1px), #374151 calc(50% + 1px), transparent calc(50% + 1px))",
+              }}
+            />
+          </button>
+        </div>
       </div>
     </div>
   );

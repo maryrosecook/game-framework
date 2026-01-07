@@ -6,6 +6,7 @@ import turn from "./definitions/turn";
 import ai from "./definitions/ai";
 import cameraFollow from "./definitions/cameraFollow";
 import explode from "./definitions/explode";
+import roam from "./definitions/roam";
 import type { ActionDefinition } from "@/engine/types";
 
 export type ActionRegistry = Record<string, ActionDefinition>;
@@ -19,4 +20,5 @@ export const actions: ActionRegistry = {
   ai,
   cameraFollow,
   explode,
+  roam,
 };
