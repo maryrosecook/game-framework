@@ -28,6 +28,8 @@ import {
   getDefaultActionSettings,
   resolveActionSettings,
 } from "@/engine/actions/settings";
+import { ColorSelect, ColorSelectOption } from "@/components/ColorSelect";
+import { getColorOptions } from "@/lib/colors";
 
 const TRIGGERS: TriggerName[] = ["create", "input", "update", "collision"];
 
@@ -370,6 +372,7 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
                     actionKey={behaviorAction.action}
                     behaviorAction={behaviorAction}
                     blueprintNames={blueprintNames}
+                    blueprintColor={blueprint.color}
                     onRemove={() => handleRemoveAction(index, actionIndex)}
                     onSettingChange={(key, value) =>
                       handleSettingChange(index, actionIndex, key, value)
@@ -410,12 +413,14 @@ function ActionCard({
   actionKey,
   behaviorAction,
   blueprintNames,
+  blueprintColor,
   onRemove,
   onSettingChange,
 }: {
   actionKey: string;
   behaviorAction: BehaviorAction;
   blueprintNames: string[];
+  blueprintColor: string;
   onRemove: () => void;
   onSettingChange: (key: string, value: ActionSettings[string]) => void;
 }) {
@@ -452,6 +457,7 @@ function ActionCard({
               setting={definition.settings[key]}
               resolvedSettings={resolvedSettings}
               blueprintNames={blueprintNames}
+              blueprintColor={blueprintColor}
               onChange={(value) => onSettingChange(key, value)}
             />
           ))}
@@ -467,6 +473,7 @@ function ActionSettingField({
   setting,
   resolvedSettings,
   blueprintNames,
+  blueprintColor,
   onChange,
 }: {
   actionKey: string;
@@ -474,6 +481,7 @@ function ActionSettingField({
   setting: ActionSetting;
   resolvedSettings: ActionSettings;
   blueprintNames: string[];
+  blueprintColor: string;
   onChange: (value: ActionSettings[string]) => void;
 }) {
   const currentValue = resolvedSettings[settingKey];
@@ -546,6 +554,18 @@ function ActionSettingField({
 
   if (setting.kind === "enum") {
     const value = typeof currentValue === "string" ? currentValue : "";
+    if (actionKey === "explode" && settingKey === "color") {
+      const options = getExplodeColorOptions(blueprintColor);
+      const selected = value || options[0]?.value || "";
+      return (
+        <ColorSelect
+          label={humanizeKey(settingKey)}
+          value={selected}
+          options={options}
+          onChange={onChange}
+        />
+      );
+    }
     const options = getEnumOptions(
       actionKey,
       settingKey,
@@ -768,6 +788,21 @@ function getEnumOptions(
   }
 
   return setting.options.map((option) => ({ label: option, value: option }));
+}
+
+function getExplodeColorOptions(blueprintColor: string): ColorSelectOption[] {
+  const resolvedBlueprintColor = blueprintColor || "#888888";
+  const options: ColorSelectOption[] = [
+    {
+      value: "blueprint",
+      label: "Blueprint",
+      swatch: resolvedBlueprintColor,
+    },
+  ];
+  for (const color of getColorOptions()) {
+    options.push({ value: color, label: color, swatch: color });
+  }
+  return options;
 }
 
 function getActionOptions(trigger: TriggerName) {

@@ -32,6 +32,7 @@ import {
   sanitizeThingData,
 } from "./blueprints";
 import { createThingProxy } from "./proxy";
+import { explodedPixelBlueprint } from "./internal/explodedPixel";
 import { getBlueprintImageUrl, getPrimaryImageName } from "@/lib/images";
 import { loadImages } from "./imageLoader";
 import {
@@ -1260,9 +1261,13 @@ export class GameEngine {
   }
 
   private rebuildBlueprintLookup() {
-    this.blueprintLookup = new Map(
+    const lookup = new Map(
       this.rawGameState.blueprints.map((bp) => [bp.name, bp])
     );
+    if (!lookup.has(explodedPixelBlueprint.name)) {
+      lookup.set(explodedPixelBlueprint.name, explodedPixelBlueprint);
+    }
+    this.blueprintLookup = lookup;
   }
 
   private getImageForThing(

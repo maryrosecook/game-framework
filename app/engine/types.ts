@@ -709,7 +709,7 @@ export function isThing(value: unknown): value is PersistedThing {
   if (value.physicsType !== undefined && !isPhysicsType(value.physicsType)) {
     return false;
   }
-  if (value.color !== undefined && typeof value.color !== "string") {
+  if ("color" in value) {
     return false;
   }
   if (value.shape !== undefined) {

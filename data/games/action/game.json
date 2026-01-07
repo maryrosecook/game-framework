@@ -27,10 +27,10 @@
     },
     {
       "id": "prj9xo4563qy",
-      "x": 591.37890625,
+      "x": 591.5,
       "y": 290.6484375,
       "z": 1,
-      "angle": 156,
+      "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
       "blueprintName": "enemy",
@@ -38,57 +38,9 @@
       "height": 100
     },
     {
-      "id": "o474f0oqykeu",
-      "x": 934,
-      "y": 402,
-      "z": 1,
-      "angle": 95,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "enemy",
-      "width": 100,
-      "height": 100
-    },
-    {
-      "id": "cbwkxtr0aafw",
-      "x": 170.15573073445262,
-      "y": 470.63697878507537,
-      "z": 1,
-      "angle": 45,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "enemy",
-      "width": 100,
-      "height": 100
-    },
-    {
-      "id": "1ie5aq3wxqxa",
-      "x": 559.1557307344526,
-      "y": 4.636978785075314,
-      "z": 1,
-      "angle": 128,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "enemy",
-      "width": 100,
-      "height": 100
-    },
-    {
-      "id": "ou72dg3pj0hd",
-      "x": 640.1557307344526,
-      "y": 572.6369787850754,
-      "z": 1,
-      "angle": 300,
-      "velocityX": 0,
-      "velocityY": 0,
-      "blueprintName": "enemy",
-      "width": 100,
-      "height": 100
-    },
-    {
-      "id": "12qrrj28n1gu",
-      "x": 899,
-      "y": 698,
+      "id": "4xxqtyshts99",
+      "x": 717,
+      "y": 522,
       "z": 1,
       "angle": 0,
       "velocityX": 0,
@@ -142,18 +94,11 @@
               }
             }
           ]
-        },
-        {
-          "trigger": "update",
-          "actions": [
-            {
-              "action": "cameraFollow",
-              "settings": {}
-            }
-          ]
         }
       ],
-      "images": ["player-paint-1767681148064.png"]
+      "images": [
+        "player-paint-1767681148064.png"
+      ]
     },
     {
       "name": "bullet",
@@ -177,7 +122,9 @@
           ]
         }
       ],
-      "images": ["bullet-paint-1767209997589.png"]
+      "images": [
+        "bullet-paint-1767209997589.png"
+      ]
     },
     {
       "name": "enemy",
@@ -195,23 +142,20 @@
             {
               "action": "destroy",
               "settings": {}
-            }
-          ]
-        },
-        {
-          "trigger": "update",
-          "actions": [
+            },
             {
-              "action": "roam",
+              "action": "explode",
               "settings": {
                 "speed": 2,
-                "arriveDistance": 8
+                "color": "#000000"
               }
             }
           ]
         }
       ],
-      "images": ["enemy-paint-1767209929014.png"]
+      "images": [
+        "enemy-paint-1767209929014.png"
+      ]
     }
   ],
   "camera": {
