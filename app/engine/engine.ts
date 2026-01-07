@@ -1,6 +1,7 @@
 import { InputManager } from "./input";
 import { physicsStep } from "./physics";
 import { renderGame } from "./render";
+import { createParticleSystem } from "./particles";
 import {
   Blueprint,
   BlueprintData,
@@ -17,6 +18,7 @@ import {
   RawThing,
   PersistedThing,
   SpawnRequest,
+  ParticleSpawnRequest,
   Vector,
 } from "./types";
 import { blueprintSlug } from "@/lib/blueprints";
@@ -154,6 +156,7 @@ export class GameEngine {
   private blueprintManifestVersion: string | null = null;
   private createdThingIds = new Set<string>();
   private isReadOnly = false;
+  private particleSystem = createParticleSystem();
 
   constructor(private readonly dependencies: GameEngineDependencies) {
     this.editableImageStore = new EditableImageStore(
@@ -171,6 +174,7 @@ export class GameEngine {
       this.blueprintImages.clear();
       this.blueprintImageLoadVersion = 0;
       this.editableImageStore.reset();
+      this.particleSystem.reset();
       if (this.persistHandle) {
         clearTimeout(this.persistHandle);
         this.persistHandle = null;
@@ -622,6 +626,11 @@ export class GameEngine {
     this.applyPendingChanges(pendingSpawns, pendingRemovals);
     this.runCreateHandlers(gameContext);
     this.updateCameraPosition();
+    this.particleSystem.step(
+      this.gameState.camera,
+      this.gameState.screen,
+      this.gameState.isPaused
+    );
     this.syncMutableThings();
 
     renderGame(
@@ -630,6 +639,7 @@ export class GameEngine {
       this.blueprintLookup,
       (thing, blueprint) => this.getImageForThing(thing, blueprint)
     );
+    this.particleSystem.render(this.ctx, this.gameState.camera);
     this.notify();
   }
 
@@ -1105,6 +1115,9 @@ export class GameEngine {
       const id = typeof target === "string" ? target : target.id;
       pendingRemovals.add(id);
     };
+    function spawnParticle(request: ParticleSpawnRequest): void {
+      self.particleSystem.spawn(request);
+    }
     const getImageForThing = (thing: RuntimeThing) => {
       const blueprint = getBlueprintForThing(thing, self.blueprintLookup);
       return self.getImageForThing(thing, blueprint);
@@ -1116,6 +1129,7 @@ export class GameEngine {
       },
       collidingThingIds,
       spawn,
+      spawnParticle,
       destroy,
       getImageForThing,
     };
