@@ -23,6 +23,16 @@ jobs:
             set -e
             cd ~/node-sites/game-framework
 
+            export NVM_DIR="$HOME/.nvm"
+            if [ -s "$NVM_DIR/nvm.sh" ]; then
+              . "$NVM_DIR/nvm.sh"
+              nvm use --silent --lts || nvm use --silent default || true
+            fi
+            if ! command -v npm >/dev/null 2>&1; then
+              echo "npm not found. Install Node/npm or configure nvm for this user." >&2
+              exit 1
+            fi
+
             echo "=== Pulling main 1/4"
             git pull origin main
 
