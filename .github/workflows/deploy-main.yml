@@ -21,7 +21,15 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=yes "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" <<'EOF'
             set -e
-            cd ~/node_sites/game-framework
+            if [ -d "$HOME/node_sites/game-framework" ]; then
+              cd "$HOME/node_sites/game-framework"
+            elif [ -d "$HOME/node-sites/game-framework" ]; then
+              cd "$HOME/node-sites/game-framework"
+            else
+              echo "Game framework directory not found. Expected ~/node_sites/game-framework or ~/node-sites/game-framework." >&2
+              ls -la "$HOME"
+              exit 1
+            fi
 
             export NVM_DIR="$HOME/.nvm"
             if [ -s "$NVM_DIR/nvm.sh" ]; then
