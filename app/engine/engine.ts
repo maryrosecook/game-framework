@@ -1799,8 +1799,7 @@ function isBlueprintManifestModule(
 }
 
 function isBlueprintJsModule(value: unknown): value is BlueprintJsModule {
-  const factory = (value as { default?: unknown })?.default;
-  return typeof factory === "function";
+  return value !== null && typeof value === "object";
 }
 
 function resolveBlueprintModule(

@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 
 import { watch } from "chokidar";
 import type { FSWatcher } from "chokidar";
+import ts from "typescript";
 
 import { blueprintSlug } from "../app/lib/blueprints";
 
@@ -13,6 +14,7 @@ type BlueprintEntry = {
   importName: string;
   importPath: string;
   absolutePath: string;
+  isModule: boolean;
 };
 
 const __filename = fileURLToPath(import.meta.url);
@@ -76,31 +78,50 @@ async function listBlueprintEntries(game: string): Promise<BlueprintEntry[]> {
   try {
     const files = await fs.readdir(blueprintDir, { withFileTypes: true });
 
-    const entries = files
-      .filter(
-        (file) =>
-          file.isFile() &&
-          file.name.endsWith(".ts") &&
-          !file.name.endsWith(".d.ts")
-      )
-      .map((file) => {
-        const baseName = path.parse(file.name).name;
-        const slug = blueprintSlug(baseName);
-        return {
-          slug,
-          importName: toIdentifier(slug),
-          importPath: `./blueprints/${baseName}`,
-          absolutePath: path.join(blueprintDir, file.name),
-        } satisfies BlueprintEntry;
-      })
-      .sort((a, b) => a.slug.localeCompare(b.slug));
+    const entries = await Promise.all(
+      files
+        .filter(
+          (file) =>
+            file.isFile() &&
+            file.name.endsWith(".ts") &&
+            !file.name.endsWith(".d.ts")
+        )
+        .map(async (file) => {
+          const baseName = path.parse(file.name).name;
+          const slug = blueprintSlug(baseName);
+          const absolutePath = path.join(blueprintDir, file.name);
+          const isModule = await isBlueprintModuleFile(absolutePath);
+          return {
+            slug,
+            importName: toIdentifier(slug),
+            importPath: `./blueprints/${baseName}`,
+            absolutePath,
+            isModule,
+          } satisfies BlueprintEntry;
+        })
+    );
 
-    return entries;
+    return entries.sort((a, b) => a.slug.localeCompare(b.slug));
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       return [];
     }
     throw error;
+  }
+}
+
+async function isBlueprintModuleFile(filePath: string) {
+  try {
+    const contents = await fs.readFile(filePath, "utf8");
+    const sourceFile = ts.createSourceFile(
+      filePath,
+      contents,
+      ts.ScriptTarget.ESNext,
+      true
+    );
+    return ts.isExternalModule(sourceFile);
+  } catch {
+    return false;
   }
 }
 
@@ -133,7 +154,18 @@ function buildManifestContent(
   ];
 
   if (entries.length > 0) {
-    lines.push("", ...entries.map(toImportStatement));
+    const importLines: string[] = [];
+    const constLines: string[] = [];
+
+    for (const entry of entries) {
+      if (entry.isModule) {
+        importLines.push(toImportStatement(entry));
+      } else {
+        constLines.push(`const ${entry.importName} = {};`);
+      }
+    }
+
+    lines.push("", ...importLines, ...constLines);
   }
 
   lines.push("", "export const blueprints = {");
@@ -183,6 +215,7 @@ async function hashBlueprints(entries: BlueprintEntry[]) {
 function toImportStatement(entry: BlueprintEntry) {
   return `import * as ${entry.importName} from "${entry.importPath}";`;
 }
+
 
 async function writeIfChanged(filePath: string, content: string) {
   try {
