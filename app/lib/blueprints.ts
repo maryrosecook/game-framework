@@ -14,7 +14,7 @@ export function blueprintSlug(name: string) {
 }
 
 export function blueprintTemplate() {
-  return ``;
+  return `export {}`;
 }
 
 const DEFAULTS: Pick<
