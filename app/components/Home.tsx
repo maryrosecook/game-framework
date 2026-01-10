@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation";
 import type { GameSummary } from "@/lib/games";
 import { getGameImageUrl } from "@/lib/images";
 import { GameCard } from "./GameCard";
-import {
-  getDroppedPngFile,
-  uploadGameCoverImage,
-} from "@/lib/imageUploads";
+import { getDroppedPngFile, uploadGameCoverImage } from "@/lib/imageUploads";
 import { isRecord } from "@/engine/types";
 import { shouldIncludeEditKeyInHomeURL } from "@/lib/homeUrl";
 
@@ -125,7 +122,7 @@ export function Home({ games }: HomeProps) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-sky-50 via-indigo-50 to-white text-slate-900">
+    <div className="min-h-screen w-full bg-gradient-to-br from-sky-200 via-indigo-50 to-white text-slate-900">
       <div className="flex w-full flex-col gap-8 px-6 py-10 sm:px-10 lg:px-[100px]">
         <header className="text-left">
           <h1 className="text-2xl font-semibold leading-tight text-slate-900">
@@ -144,19 +141,17 @@ export function Home({ games }: HomeProps) {
                   onDropImage={(event) =>
                     handleDropImage(game.directory, event)
                   }
-                  onNavigate={(event) =>
-                    handleNavigate(game, event)
-                  }
+                  onNavigate={(event) => handleNavigate(game, event)}
                   onDragEnter={() => setActiveDrop(game.directory)}
                   onDragLeave={() => setActiveDrop(null)}
                 />
-                  {uploadErrors[game.directory] ? (
-                    <p className="text-xs text-red-600">
-                      {uploadErrors[game.directory]}
-                    </p>
-                  ) : null}
-                </div>
-              ))}
+                {uploadErrors[game.directory] ? (
+                  <p className="text-xs text-red-600">
+                    {uploadErrors[game.directory]}
+                  </p>
+                ) : null}
+              </div>
+            ))}
             <NewGameTile onCreate={handleCreateGame} isCreating={isCreating} />
           </div>
         </div>
