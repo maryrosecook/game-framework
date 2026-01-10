@@ -1,0 +1,39 @@
+name: Deploy Game Framework
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Deploy
+        run: |
+          ssh -o StrictHostKeyChecking=yes "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" <<'EOF'
+            set -e
+            cd ~/node-sites/game-framework
+
+            echo "=== Pulling main 1/4"
+            git pull origin main
+
+            echo "=== Installing npm modules 2/4"
+            npm install
+
+            echo "=== Building client and server 3/4"
+            npm run build
+
+            echo "=== Restarting server 4/4"
+            pm2 restart game-framework
+
+            echo "=== Done"
+          EOF
