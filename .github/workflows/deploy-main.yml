@@ -21,7 +21,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=yes "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" <<'EOF'
             set -e
-            cd ~/node-sites/game-framework
+            cd ~/node_sites/game-framework
 
             echo "=== Pulling main 1/4"
             git pull origin main
