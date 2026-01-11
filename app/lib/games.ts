@@ -14,7 +14,7 @@ import { shouldIncludeEditKeyInHomeURL } from "@/lib/homeUrl";
 const ROOT = process.cwd();
 const GAMES_ROOT = path.join(ROOT, "data", "games");
 const EDITOR_SETTINGS_PATH = path.join(ROOT, "data", "editorSettings.json");
-const DEFAULT_BACKGROUND_COLOR = "#f8fafc";
+const DEFAULT_BACKGROUND_COLOR = "#fbcfe8";
 const GAME_NAME_PATTERN = /[^a-z0-9]+/g;
 const GAME_EDIT_FILE_NAME = "game-edit.json";
 
