@@ -94,7 +94,7 @@ type BlueprintJsModuleManifest = {
   version: string | null;
 };
 
-const DEFAULT_BACKGROUND_COLOR = "#f8fafc";
+const DEFAULT_BACKGROUND_COLOR = "#fbcfe8";
 
 function cloneDefaultRawGameState(): RawGameState {
   return {
