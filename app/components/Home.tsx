@@ -122,7 +122,7 @@ export function Home({ games }: HomeProps) {
   };
 
   return (
-    <div className="min-h-screen w-full bg-pink-200 text-slate-900">
+    <div className="min-h-screen w-full bg-gradient-to-br from-[#7bbdff] to-[#f4a3e4] text-slate-900">
       <div className="flex w-full flex-col gap-8 px-6 py-10 sm:px-10 lg:px-[100px]">
         <header className="text-left">
           <h1 className="text-2xl font-semibold leading-tight text-slate-900">
