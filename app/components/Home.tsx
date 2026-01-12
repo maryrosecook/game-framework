@@ -1,13 +1,17 @@
 "use client";
 
-import { DragEvent, MouseEvent, useState } from "react";
+import { DragEvent, MouseEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { GameSummary } from "@/lib/games";
 import { getGameImageUrl } from "@/lib/images";
 import { GameCard } from "./GameCard";
 import { getDroppedPngFile, uploadGameCoverImage } from "@/lib/imageUploads";
 import { isRecord } from "@/engine/types";
-import { shouldIncludeEditKeyInHomeURL } from "@/lib/homeUrl";
+import {
+  getStoredEditKeyForGame,
+  storeEditKeyForGame,
+  storeEditKeys,
+} from "@/lib/editKeyStorage";
 
 type HomeProps = {
   games: GameSummary[];
@@ -23,13 +27,28 @@ export function Home({ games }: HomeProps) {
   const [uploadErrors, setUploadErrors] = useState<
     Record<string, string | null>
   >({});
-  const includeEditKeyInHomeURL = shouldIncludeEditKeyInHomeURL();
+
+  useEffect(() => {
+    const entries = gameCards.flatMap((game) => {
+      if (typeof game.editKey !== "string") {
+        return [];
+      }
+      const trimmed = game.editKey.trim();
+      if (!trimmed) {
+        return [];
+      }
+      return [{ gameDirectory: game.directory, editKey: trimmed }];
+    });
+    if (entries.length > 0) {
+      storeEditKeys(entries);
+    }
+  }, [gameCards]);
 
   function handleNavigate(
     game: GameSummary,
     event: MouseEvent<HTMLButtonElement>
   ) {
-    const targetPath = buildGamePath(game, includeEditKeyInHomeURL);
+    const targetPath = buildGamePath(game);
     if (event.metaKey || event.ctrlKey || event.button === 1) {
       event.preventDefault();
       window.open(targetPath, "_blank", "noopener,noreferrer");
@@ -67,9 +86,8 @@ export function Home({ games }: HomeProps) {
       if (!response.ok || !gameDirectory || !editKey) {
         throw new Error(errorMessage ?? "Failed to create game");
       }
-      router.push(
-        `/games/${gameDirectory}?edit=${encodeURIComponent(editKey)}`
-      );
+      storeEditKeyForGame(gameDirectory, editKey);
+      router.push(`/games/${gameDirectory}`);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to create game";
@@ -99,9 +117,11 @@ export function Home({ games }: HomeProps) {
     setUploadErrors((prev) => ({ ...prev, [gameDirectory]: null }));
     setUploadingFor(gameDirectory);
     try {
+      const editKey = getStoredEditKeyForGame(gameDirectory);
       const imageName = await uploadGameCoverImage({
         gameDirectory,
         file,
+        editKey,
       });
       setGameCards((previous) =>
         previous.map((entry) =>
@@ -167,17 +187,9 @@ export function Home({ games }: HomeProps) {
 }
 
 function buildGamePath(
-  game: GameSummary,
-  includeEditKeyInHomeURL: boolean
+  game: GameSummary
 ): string {
-  const base = `/games/${game.directory}`;
-  if (!includeEditKeyInHomeURL) {
-    return base;
-  }
-  if (!game.editKey) {
-    throw new Error(`Missing edit key for ${game.directory}`);
-  }
-  return `${base}?edit=${encodeURIComponent(game.editKey)}`;
+  return `/games/${game.directory}`;
 }
 
 function NewGameTile({

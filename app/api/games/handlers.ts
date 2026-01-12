@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
 import {
   readGameFile,
-  validateEditKey,
   writeEditorSettings,
   writeGameFile,
 } from "@/lib/games";
 import { isGameFile, isNotFoundError } from "@/engine/types";
 import { getErrorMessage } from "@/lib/errors";
-import { requireEditAccess } from "@/lib/editAccess";
+import { canEditGame } from "@/lib/editAccess";
 
 type HandlerOptions = {
   updateEditorSettings?: boolean;
 };
 
 export async function loadGameResponse(
+  request: Request | null,
   gameDirectory: string,
   editKey: string | null,
   options: HandlerOptions = {}
@@ -29,7 +29,7 @@ export async function loadGameResponse(
     if (updateEditorSettings) {
       await writeEditorSettings({ currentGameDirectory: gameDirectory });
     }
-    const canEdit = await validateEditKey(gameDirectory, editKey);
+    const canEdit = await canEditGame(request, gameDirectory, editKey);
     return NextResponse.json({ game, gameDirectory, canEdit });
   } catch (error) {
     if (isNotFoundError(error)) {
@@ -43,6 +43,7 @@ export async function loadGameResponse(
 }
 
 export async function saveGameResponse(
+  request: Request,
   gameDirectory: string,
   rawGame: unknown,
   editKey: string | null,
@@ -61,9 +62,12 @@ export async function saveGameResponse(
   }
 
   try {
-    const accessResponse = await requireEditAccess(gameDirectory, editKey);
-    if (accessResponse) {
-      return accessResponse;
+    const canEdit = await canEditGame(request, gameDirectory, editKey);
+    if (!canEdit) {
+      return NextResponse.json(
+        { error: "Edit access required" },
+        { status: 403 }
+      );
     }
     await writeGameFile(gameDirectory, rawGame);
     if (updateEditorSettings) {

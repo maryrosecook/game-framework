@@ -1,18 +1,24 @@
 import "server-only";
 
-import { NextResponse } from "next/server";
 import { validateEditKey } from "@/lib/games";
 
-export async function requireEditAccess(
+export async function canEditGame(
+  request: Request | null,
   gameDirectory: string,
   editKey: string | null
-) {
-  const canEdit = await validateEditKey(gameDirectory, editKey);
-  if (canEdit) {
-    return null;
+): Promise<boolean> {
+  if (request && isLocalhostRequest(request)) {
+    return true;
   }
-  return NextResponse.json(
-    { error: "Edit access required" },
-    { status: 403 }
+  return validateEditKey(gameDirectory, editKey);
+}
+
+function isLocalhostRequest(request: Request): boolean {
+  const hostname = new URL(request.url).hostname.trim().toLowerCase();
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0" ||
+    hostname === "::1"
   );
 }

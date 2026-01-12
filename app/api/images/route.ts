@@ -4,8 +4,8 @@ import path from "node:path";
 import { blueprintSlug } from "@/lib/blueprints";
 import { gameSlug } from "@/lib/games";
 import { getErrorMessage } from "@/lib/errors";
-import { extractEditKeyFromUrl } from "@/lib/editKey";
-import { requireEditAccess } from "@/lib/editAccess";
+import { extractEditKeyFromRequest } from "@/lib/editKey";
+import { canEditGame } from "@/lib/editAccess";
 
 const ROOT = process.cwd();
 const GAMES_ROOT = path.join(ROOT, "data", "games");
@@ -43,10 +43,13 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-  const editKey = extractEditKeyFromUrl(request);
-  const accessResponse = await requireEditAccess(normalizedDirectory, editKey);
-  if (accessResponse) {
-    return accessResponse;
+  const editKey = extractEditKeyFromRequest(request);
+  const canEdit = await canEditGame(request, normalizedDirectory, editKey);
+  if (!canEdit) {
+    return NextResponse.json(
+      { error: "Edit access required" },
+      { status: 403 }
+    );
   }
 
   const extension = path.extname(getFileName(file)).toLowerCase();

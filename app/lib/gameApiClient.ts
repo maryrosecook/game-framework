@@ -5,6 +5,7 @@ import {
   EditableImageRecord,
   persistEditableImage,
 } from "@/engine/editableImages";
+import { getEditKeyHeaders } from "@/lib/editKey";
 
 type GameApiPayload = {
   game?: unknown;
@@ -43,11 +44,10 @@ async function loadGame(
   editKey: string | null | undefined,
   onEditAccess?: (canEdit: boolean) => void
 ): Promise<LoadedGame> {
-  const url = withEditKey(
+  const response = await fetch(
     `/api/games/${encodeURIComponent(gameDirectory)}`,
-    editKey
+    { headers: getEditKeyHeaders(editKey) }
   );
-  const response = await fetch(url);
   const payload = await readJson(response);
   const canEdit = getCanEdit(payload);
   onEditAccess?.(canEdit);
@@ -64,15 +64,17 @@ async function persistGame(
   game: GameFile,
   editKey: string | null | undefined
 ) {
-  const url = withEditKey(
+  const response = await fetch(
     `/api/games/${encodeURIComponent(gameDirectory)}`,
-    editKey
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getEditKeyHeaders(editKey),
+      },
+      body: JSON.stringify({ game }),
+    }
   );
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ game }),
-  });
   if (!response.ok) {
     const payload = await readJson(response);
     const message =
@@ -88,10 +90,12 @@ async function scaffoldBlueprintFile(
   },
   editKey: string | null | undefined
 ) {
-  const url = withEditKey("/api/blueprints", editKey);
-  const response = await fetch(url, {
+  const response = await fetch("/api/blueprints", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getEditKeyHeaders(editKey),
+    },
     body: JSON.stringify(input),
   });
   if (!response.ok) {
@@ -107,10 +111,12 @@ async function renameBlueprintFile(
   },
   editKey: string | null | undefined
 ) {
-  const url = withEditKey("/api/blueprints", editKey);
-  const response = await fetch(url, {
+  const response = await fetch("/api/blueprints", {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...getEditKeyHeaders(editKey),
+    },
     body: JSON.stringify(input),
   });
   if (!response.ok) {
@@ -122,11 +128,9 @@ async function persistImage(
   record: EditableImageRecord,
   editKey: string | null | undefined
 ): Promise<boolean> {
-  if (!editKey) {
-    return false;
-  }
-  const src = withEditKey(record.src, editKey);
-  return persistEditableImage({ ...record, src });
+  return persistEditableImage(record, {
+    headers: getEditKeyHeaders(editKey),
+  });
 }
 
 function parseLoadedGame(payload: unknown): LoadedGame {
@@ -165,12 +169,4 @@ function getCanEdit(payload: unknown): boolean {
     return false;
   }
   return payload.canEdit === true;
-}
-
-function withEditKey(path: string, editKey: string | null | undefined): string {
-  if (!editKey) {
-    return path;
-  }
-  const divider = path.includes("?") ? "&" : "?";
-  return `${path}${divider}edit=${encodeURIComponent(editKey)}`;
 }
