@@ -6,9 +6,9 @@ import {
 } from "@/lib/games";
 import { isNotFoundError, isRecord } from "@/engine/types";
 import { getErrorMessage } from "@/lib/errors";
-import { extractEditKeyFromUrl } from "@/lib/editKey";
+import { extractEditKeyFromRequest } from "@/lib/editKey";
 import { normalizeImageFileName } from "@/lib/images";
-import { requireEditAccess } from "@/lib/editAccess";
+import { canEditGame } from "@/lib/editAccess";
 
 type RouteContext = {
   params: Promise<{ game: string }>;
@@ -45,10 +45,13 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "Invalid game name" }, { status: 400 });
   }
 
-  const editKey = extractEditKeyFromUrl(request);
-  const accessResponse = await requireEditAccess(slug, editKey);
-  if (accessResponse) {
-    return accessResponse;
+  const editKey = extractEditKeyFromRequest(request);
+  const canEdit = await canEditGame(request, slug, editKey);
+  if (!canEdit) {
+    return NextResponse.json(
+      { error: "Edit access required" },
+      { status: 403 }
+    );
   }
 
   const payload = await request.json().catch(() => null);

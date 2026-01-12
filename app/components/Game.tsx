@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { Toolbar } from "@/components/Toolbar";
 import { EditPanel } from "@/components/EditPanel";
 import { GameCanvas } from "@/components/GameCanvas";
@@ -13,24 +12,24 @@ import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { createBlueprint, getNextBlueprintName } from "@/lib/blueprints";
 import { getColorOptions, getRandomColorOption } from "@/components/ColorGrid";
 import { createThingFromBlueprint } from "@/engine/blueprints";
+import { getStoredEditKeyForGame } from "@/lib/editKeyStorage";
 
 type GameProps = {
   gameDirectory: string;
 };
 
 export function Game({ gameDirectory }: GameProps) {
-  const searchParams = useSearchParams();
-  const rawEditKey = searchParams.get("edit");
-  const editKey = rawEditKey ? rawEditKey.trim() : null;
-  const normalizedEditKey = editKey && editKey.length > 0 ? editKey : null;
   const [serverCanEdit, setServerCanEdit] = useState(false);
-  const canEdit = normalizedEditKey ? serverCanEdit : false;
-  const isReadOnly = !canEdit;
+  const canEdit = serverCanEdit;
+  const editKey = useMemo(
+    () => getStoredEditKeyForGame(gameDirectory),
+    [gameDirectory]
+  );
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { subscribe, engine } = useGame(canvasRef, gameDirectory, {
-    editKey: normalizedEditKey,
+    editKey,
     onEditAccess: setServerCanEdit,
-    isReadOnly,
+    isReadOnly: !canEdit,
   });
   const [blueprints] = subscribe<Blueprint[] | undefined>(["blueprints"]);
   const [things] = subscribe<RawThing[]>(["things"]);
@@ -83,7 +82,7 @@ export function Game({ gameDirectory }: GameProps) {
     });
   }, [engine]);
 
-  useKeyboardShortcuts({ engine, selectedThingIds, isReadOnly });
+  useKeyboardShortcuts({ engine, selectedThingIds, isReadOnly: !canEdit });
 
   const handleSelectBlueprint = (name: string) => {
     if (!canEdit) {
@@ -182,8 +181,8 @@ export function Game({ gameDirectory }: GameProps) {
         engine={engine}
         gameDirectory={gameDirectory}
         onSelectBlueprint={setActiveBlueprintName}
-        isReadOnly={isReadOnly}
-        editKey={normalizedEditKey}
+        isReadOnly={!canEdit}
+        editKey={editKey}
       >
         <GameCanvas canvasRef={canvasRef} />
       </DragAndDrop>

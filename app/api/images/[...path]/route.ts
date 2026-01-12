@@ -4,9 +4,9 @@ import path from "node:path";
 import { gameSlug } from "@/lib/games";
 import { isNotFoundError } from "@/engine/types";
 import { getErrorMessage } from "@/lib/errors";
-import { extractEditKeyFromUrl } from "@/lib/editKey";
+import { extractEditKeyFromRequest } from "@/lib/editKey";
 import { normalizeImageFileName } from "@/lib/images";
-import { requireEditAccess } from "@/lib/editAccess";
+import { canEditGame } from "@/lib/editAccess";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -84,10 +84,13 @@ export async function PUT(request: Request, context: RouteContext) {
     );
   }
 
-  const editKey = extractEditKeyFromUrl(request);
-  const accessResponse = await requireEditAccess(gameDirectory, editKey);
-  if (accessResponse) {
-    return accessResponse;
+  const editKey = extractEditKeyFromRequest(request);
+  const canEdit = await canEditGame(request, gameDirectory, editKey);
+  if (!canEdit) {
+    return NextResponse.json(
+      { error: "Edit access required" },
+      { status: 403 }
+    );
   }
 
   const contentType = request.headers.get("content-type") ?? "";
