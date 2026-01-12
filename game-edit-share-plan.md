@@ -38,4 +38,4 @@
 
 ## Validation checklist
 
-- `npx tsc`
+- `npm run typescript`
