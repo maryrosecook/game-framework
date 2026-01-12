@@ -1,6 +1,6 @@
 import { isRecord } from "@/engine/types";
 
-export type StoredEditKey = {
+type StoredEditKey = {
   gameDirectory: string;
   editKey: string;
 };
@@ -32,29 +32,6 @@ export function storeEditKeyForGame(
   );
   next.push({ gameDirectory: normalizedGame, editKey: normalizedKey });
   writeStoredEditKeys(next);
-}
-
-export function storeEditKeys(entries: StoredEditKey[]): void {
-  if (entries.length === 0) {
-    return;
-  }
-  const existing = readStoredEditKeys();
-  const merged = new Map<string, StoredEditKey>();
-  for (const entry of existing) {
-    merged.set(entry.gameDirectory, entry);
-  }
-  for (const entry of entries) {
-    const normalizedGame = normalizeValue(entry.gameDirectory);
-    const normalizedKey = normalizeValue(entry.editKey);
-    if (!normalizedGame || !normalizedKey) {
-      continue;
-    }
-    merged.set(normalizedGame, {
-      gameDirectory: normalizedGame,
-      editKey: normalizedKey,
-    });
-  }
-  writeStoredEditKeys([...merged.values()]);
 }
 
 function readStoredEditKeys(): StoredEditKey[] {
