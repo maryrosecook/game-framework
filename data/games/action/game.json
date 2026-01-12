@@ -108,6 +108,18 @@
       "blueprintName": "enemy",
       "width": 100,
       "height": 100
+    },
+    {
+      "id": "daf8g7ec2ks1",
+      "x": 943.5,
+      "y": 750.5,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "bullet",
+      "width": 7,
+      "height": 7
     }
   ],
   "blueprints": [
@@ -206,8 +218,8 @@
             {
               "action": "explode",
               "settings": {
-                "speed": 2,
-                "color": "#000000"
+                "speed": 6,
+                "color": "#ffd700"
               }
             }
           ]

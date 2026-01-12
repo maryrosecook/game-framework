@@ -1,4 +1,5 @@
 import { DragEvent } from "react";
+import { getEditKeyHeaders } from "@/lib/editKey";
 
 const PNG_ONLY_ERROR = "Only PNG files are supported.";
 
@@ -37,9 +38,10 @@ export async function uploadImageFile({
     formData.append("blueprintName", blueprintName);
   }
   formData.append("file", file);
-  const response = await fetch(withEditKey("/api/images", editKey), {
+  const response = await fetch("/api/images", {
     method: "POST",
     body: formData,
+    headers: getEditKeyHeaders(editKey),
   });
 
   const payload = (await response.json().catch(() => null)) as {
@@ -91,10 +93,13 @@ export async function uploadGameCoverImage({
   });
 
   const response = await fetch(
-    withEditKey(`/api/game-settings/${encodeURIComponent(gameDirectory)}`, editKey),
+    `/api/game-settings/${encodeURIComponent(gameDirectory)}`,
     {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...getEditKeyHeaders(editKey),
+      },
       body: JSON.stringify({ image: fileName }),
     }
   );
@@ -134,12 +139,4 @@ function isPng(file: File) {
     file.type === "image/png" ||
     file.name.toLowerCase().trim().endsWith(".png")
   );
-}
-
-function withEditKey(path: string, editKey: string | null | undefined): string {
-  if (!editKey) {
-    return path;
-  }
-  const divider = path.includes("?") ? "&" : "?";
-  return `${path}${divider}edit=${encodeURIComponent(editKey)}`;
 }

@@ -10,8 +10,8 @@ import {
 } from "@/lib/games";
 import type { GameFile } from "@/engine/types";
 import { z, type ZodType } from "zod";
-import { extractEditKeyFromUrl } from "@/lib/editKey";
-import { requireEditAccess } from "@/lib/editAccess";
+import { extractEditKeyFromRequest } from "@/lib/editKey";
+import { canEditGame } from "@/lib/editAccess";
 
 const ROOT = process.cwd();
 const GAMES_ROOT = path.join(ROOT, "data", "games");
@@ -113,10 +113,13 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-  const editKey = extractEditKeyFromUrl(request);
-  const accessResponse = await requireEditAccess(normalizedDirectory, editKey);
-  if (accessResponse) {
-    return accessResponse;
+  const editKey = extractEditKeyFromRequest(request);
+  const canEdit = await canEditGame(request, normalizedDirectory, editKey);
+  if (!canEdit) {
+    return NextResponse.json(
+      { error: "Edit access required" },
+      { status: 403 }
+    );
   }
 
   const slug = blueprintSlug(blueprintName || "blueprint");
@@ -161,10 +164,13 @@ export async function PUT(request: Request) {
       { status: 400 }
     );
   }
-  const editKey = extractEditKeyFromUrl(request);
-  const accessResponse = await requireEditAccess(normalizedDirectory, editKey);
-  if (accessResponse) {
-    return accessResponse;
+  const editKey = extractEditKeyFromRequest(request);
+  const canEdit = await canEditGame(request, normalizedDirectory, editKey);
+  if (!canEdit) {
+    return NextResponse.json(
+      { error: "Edit access required" },
+      { status: 403 }
+    );
   }
   if (previousName === nextName) {
     return NextResponse.json({ ok: true, renamed: false, updatedGame: false });

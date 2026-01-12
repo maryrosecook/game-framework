@@ -6,8 +6,13 @@ export type EditableImageRecord = {
   canvas: HTMLCanvasElement;
 };
 
+export type PersistEditableImageOptions = {
+  headers?: HeadersInit;
+};
+
 export type PersistEditableImage = (
-  record: EditableImageRecord
+  record: EditableImageRecord,
+  options?: PersistEditableImageOptions
 ) => Promise<boolean>;
 
 export class EditableImageStore {
@@ -121,14 +126,17 @@ export function createRecordFromSource(
 }
 
 export async function persistEditableImage(
-  record: EditableImageRecord
+  record: EditableImageRecord,
+  options: PersistEditableImageOptions = {}
 ): Promise<boolean> {
   const blob = await canvasToBlob(record.canvas);
   if (!blob) return false;
   try {
+    const headers = new Headers(options.headers ?? {});
+    headers.set("Content-Type", "image/png");
     const response = await fetch(record.src, {
       method: "PUT",
-      headers: { "Content-Type": "image/png" },
+      headers,
       body: blob,
     });
     if (!response.ok) {
