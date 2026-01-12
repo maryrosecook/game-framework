@@ -1,17 +1,13 @@
 "use client";
 
-import { DragEvent, MouseEvent, useEffect, useState } from "react";
+import { DragEvent, MouseEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { GameSummary } from "@/lib/games";
 import { getGameImageUrl } from "@/lib/images";
 import { GameCard } from "./GameCard";
 import { getDroppedPngFile, uploadGameCoverImage } from "@/lib/imageUploads";
 import { isRecord } from "@/engine/types";
-import {
-  getStoredEditKeyForGame,
-  storeEditKeyForGame,
-  storeEditKeys,
-} from "@/lib/editKeyStorage";
+import { getStoredEditKeyForGame, storeEditKeyForGame } from "@/lib/editKeyStorage";
 
 type HomeProps = {
   games: GameSummary[];
@@ -27,22 +23,6 @@ export function Home({ games }: HomeProps) {
   const [uploadErrors, setUploadErrors] = useState<
     Record<string, string | null>
   >({});
-
-  useEffect(() => {
-    const entries = gameCards.flatMap((game) => {
-      if (typeof game.editKey !== "string") {
-        return [];
-      }
-      const trimmed = game.editKey.trim();
-      if (!trimmed) {
-        return [];
-      }
-      return [{ gameDirectory: game.directory, editKey: trimmed }];
-    });
-    if (entries.length > 0) {
-      storeEditKeys(entries);
-    }
-  }, [gameCards]);
 
   function handleNavigate(
     game: GameSummary,
