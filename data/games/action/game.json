@@ -4,7 +4,7 @@
     {
       "id": "l1fl4fva8p74",
       "x": 987.859375,
-      "y": 324.28515625,
+      "y": 324.61328125,
       "z": 2,
       "angle": 0,
       "velocityX": 0,
@@ -152,10 +152,6 @@
                 "speed": 2,
                 "move": "turn"
               }
-            },
-            {
-              "action": "cameraFollow",
-              "settings": {}
             }
           ]
         }
