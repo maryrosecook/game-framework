@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { actions } from "@/engine/actions";
 import { createBehaviorForTrigger } from "@/engine/actions/behaviorActions";
 import {
@@ -424,6 +425,7 @@ function ActionCard({
   onRemove: () => void;
   onSettingChange: (key: string, value: ActionSettings[string]) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const definition = actions[actionKey];
   const label = actionLabelFromKey(actionKey);
   const resolvedSettings = definition
@@ -432,37 +434,52 @@ function ActionCard({
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-3 space-y-3">
-      <div className="flex items-center justify-between">
-        <div className="text-sm font-semibold text-slate-700">{label}</div>
-        <button
-          type="button"
-          className="flex h-6 w-6 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 cursor-pointer"
-          onClick={onRemove}
-          aria-label={`Remove ${label} action`}
-        >
-          ×
-        </button>
-      </div>
-      {!definition ? (
-        <p className="text-xs text-amber-600">Action definition missing.</p>
-      ) : Object.keys(definition.settings).length === 0 ? (
-        <p className="text-xs text-slate-500">No settings.</p>
-      ) : (
-        <div className="space-y-2">
-          {Object.keys(definition.settings).map((key) => (
-            <ActionSettingField
-              key={key}
-              actionKey={actionKey}
-              settingKey={key}
-              setting={definition.settings[key]}
-              resolvedSettings={resolvedSettings}
-              blueprintNames={blueprintNames}
-              blueprintColor={blueprintColor}
-              onChange={(value) => onSettingChange(key, value)}
-            />
-          ))}
-        </div>
-      )}
+      <button
+        type="button"
+        className="-mx-3 -mt-3 flex w-[calc(100%+1.5rem)] items-center justify-between px-3 pt-3 text-left text-sm font-semibold text-slate-700 cursor-pointer"
+        onClick={() => setIsOpen((open) => !open)}
+        aria-label={`${isOpen ? "Collapse" : "Expand"} ${label} action`}
+      >
+        <span>{label}</span>
+        {isOpen ? (
+          <ChevronDown className="h-4 w-4 text-slate-500" aria-hidden="true" />
+        ) : (
+          <ChevronRight className="h-4 w-4 text-slate-500" aria-hidden="true" />
+        )}
+      </button>
+      {isOpen ? (
+        <>
+          {!definition ? (
+            <p className="text-xs text-amber-600">Action definition missing.</p>
+          ) : Object.keys(definition.settings).length === 0 ? (
+            <p className="text-xs text-slate-500">No settings.</p>
+          ) : (
+            <div className="space-y-2">
+              {Object.keys(definition.settings).map((key) => (
+                <ActionSettingField
+                  key={key}
+                  actionKey={actionKey}
+                  settingKey={key}
+                  setting={definition.settings[key]}
+                  resolvedSettings={resolvedSettings}
+                  blueprintNames={blueprintNames}
+                  blueprintColor={blueprintColor}
+                  onChange={(value) => onSettingChange(key, value)}
+                />
+              ))}
+            </div>
+          )}
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="text-xs text-red-600 hover:text-red-700"
+              onClick={onRemove}
+            >
+              Delete
+            </button>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }
