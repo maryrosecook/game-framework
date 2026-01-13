@@ -1,0 +1,39 @@
+{
+  "id": 9,
+  "things": [
+    {
+      "id": "uah1d5wznx9v",
+      "x": 1369.671875,
+      "y": 496.01171875,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-1",
+      "width": 433.125,
+      "height": 337.21875
+    }
+  ],
+  "blueprints": [
+    {
+      "name": "blueprint-1",
+      "width": 100,
+      "height": 100,
+      "color": "#4b0082",
+      "images": [
+        "blueprint-1-paint-1768272633295.png"
+      ],
+      "shape": "rectangle",
+      "physicsType": "static",
+      "weight": 1,
+      "bounce": 0
+    }
+  ],
+  "camera": {
+    "x": 0,
+    "y": 0
+  },
+  "backgroundColor": "#ffffff",
+  "isGravityEnabled": false,
+  "image": null
+}

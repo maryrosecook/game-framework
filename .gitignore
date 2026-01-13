@@ -57,6 +57,8 @@ data/games/*
 !data/games/thomas-air-track/**
 !data/games/thomas-runaway-train/
 !data/games/thomas-runaway-train/**
+!data/games/youtube/
+!data/games/youtube/**
 data/games/*/blueprint-manifest.ts
 data/games/blueprint-manifest-index.ts
 data/editorSettings.json
