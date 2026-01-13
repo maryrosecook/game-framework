@@ -464,21 +464,28 @@ export function runBlueprintHandlers<T extends TriggerName>(
 
   for (const handler of handlers) {
     try {
-      if (trigger === "input" && handler.inputTrigger) {
-        if (!inputFrame) {
-          continue;
+      switch (trigger) {
+        case "input": {
+          if (handler.inputTrigger) {
+            if (!inputFrame) {
+              continue;
+            }
+            if (
+              !isInputTriggerActive(
+                handler.inputTrigger.key,
+                handler.inputTrigger.stage,
+                inputFrame
+              )
+            ) {
+              continue;
+            }
+          }
+          invoke(handler.fn);
+          break;
         }
-        if (
-          !isInputTriggerActive(
-            handler.inputTrigger.key,
-            handler.inputTrigger.stage,
-            inputFrame
-          )
-        ) {
-          continue;
-        }
+        default:
+          invoke(handler.fn);
       }
-      invoke(handler.fn);
     } catch (error) {
       console.warn(
         `Error running ${trigger} handler "${handler.name}" for blueprint "${
