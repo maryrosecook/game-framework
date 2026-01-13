@@ -5,7 +5,7 @@ import {
   RuntimeThing,
 } from "@/engine/types";
 import {
-  FOV_DEGREES,
+  HORIZONTAL_FOV_DEGREES,
   LASER_FLASH_DURATION_MS,
   NEAR_CLIP,
   PLAYER_SPEED_UNITS_PER_SECOND,
@@ -292,7 +292,8 @@ function findHitTarget(
   const basis = getPlayerBasis(playerData);
   const screen = game.gameState.screen;
   const focalLength =
-    (0.5 * screen.height) / Math.tan((FOV_DEGREES * Math.PI) / 360);
+    (0.5 * screen.width) /
+    Math.tan((HORIZONTAL_FOV_DEGREES * Math.PI) / 360);
   const screenCenter = {
     x: screen.width / 2,
     y: screen.height / 2,
