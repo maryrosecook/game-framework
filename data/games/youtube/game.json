@@ -3,15 +3,39 @@
   "things": [
     {
       "id": "uah1d5wznx9v",
-      "x": 1369.671875,
-      "y": 496.01171875,
+      "x": 815.1572265625,
+      "y": 529.7114190508191,
       "z": 1,
       "angle": 0,
       "velocityX": 0,
       "velocityY": 0,
       "blueprintName": "blueprint-1",
-      "width": 433.125,
-      "height": 337.21875
+      "width": 165.1357421875,
+      "height": 132.32983734959032
+    },
+    {
+      "id": "jijr7aw9v6rf",
+      "x": 19.9296875,
+      "y": 727.3203125,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-2",
+      "width": 1303.4296875,
+      "height": 48.28125
+    },
+    {
+      "id": "1r4ztabquf5u",
+      "x": 207,
+      "y": 522,
+      "z": 1,
+      "angle": 0,
+      "velocityX": 0,
+      "velocityY": 0,
+      "blueprintName": "blueprint-3",
+      "width": 100,
+      "height": 100
     }
   ],
   "blueprints": [
@@ -24,9 +48,46 @@
         "blueprint-1-paint-1768272633295.png"
       ],
       "shape": "rectangle",
-      "physicsType": "static",
+      "physicsType": "dynamic",
       "weight": 1,
       "bounce": 0
+    },
+    {
+      "name": "blueprint-2",
+      "width": 100,
+      "height": 100,
+      "color": "#ffffff",
+      "shape": "rectangle",
+      "physicsType": "static",
+      "weight": 1,
+      "bounce": 0,
+      "images": [
+        "blueprint-2-paint-1768284367557.png"
+      ]
+    },
+    {
+      "name": "blueprint-3",
+      "width": 100,
+      "height": 100,
+      "color": "#ff8c00",
+      "shape": "rectangle",
+      "physicsType": "dynamic",
+      "weight": 1,
+      "bounce": 0,
+      "behaviors": [
+        {
+          "trigger": "update",
+          "actions": [
+            {
+              "action": "moveWithArrows",
+              "settings": {
+                "move": "sideways",
+                "speed": 2
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "camera": {
@@ -34,6 +95,6 @@
     "y": 0
   },
   "backgroundColor": "#ffffff",
-  "isGravityEnabled": false,
+  "isGravityEnabled": true,
   "image": null
 }
