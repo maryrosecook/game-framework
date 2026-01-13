@@ -1,10 +1,7 @@
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { actions } from "@/engine/actions";
 import { createBehaviorForTrigger } from "@/engine/actions/behaviorActions";
 import {
-  ActionSetting,
-  ActionSettingEnum,
   ActionSettings,
   BehaviorAction,
   Blueprint,
@@ -14,23 +11,12 @@ import {
   InputKey,
   InputTriggerKey,
   InputTriggerStage,
-  SPAWN_INIT_PROPERTIES,
-  SpawnInitAssignment,
-  SpawnInitAssignments,
-  SpawnInitProperty,
-  SpawnInitValue,
   TriggerName,
   isInputTriggerKey,
-  isSpawnInitAssignments,
-  isSpawnInitProperty,
   isInputTriggerStage,
 } from "@/engine/types";
-import {
-  getDefaultActionSettings,
-  resolveActionSettings,
-} from "@/engine/actions/settings";
-import { ColorSelect, ColorSelectOption } from "@/components/ColorSelect";
-import { getColorOptions } from "@/lib/colors";
+import { getDefaultActionSettings } from "@/engine/actions/settings";
+import { ActionCard, actionLabelFromKey } from "@/components/ActionCard";
 
 const TRIGGERS: TriggerName[] = ["create", "input", "update", "collision"];
 
@@ -46,9 +32,6 @@ const SELECT_CLASS =
 
 const INPUT_SELECT_CLASS =
   "select-chevron rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-slate-400 cursor-pointer";
-
-const INLINE_INPUT_CLASS =
-  "rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 outline-none focus:border-slate-400";
 
 const INPUT_KEY_LABELS: Record<InputKey, string> = {
   arrowLeft: "Arrow Left",
@@ -78,19 +61,6 @@ const INPUT_STAGE_OPTIONS: Array<{
 }> = [
   { value: "press", label: "Press" },
   { value: "hold", label: "Hold" },
-];
-
-const SPAWN_INIT_PROPERTY_OPTIONS = SPAWN_INIT_PROPERTIES.map((property) => ({
-  value: property,
-  label: humanizeKey(property),
-}));
-
-const SPAWN_INIT_VALUE_TYPE_OPTIONS: Array<{
-  value: SpawnInitValue["type"];
-  label: string;
-}> = [
-  { value: "literal", label: "Number" },
-  { value: "source", label: "Source" },
 ];
 
 type ActionTabProps = {
@@ -241,34 +211,103 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
 
   function handleInputKeyChange(index: number, key: InputTriggerKey) {
     const target = behaviors[index];
-    if (!target || target.trigger !== "input") {
+    if (!target) {
       return;
     }
-    const nextBehaviors = behaviors.map((behavior, idx) =>
-      idx === index ? { ...behavior, key } : behavior
-    );
-    dispatch({
-      type: "setBlueprintProperty",
-      blueprintName: blueprint.name,
-      property: "behaviors",
-      value: nextBehaviors,
-    });
+    switch (target.trigger) {
+      case "input": {
+        const nextBehaviors = behaviors.map((behavior, idx) =>
+          idx === index ? { ...behavior, key } : behavior
+        );
+        dispatch({
+          type: "setBlueprintProperty",
+          blueprintName: blueprint.name,
+          property: "behaviors",
+          value: nextBehaviors,
+        });
+        return;
+      }
+      case "create":
+      case "update":
+      case "collision":
+        return;
+    }
   }
 
   function handleInputStageChange(index: number, stage: InputTriggerStage) {
     const target = behaviors[index];
-    if (!target || target.trigger !== "input") {
+    if (!target) {
       return;
     }
-    const nextBehaviors = behaviors.map((behavior, idx) =>
-      idx === index ? { ...behavior, stage } : behavior
-    );
-    dispatch({
-      type: "setBlueprintProperty",
-      blueprintName: blueprint.name,
-      property: "behaviors",
-      value: nextBehaviors,
-    });
+    switch (target.trigger) {
+      case "input": {
+        const nextBehaviors = behaviors.map((behavior, idx) =>
+          idx === index ? { ...behavior, stage } : behavior
+        );
+        dispatch({
+          type: "setBlueprintProperty",
+          blueprintName: blueprint.name,
+          property: "behaviors",
+          value: nextBehaviors,
+        });
+        return;
+      }
+      case "create":
+      case "update":
+      case "collision":
+        return;
+    }
+  }
+
+  function renderTriggerInputs(
+    behavior: BlueprintBehaviors[number],
+    index: number
+  ) {
+    switch (behavior.trigger) {
+      case "input":
+        return (
+          <>
+            <select
+              className={INPUT_SELECT_CLASS}
+              value={behavior.key}
+              aria-label="Input key"
+              onChange={(event) => {
+                const selected = event.target.value;
+                if (isInputTriggerKey(selected)) {
+                  handleInputKeyChange(index, selected);
+                }
+              }}
+            >
+              {INPUT_KEY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <select
+              className={INPUT_SELECT_CLASS}
+              value={behavior.stage}
+              aria-label="Input stage"
+              onChange={(event) => {
+                const selected = event.target.value;
+                if (isInputTriggerStage(selected)) {
+                  handleInputStageChange(index, selected);
+                }
+              }}
+            >
+              {INPUT_STAGE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </>
+        );
+      case "create":
+      case "update":
+      case "collision":
+        return null;
+    }
   }
 
   return (
@@ -312,44 +351,7 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
                     </option>
                   ))}
                 </select>
-                {behavior.trigger === "input" ? (
-                  <>
-                    <select
-                      className={INPUT_SELECT_CLASS}
-                      value={behavior.key}
-                      aria-label="Input key"
-                      onChange={(event) => {
-                        const selected = event.target.value;
-                        if (isInputTriggerKey(selected)) {
-                          handleInputKeyChange(index, selected);
-                        }
-                      }}
-                    >
-                      {INPUT_KEY_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    <select
-                      className={INPUT_SELECT_CLASS}
-                      value={behavior.stage}
-                      aria-label="Input stage"
-                      onChange={(event) => {
-                        const selected = event.target.value;
-                        if (isInputTriggerStage(selected)) {
-                          handleInputStageChange(index, selected);
-                        }
-                      }}
-                    >
-                      {INPUT_STAGE_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                ) : null}
+                {renderTriggerInputs(behavior, index)}
               </div>
               {behavior.actions.length === 0 ? (
                 <button
@@ -410,445 +412,10 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
   );
 }
 
-function ActionCard({
-  actionKey,
-  behaviorAction,
-  blueprintNames,
-  blueprintColor,
-  onRemove,
-  onSettingChange,
-}: {
-  actionKey: string;
-  behaviorAction: BehaviorAction;
-  blueprintNames: string[];
-  blueprintColor: string;
-  onRemove: () => void;
-  onSettingChange: (key: string, value: ActionSettings[string]) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const definition = actions[actionKey];
-  const label = actionLabelFromKey(actionKey);
-  const resolvedSettings = definition
-    ? resolveActionSettings(definition.settings, behaviorAction.settings)
-    : {};
-
-  return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3 space-y-3">
-      <button
-        type="button"
-        className="-mx-3 -mt-3 flex w-[calc(100%+1.5rem)] items-center justify-between px-3 pt-3 text-left text-sm font-semibold text-slate-700 cursor-pointer"
-        onClick={() => setIsOpen((open) => !open)}
-        aria-label={`${isOpen ? "Collapse" : "Expand"} ${label} action`}
-      >
-        <span>{label}</span>
-        {isOpen ? (
-          <ChevronDown className="h-4 w-4 text-slate-500" aria-hidden="true" />
-        ) : (
-          <ChevronRight className="h-4 w-4 text-slate-500" aria-hidden="true" />
-        )}
-      </button>
-      {isOpen ? (
-        <>
-          {!definition ? (
-            <p className="text-xs text-amber-600">Action definition missing.</p>
-          ) : Object.keys(definition.settings).length === 0 ? (
-            <p className="text-xs text-slate-500">No settings.</p>
-          ) : (
-            <div className="space-y-2">
-              {Object.keys(definition.settings).map((key) => (
-                <ActionSettingField
-                  key={key}
-                  actionKey={actionKey}
-                  settingKey={key}
-                  setting={definition.settings[key]}
-                  resolvedSettings={resolvedSettings}
-                  blueprintNames={blueprintNames}
-                  blueprintColor={blueprintColor}
-                  onChange={(value) => onSettingChange(key, value)}
-                />
-              ))}
-            </div>
-          )}
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="text-xs text-red-600 hover:text-red-700"
-              onClick={onRemove}
-            >
-              Delete
-            </button>
-          </div>
-        </>
-      ) : null}
-    </div>
-  );
-}
-
-function ActionSettingField({
-  actionKey,
-  settingKey,
-  setting,
-  resolvedSettings,
-  blueprintNames,
-  blueprintColor,
-  onChange,
-}: {
-  actionKey: string;
-  settingKey: string;
-  setting: ActionSetting;
-  resolvedSettings: ActionSettings;
-  blueprintNames: string[];
-  blueprintColor: string;
-  onChange: (value: ActionSettings[string]) => void;
-}) {
-  const currentValue = resolvedSettings[settingKey];
-
-  if (setting.kind === "boolean") {
-    const checked = typeof currentValue === "boolean" ? currentValue : false;
-    return (
-      <label className="flex items-center gap-2 text-xs text-slate-700">
-        <input
-          type="checkbox"
-          className="h-4 w-4 rounded border-slate-300 accent-slate-900"
-          checked={checked}
-          onChange={(event) => onChange(event.target.checked)}
-        />
-        {humanizeKey(settingKey)}
-      </label>
-    );
-  }
-
-  if (setting.kind === "number") {
-    const value = typeof currentValue === "number" ? currentValue : 0;
-    return (
-      <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
-        {humanizeKey(settingKey)}
-        <input
-          type="number"
-          className={`w-full ${INLINE_INPUT_CLASS}`}
-          value={value}
-          min={setting.min}
-          max={setting.max}
-          step={setting.step}
-          onChange={(event) => {
-            const nextValue = Number(event.target.value);
-            if (!Number.isFinite(nextValue)) {
-              return;
-            }
-            onChange(nextValue);
-          }}
-        />
-      </label>
-    );
-  }
-
-  if (setting.kind === "string") {
-    const value = typeof currentValue === "string" ? currentValue : "";
-    return (
-      <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
-        {humanizeKey(settingKey)}
-        {setting.isSingleLine ? (
-          <input
-            type="text"
-            className={`w-full ${INLINE_INPUT_CLASS}`}
-            value={value}
-            maxLength={setting.maxLength}
-            placeholder={setting.placeholder}
-            onChange={(event) => onChange(event.target.value)}
-          />
-        ) : (
-          <textarea
-            className={`w-full ${INLINE_INPUT_CLASS} min-h-[96px] resize-y`}
-            value={value}
-            maxLength={setting.maxLength}
-            placeholder={setting.placeholder}
-            onChange={(event) => onChange(event.target.value)}
-          />
-        )}
-      </label>
-    );
-  }
-
-  if (setting.kind === "enum") {
-    const value = typeof currentValue === "string" ? currentValue : "";
-    if (actionKey === "explode" && settingKey === "color") {
-      const options = getExplodeColorOptions(blueprintColor);
-      const selected = value || options[0]?.value || "";
-      return (
-        <ColorSelect
-          label={humanizeKey(settingKey)}
-          value={selected}
-          options={options}
-          onChange={onChange}
-        />
-      );
-    }
-    const options = getEnumOptions(
-      actionKey,
-      settingKey,
-      setting,
-      blueprintNames,
-      value
-    );
-    const isMissingBlueprint =
-      actionKey === "spawnObject" &&
-      settingKey === "blueprint" &&
-      value.length > 0 &&
-      !blueprintNames.includes(value);
-
-    return (
-      <div className="space-y-1">
-        <label className="flex flex-col gap-1 text-xs uppercase tracking-wide text-slate-500">
-          {humanizeKey(settingKey)}
-          <select
-            className={SELECT_CLASS}
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-          >
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        {isMissingBlueprint ? (
-          <p className="text-xs text-amber-600">
-            Saved blueprint no longer exists.
-          </p>
-        ) : null}
-      </div>
-    );
-  }
-
-  if (setting.kind === "spawnInit") {
-    const value = isSpawnInitAssignments(currentValue)
-      ? currentValue
-      : setting.default;
-    return (
-      <SpawnInitSettingField
-        assignments={value}
-        onChange={onChange}
-      />
-    );
-  }
-
-  return null;
-}
-
-function SpawnInitSettingField({
-  assignments,
-  onChange,
-}: {
-  assignments: SpawnInitAssignments;
-  onChange: (value: SpawnInitAssignments) => void;
-}) {
-  const handleAdd = () => {
-    const defaultProperty: SpawnInitProperty = "angle";
-    const nextAssignment: SpawnInitAssignment = {
-      property: defaultProperty,
-      value: { type: "source", literal: 0 },
-    };
-    onChange([...assignments, nextAssignment]);
-  };
-
-  const handleRemove = (index: number) => {
-    onChange(assignments.filter((_, idx) => idx !== index));
-  };
-
-  const handlePropertyChange = (index: number, property: SpawnInitProperty) => {
-    onChange(
-      assignments.map((assignment, idx) =>
-        idx === index ? { ...assignment, property } : assignment
-      )
-    );
-  };
-
-  const handleValueTypeChange = (
-    index: number,
-    valueType: SpawnInitValue["type"]
-  ) => {
-    onChange(
-      assignments.map((assignment, idx) => {
-        if (idx !== index) {
-          return assignment;
-        }
-        return {
-          ...assignment,
-          value: {
-            type: valueType,
-            literal: assignment.value.literal ?? 0,
-          },
-        };
-      })
-    );
-  };
-
-  const handleLiteralValueChange = (index: number, value: number) => {
-    onChange(
-      assignments.map((assignment, idx) => {
-        if (idx !== index || assignment.value.type !== "literal") {
-          return assignment;
-        }
-        return {
-          ...assignment,
-          value: { type: "literal", literal: value },
-        };
-      })
-    );
-  };
-
-  return (
-    <div className="space-y-2">
-      {assignments.length === 0 ? (
-        <p className="text-xs text-slate-500">No vars yet.</p>
-      ) : (
-        <div className="space-y-2">
-          {assignments.map((assignment, index) => (
-            <div
-              key={`${assignment.property}-${index}`}
-              className="flex items-center gap-2"
-            >
-              <select
-                className={`${INPUT_SELECT_CLASS} flex-1 basis-0 min-w-0`}
-                value={assignment.property}
-                aria-label="Spawn property"
-                onChange={(event) => {
-                  const selected = event.target.value;
-                  if (isSpawnInitProperty(selected)) {
-                    handlePropertyChange(index, selected);
-                  }
-                }}
-              >
-                {SPAWN_INIT_PROPERTY_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <select
-                className={`${INPUT_SELECT_CLASS} flex-1 basis-0 min-w-0`}
-                value={assignment.value.type}
-                aria-label="Spawn value type"
-                onChange={(event) => {
-                  const selected = event.target.value;
-                  if (isSpawnInitValueType(selected)) {
-                    handleValueTypeChange(index, selected);
-                  }
-                }}
-              >
-                {SPAWN_INIT_VALUE_TYPE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              {assignment.value.type === "literal" ? (
-                <input
-                  type="number"
-                  className={`${INLINE_INPUT_CLASS} flex-1 basis-0 min-w-0`}
-                  value={assignment.value.literal ?? 0}
-                  aria-label="Spawn number value"
-                  onChange={(event) => {
-                    const nextValue = Number(event.target.value);
-                    if (!Number.isFinite(nextValue)) {
-                      return;
-                    }
-                    handleLiteralValueChange(index, nextValue);
-                  }}
-                />
-              ) : null}
-              <button
-                type="button"
-                className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 cursor-pointer"
-                aria-label="Remove spawn init"
-                onClick={() => handleRemove(index)}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-      <button
-        type="button"
-        className="text-xs font-medium text-slate-600 hover:text-slate-900"
-        onClick={handleAdd}
-      >
-        + Add var
-      </button>
-    </div>
-  );
-}
-
-function getEnumOptions(
-  actionKey: string,
-  settingKey: string,
-  setting: ActionSettingEnum,
-  blueprintNames: string[],
-  currentValue: string
-) {
-  if (actionKey === "spawnObject" && settingKey === "blueprint") {
-    const options: { label: string; value: string }[] = [
-      { label: "Select blueprint", value: "" },
-    ];
-    if (currentValue && !blueprintNames.includes(currentValue)) {
-      options.push({
-        label: `${currentValue} (missing)`,
-        value: currentValue,
-      });
-    }
-    for (const name of blueprintNames) {
-      options.push({ label: name, value: name });
-    }
-    return options;
-  }
-
-  return setting.options.map((option) => ({ label: option, value: option }));
-}
-
-function getExplodeColorOptions(blueprintColor: string): ColorSelectOption[] {
-  const resolvedBlueprintColor = blueprintColor || "#888888";
-  const options: ColorSelectOption[] = [
-    {
-      value: "blueprint",
-      label: "Blueprint",
-      swatch: resolvedBlueprintColor,
-    },
-  ];
-  for (const color of getColorOptions()) {
-    options.push({ value: color, label: color, swatch: color });
-  }
-  return options;
-}
-
 function getActionOptions(trigger: TriggerName) {
   return Object.keys(actions)
     .filter((key) => actions[key].allowedTriggers.includes(trigger))
     .map((key) => ({ value: key, label: actionLabelFromKey(key) }));
-}
-
-function actionLabelFromKey(key: string) {
-  if (key === "ai") {
-    return "AI Action";
-  }
-  return humanizeKey(key);
-}
-
-function sentenceCase(value: string) {
-  if (value.length === 0) {
-    return value;
-  }
-  return value[0].toUpperCase() + value.slice(1);
-}
-
-function humanizeKey(value: string) {
-  const withSpaces = value.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
-  return sentenceCase(withSpaces);
-}
-
-function isSpawnInitValueType(value: string): value is SpawnInitValue["type"] {
-  return SPAWN_INIT_VALUE_TYPE_OPTIONS.some((option) => option.value === value);
 }
 
 function isTriggerName(value: string): value is TriggerName {
