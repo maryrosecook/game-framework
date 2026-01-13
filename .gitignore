@@ -39,8 +39,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 data/games/*
-!data/games/action/
-!data/games/action/**
+!data/games/dogfight/
+!data/games/dogfight/**
 !data/games/block/
 !data/games/block/**
 !data/games/commando/
