@@ -1,5 +1,5 @@
 import { BlueprintData, GameContext, KeyState, RuntimeThing } from "@/engine/types";
-import { FOV_DEGREES, NEAR_CLIP, TARGET_WORLD_SIZE } from "./constants";
+import { HORIZONTAL_FOV_DEGREES, NEAR_CLIP, TARGET_WORLD_SIZE } from "./constants";
 import { getPlayerBasis } from "./player";
 import { Vector3, dot3, subtract3 } from "./math";
 import { PlayerData, TargetData } from "./types";
@@ -62,7 +62,8 @@ export default function createTargetBlueprint(data: BlueprintData<TargetData>) {
       const screen = game.gameState.screen;
       const canvas = ctx.canvas;
       const focalLength =
-        (0.5 * screen.height) / Math.tan((FOV_DEGREES * Math.PI) / 360);
+        (0.5 * screen.width) /
+        Math.tan((HORIZONTAL_FOV_DEGREES * Math.PI) / 360);
       const projectedVertices = projectVertices(
         cameraVertices,
         screen,
