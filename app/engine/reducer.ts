@@ -1,5 +1,5 @@
 import { Blueprint, GameAction, RawThing, RawGameState } from "./types";
-import { renameSpawnObjectBlueprints } from "./actions/behaviorActions";
+import { renameBehaviorBlueprints } from "./actions/behaviorActions";
 
 export function reduceState(
   state: RawGameState,
@@ -154,7 +154,7 @@ function renameBlueprint(state: RawGameState, previous: string, next: string) {
   }
   const blueprints = state.blueprints.map((bp) => {
     const renamed = bp.name === previous ? { ...bp, name: next } : bp;
-    const updatedBehaviors = renameSpawnObjectBlueprints(
+    const updatedBehaviors = renameBehaviorBlueprints(
       renamed.behaviors,
       previous,
       next

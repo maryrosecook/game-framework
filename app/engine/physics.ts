@@ -521,13 +521,15 @@ function notifyCollision(
     "collision",
     blueprintA,
     blueprintA?.collision,
-    (handler) => handler(a, b, game)
+    (handler) => handler(a, b, game),
+    { otherThing: b }
   );
   runBlueprintHandlers(
     "collision",
     blueprintB,
     blueprintB?.collision,
-    (handler) => handler(b, a, game)
+    (handler) => handler(b, a, game),
+    { otherThing: a }
   );
 }
 
