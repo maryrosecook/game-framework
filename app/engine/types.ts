@@ -662,45 +662,58 @@ export function isBlueprintBehavior(
     return false;
   }
   if (typeof value.trigger !== "string" || !isTriggerName(value.trigger)) {
+    console.log("hereeee")
     return false;
   }
   if (value.trigger === "input") {
     if (!("key" in value)) {
+          console.log("hereeee")
       return false;
     }
     if (!("stage" in value)) {
+          console.log("hereeee")
       return false;
     }
     if (!isInputTriggerKey(value.key)) {
+          console.log("hereeee")
       return false;
     }
     if (!isInputTriggerStage(value.stage)) {
+          console.log("hereeee")
       return false;
     }
     if ("blueprint" in value) {
+          console.log("hereeee")
       return false;
     }
   } else if (value.trigger === "collision") {
     if ("key" in value) {
+          console.log("hereeee!!!!!")
       return false;
     }
     if ("stage" in value) {
+          console.log("hereeee")
       return false;
     }
     if (!("blueprint" in value)) {
+          console.log("hereeee!!!!!!", value)
       return false;
     }
     if (!isCollisionTriggerBlueprint(value.blueprint)) {
+          console.log("hereeee")
       return false;
     }
   } else {
     if ("key" in value) {
+          console.log("hereeee")
       return false;
     }
     if ("stage" in value) {
+          console.log("hereeee")
       return false;
     }
     if ("blueprint" in value) {
+          console.log("hereeee")
       return false;
     }
   }
@@ -760,12 +773,15 @@ export function isThing(value: unknown): value is PersistedThing {
 
 export function isBlueprintData(value: unknown): value is BlueprintData {
   if (!isRecord(value)) {
+    console.log("her")
     return false;
   }
   if ("z" in value) {
+        console.log("her")
     return false;
   }
   if ("image" in value) {
+        console.log("her")
     return false;
   }
   if (
@@ -776,13 +792,16 @@ export function isBlueprintData(value: unknown): value is BlueprintData {
     !isShape(value.shape) ||
     !isPhysicsType(value.physicsType)
   ) {
+        console.log("her")
     return false;
   }
   if (value.images !== undefined) {
     if (!Array.isArray(value.images)) {
+          console.log("her")
       return false;
     }
     if (!value.images.every((entry) => typeof entry === "string")) {
+          console.log("her")
       return false;
     }
   }
@@ -791,6 +810,7 @@ export function isBlueprintData(value: unknown): value is BlueprintData {
     !Number.isFinite(value.weight) ||
     value.weight < MIN_BLUEPRINT_WEIGHT
   ) {
+        console.log("her")
     return false;
   }
   if (
@@ -799,9 +819,11 @@ export function isBlueprintData(value: unknown): value is BlueprintData {
     value.bounce < 0 ||
     value.bounce > 1
   ) {
+        console.log("her")
     return false;
   }
   if (value.behaviors !== undefined && !isBlueprintBehaviors(value.behaviors)) {
+        console.log("her", value.behaviors)
     return false;
   }
   return true;
@@ -829,6 +851,14 @@ export function isGameFile(value: unknown): value is GameFile {
     value.image === null ||
     typeof value.image === "string";
   const hasGravitySetting = typeof value.isGravityEnabled === "boolean";
+
+    console.log(hasValidId ,
+    hasCamera ,
+    hasThings ,
+    hasBlueprints ,
+    hasBackgroundColor ,
+    hasValidImage ,
+    hasGravitySetting)
   return (
     hasValidId &&
     hasCamera &&

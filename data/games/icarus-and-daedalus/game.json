@@ -725,6 +725,7 @@
         },
         {
           "trigger": "collision",
+          "blueprint": "any",
           "actions": [
             {
               "action": "destroy",
@@ -787,6 +788,16 @@
               }
             }
           ]
+        },
+        {
+          "trigger": "collision",
+          "blueprint": "blueprint-14",
+          "actions": [
+            {
+              "action": "destroy",
+              "settings": {}
+            }
+          ]
         }
       ]
     },
@@ -805,6 +816,7 @@
       "behaviors": [
         {
           "trigger": "collision",
+          "blueprint": "any",
           "actions": [
             {
               "action": "destroy",
