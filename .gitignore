@@ -59,6 +59,8 @@ data/games/*
 !data/games/thomas-runaway-train/**
 !data/games/youtube/
 !data/games/youtube/**
+!data/games/icarus-and-daedalus/
+!data/games/icarus-and-daedalus/**
 data/games/*/blueprint-manifest.ts
 data/games/blueprint-manifest-index.ts
 data/editorSettings.json
