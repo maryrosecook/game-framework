@@ -9,6 +9,8 @@ import {
   BlueprintDefinition,
   BlueprintKind,
   BlueprintModule,
+  COLLISION_TRIGGER_ANY,
+  CollisionTriggerBlueprint,
   DEFAULT_THING_Z,
   GameContext,
   INPUT_KEYS,
@@ -276,6 +278,7 @@ type TriggerBehaviorAction = {
   action: BehaviorAction;
   inputKey?: InputTriggerKey;
   inputStage?: InputTriggerStage;
+  collisionBlueprint?: CollisionTriggerBlueprint;
 };
 
 function getActionsForTrigger(
@@ -294,8 +297,10 @@ function getActionsForTrigger(
     const inputKey = behavior.trigger === "input" ? behavior.key : undefined;
     const inputStage =
       behavior.trigger === "input" ? behavior.stage : undefined;
+    const collisionBlueprint =
+      behavior.trigger === "collision" ? behavior.blueprint : undefined;
     for (const action of behavior.actions) {
-      actions.push({ action, inputKey, inputStage });
+      actions.push({ action, inputKey, inputStage, collisionBlueprint });
     }
   }
   return actions;
@@ -371,6 +376,7 @@ type CollectedHandler<T extends TriggerName> = {
   name: string;
   fn: TriggerHandler<T>;
   inputTrigger?: { key: InputTriggerKey; stage: InputTriggerStage };
+  collisionBlueprint?: CollisionTriggerBlueprint;
 };
 
 function collectBlueprintHandlers<T extends TriggerName>(
@@ -404,6 +410,7 @@ function collectBlueprintHandlers<T extends TriggerName>(
       behaviorAction.settings
     );
     let inputTrigger: { key: InputTriggerKey; stage: InputTriggerStage } | undefined;
+    let collisionBlueprint: CollisionTriggerBlueprint | undefined;
     if (trigger === "input") {
       if (
         behaviorEntry.inputKey === undefined ||
@@ -418,6 +425,8 @@ function collectBlueprintHandlers<T extends TriggerName>(
         key: behaviorEntry.inputKey,
         stage: behaviorEntry.inputStage,
       };
+    } else if (trigger === "collision") {
+      collisionBlueprint = behaviorEntry.collisionBlueprint;
     }
     handlers.push({
       name: behaviorAction.action,
@@ -427,20 +436,36 @@ function collectBlueprintHandlers<T extends TriggerName>(
         resolvedSettings
       ),
       ...(inputTrigger ? { inputTrigger } : {}),
+      ...(collisionBlueprint !== undefined
+        ? { collisionBlueprint }
+        : {}),
     });
   }
 
   return handlers;
 }
 
+type RunBlueprintHandlersContext =
+  | { inputFrame: InputFrameState }
+  | { otherThing: RuntimeThing };
+
 export function runBlueprintHandlers(
   trigger: "input",
   blueprint: Blueprint | undefined,
   blueprintHandler: TriggerHandler<"input"> | undefined,
   invoke: (handler: TriggerHandler<"input">) => void,
-  inputFrame: InputFrameState
+  context: { inputFrame: InputFrameState }
 ): boolean;
-export function runBlueprintHandlers<T extends Exclude<TriggerName, "input">>(
+export function runBlueprintHandlers(
+  trigger: "collision",
+  blueprint: Blueprint | undefined,
+  blueprintHandler: TriggerHandler<"collision"> | undefined,
+  invoke: (handler: TriggerHandler<"collision">) => void,
+  context: { otherThing: RuntimeThing }
+): boolean;
+export function runBlueprintHandlers<
+  T extends Exclude<TriggerName, "input" | "collision">
+>(
   trigger: T,
   blueprint: Blueprint | undefined,
   blueprintHandler: TriggerHandler<T> | undefined,
@@ -451,7 +476,7 @@ export function runBlueprintHandlers<T extends TriggerName>(
   blueprint: Blueprint | undefined,
   blueprintHandler: TriggerHandler<T> | undefined,
   invoke: (handler: TriggerHandler<T>) => void,
-  inputFrame?: InputFrameState
+  context?: RunBlueprintHandlersContext
 ): boolean {
   const handlers = collectBlueprintHandlers(
     trigger,
@@ -461,6 +486,10 @@ export function runBlueprintHandlers<T extends TriggerName>(
   if (handlers.length === 0) {
     return false;
   }
+  const inputFrame =
+    context && "inputFrame" in context ? context.inputFrame : undefined;
+  const otherThing =
+    context && "otherThing" in context ? context.otherThing : undefined;
 
   for (const handler of handlers) {
     try {
@@ -477,6 +506,21 @@ export function runBlueprintHandlers<T extends TriggerName>(
                 inputFrame
               )
             ) {
+              continue;
+            }
+          }
+          invoke(handler.fn);
+          break;
+        }
+        case "collision": {
+          if (!otherThing) {
+            continue;
+          }
+          if (
+            handler.collisionBlueprint &&
+            handler.collisionBlueprint !== COLLISION_TRIGGER_ANY
+          ) {
+            if (otherThing.blueprintName !== handler.collisionBlueprint) {
               continue;
             }
           }

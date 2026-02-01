@@ -50,6 +50,12 @@ export type InputTriggerKey = InputKey | "any";
 
 export type InputTriggerStage = "press" | "hold";
 
+export const COLLISION_TRIGGER_ANY = "any";
+
+export type CollisionTriggerBlueprint =
+  | typeof COLLISION_TRIGGER_ANY
+  | string;
+
 export type TriggerName = "create" | "input" | "update" | "collision";
 
 export type ActionSettingNumber = {
@@ -145,12 +151,21 @@ export type InputBlueprintBehavior = {
   actions: BehaviorAction[];
 };
 
-export type NonInputBlueprintBehavior = {
-  trigger: Exclude<TriggerName, "input">;
+export type CollisionBlueprintBehavior = {
+  trigger: "collision";
+  blueprint: CollisionTriggerBlueprint;
   actions: BehaviorAction[];
 };
 
-export type BlueprintBehavior = InputBlueprintBehavior | NonInputBlueprintBehavior;
+export type NonInputBlueprintBehavior = {
+  trigger: Exclude<TriggerName, "input" | "collision">;
+  actions: BehaviorAction[];
+};
+
+export type BlueprintBehavior =
+  | InputBlueprintBehavior
+  | CollisionBlueprintBehavior
+  | NonInputBlueprintBehavior;
 
 export type CreateHandler<TData = unknown> = (
   thing: RuntimeThing<TData>,
@@ -564,6 +579,12 @@ export function isInputTriggerStage(value: unknown): value is InputTriggerStage 
   return value === "press" || value === "hold";
 }
 
+export function isCollisionTriggerBlueprint(
+  value: unknown
+): value is CollisionTriggerBlueprint {
+  return typeof value === "string" && value.length > 0;
+}
+
 export function isSpawnInitProperty(
   value: unknown
 ): value is SpawnInitProperty {
@@ -656,10 +677,32 @@ export function isBlueprintBehavior(
     if (!isInputTriggerStage(value.stage)) {
       return false;
     }
-  } else if ("key" in value) {
-    return false;
-  } else if ("stage" in value) {
-    return false;
+    if ("blueprint" in value) {
+      return false;
+    }
+  } else if (value.trigger === "collision") {
+    if ("key" in value) {
+      return false;
+    }
+    if ("stage" in value) {
+      return false;
+    }
+    if (!("blueprint" in value)) {
+      return false;
+    }
+    if (!isCollisionTriggerBlueprint(value.blueprint)) {
+      return false;
+    }
+  } else {
+    if ("key" in value) {
+      return false;
+    }
+    if ("stage" in value) {
+      return false;
+    }
+    if ("blueprint" in value) {
+      return false;
+    }
   }
   if (
     !Array.isArray(value.actions) ||

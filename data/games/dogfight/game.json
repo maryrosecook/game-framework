@@ -97,6 +97,7 @@
         },
         {
           "trigger": "collision",
+          "blueprint": "any",
           "actions": [
             {
               "action": "explode",
@@ -154,6 +155,7 @@
       "behaviors": [
         {
           "trigger": "collision",
+          "blueprint": "any",
           "actions": [
             {
               "action": "explode",

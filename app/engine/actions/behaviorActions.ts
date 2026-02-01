@@ -2,6 +2,7 @@ import {
   BehaviorAction,
   BlueprintBehavior,
   BlueprintBehaviors,
+  COLLISION_TRIGGER_ANY,
   InputTriggerKey,
   InputTriggerStage,
   TriggerName,
@@ -9,6 +10,7 @@ import {
 
 const DEFAULT_INPUT_TRIGGER_KEY: InputTriggerKey = "any";
 const DEFAULT_INPUT_TRIGGER_STAGE: InputTriggerStage = "press";
+const DEFAULT_COLLISION_TRIGGER_BLUEPRINT = COLLISION_TRIGGER_ANY;
 
 export function createBehaviorForTrigger(
   trigger: TriggerName,
@@ -22,10 +24,17 @@ export function createBehaviorForTrigger(
       actions,
     };
   }
+  if (trigger === "collision") {
+    return {
+      trigger,
+      blueprint: DEFAULT_COLLISION_TRIGGER_BLUEPRINT,
+      actions,
+    };
+  }
   return { trigger, actions };
 }
 
-export function renameSpawnObjectBlueprints(
+export function renameBehaviorBlueprints(
   behaviors: BlueprintBehaviors | undefined,
   previousName: string,
   nextName: string
@@ -36,6 +45,14 @@ export function renameSpawnObjectBlueprints(
   let changed = false;
   const nextBehaviors: BlueprintBehaviors = behaviors.map((behavior) => {
     let entryChanged = false;
+    let nextBehavior: BlueprintBehavior = behavior;
+    if (
+      behavior.trigger === "collision" &&
+      behavior.blueprint === previousName
+    ) {
+      entryChanged = true;
+      nextBehavior = { ...behavior, blueprint: nextName };
+    }
     const nextActions = behavior.actions.map((action) => {
       if (action.action !== "spawnObject") {
         return action;
@@ -54,7 +71,7 @@ export function renameSpawnObjectBlueprints(
       return behavior;
     }
     changed = true;
-    return { ...behavior, actions: nextActions };
+    return { ...nextBehavior, actions: nextActions };
   });
   return changed ? nextBehaviors : behaviors;
 }
