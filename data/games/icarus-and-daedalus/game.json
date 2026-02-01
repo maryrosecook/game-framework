@@ -560,9 +560,7 @@
       "width": 100,
       "height": 100,
       "color": "#98fb98",
-      "images": [
-        "blueprint-1-paint-1769896651585.png"
-      ],
+      "images": ["blueprint-1-paint-1769896651585.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -573,9 +571,7 @@
       "width": 100,
       "height": 100,
       "color": "#006400",
-      "images": [
-        "blueprint-2-paint-1769896920524.png"
-      ],
+      "images": ["blueprint-2-paint-1769896920524.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -586,9 +582,7 @@
       "width": 100,
       "height": 100,
       "color": "#ffb3b3",
-      "images": [
-        "blueprint-3-paint-1769897575969.png"
-      ],
+      "images": ["blueprint-3-paint-1769897575969.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -599,9 +593,7 @@
       "width": 100,
       "height": 100,
       "color": "#1a1a1a",
-      "images": [
-        "blueprint-4-paint-1769897713676.png"
-      ],
+      "images": ["blueprint-4-paint-1769897713676.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -612,9 +604,7 @@
       "width": 100,
       "height": 100,
       "color": "#ffa500",
-      "images": [
-        "blueprint-5-paint-1769897892022.png"
-      ],
+      "images": ["blueprint-5-paint-1769897892022.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -625,9 +615,7 @@
       "width": 100,
       "height": 100,
       "color": "#000080",
-      "images": [
-        "blueprint-6-paint-1769898096908.png"
-      ],
+      "images": ["blueprint-6-paint-1769898096908.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -638,9 +626,7 @@
       "width": 100,
       "height": 100,
       "color": "#da70d6",
-      "images": [
-        "blueprint-7-paint-1769898178292.png"
-      ],
+      "images": ["blueprint-7-paint-1769898178292.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -651,9 +637,7 @@
       "width": 100,
       "height": 100,
       "color": "#8b4500",
-      "images": [
-        "blueprint-8-paint-1769898987155.png"
-      ],
+      "images": ["blueprint-8-paint-1769898987155.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -664,9 +648,7 @@
       "width": 100,
       "height": 100,
       "color": "#ff8c00",
-      "images": [
-        "blueprint-9-paint-1769899060433.png"
-      ],
+      "images": ["blueprint-9-paint-1769899060433.png"],
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
@@ -677,9 +659,7 @@
       "width": 100,
       "height": 100,
       "color": "#ff0000",
-      "images": [
-        "blueprint-10-paint-1769899159347.png"
-      ],
+      "images": ["blueprint-10-paint-1769899159347.png"],
       "shape": "rectangle",
       "physicsType": "static",
       "weight": 1,
@@ -690,9 +670,7 @@
       "width": 100,
       "height": 100,
       "color": "#8b0000",
-      "images": [
-        "blueprint-11-paint-1769899765046.png"
-      ],
+      "images": ["blueprint-11-paint-1769899765046.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -703,9 +681,7 @@
       "width": 100,
       "height": 100,
       "color": "#98fb98",
-      "images": [
-        "blueprint-12-paint-1769900548427.png"
-      ],
+      "images": ["blueprint-12-paint-1769900548427.png"],
       "shape": "rectangle",
       "physicsType": "ambient",
       "weight": 1,
@@ -725,6 +701,7 @@
         },
         {
           "trigger": "collision",
+          "blueprint": "any",
           "actions": [
             {
               "action": "destroy",
@@ -768,9 +745,7 @@
       "width": 100,
       "height": 100,
       "color": "#da70d6",
-      "images": [
-        "blueprint-13-paint-1769901824318.png"
-      ],
+      "images": ["blueprint-13-paint-1769901824318.png"],
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
@@ -795,9 +770,7 @@
       "width": 100,
       "height": 100,
       "color": "#000000",
-      "images": [
-        "blueprint-14-paint-1769903710237.png"
-      ],
+      "images": ["blueprint-14-paint-1769903710237.png"],
       "shape": "rectangle",
       "physicsType": "dynamic",
       "weight": 1,
@@ -805,6 +778,7 @@
       "behaviors": [
         {
           "trigger": "collision",
+          "blueprint": "any",
           "actions": [
             {
               "action": "destroy",
