@@ -125,8 +125,15 @@ export async function writeEditorSettings(settings: EditorSettings) {
 export async function readGameFile(gameDirectory: string) {
   const gameFilePath = getGameFilePath(gameDirectory);
   const raw = await fs.readFile(gameFilePath, "utf-8");
-  const parsed = JSON.parse(raw) as unknown;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw) as unknown;
+  } catch (error: unknown) {
+    console.warn(`Invalid game file: ${gameFilePath}`);
+    throw error;
+  }
   if (!isGameFile(parsed)) {
+    console.warn(`Invalid game file: ${gameFilePath}`);
     throw new Error("Invalid game file");
   }
   return parsed;
