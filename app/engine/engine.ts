@@ -23,7 +23,7 @@ import {
 } from "./types";
 import { blueprintSlug } from "@/lib/blueprints";
 import { reduceState } from "./reducer";
-import { renameSpawnObjectBlueprints } from "./actions/behaviorActions";
+import { renameBehaviorBlueprints } from "./actions/behaviorActions";
 import {
   createThingFromBlueprint,
   getBlueprintForThing,
@@ -1069,7 +1069,7 @@ export class GameEngine {
         blueprint,
         blueprint?.input,
         (handler) => handler(thing, game, keyState),
-        inputFrame
+        { inputFrame }
       );
     }
   }
@@ -1602,7 +1602,7 @@ export class GameEngine {
     }
     const nextBlueprints = this.persistedGameState.blueprints.map((bp) => {
       const renamed = bp.name === previousName ? { ...bp, name: nextName } : bp;
-      const updatedBehaviors = renameSpawnObjectBlueprints(
+      const updatedBehaviors = renameBehaviorBlueprints(
         renamed.behaviors,
         previousName,
         nextName

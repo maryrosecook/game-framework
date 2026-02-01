@@ -6,12 +6,15 @@ import {
   BehaviorAction,
   Blueprint,
   BlueprintBehaviors,
+  COLLISION_TRIGGER_ANY,
+  CollisionTriggerBlueprint,
   GameAction,
   INPUT_KEYS,
   InputKey,
   InputTriggerKey,
   InputTriggerStage,
   TriggerName,
+  isCollisionTriggerBlueprint,
   isInputTriggerKey,
   isInputTriggerStage,
 } from "@/engine/types";
@@ -63,6 +66,8 @@ const INPUT_STAGE_OPTIONS: Array<{
   { value: "hold", label: "Hold" },
 ];
 
+const COLLISION_BLUEPRINT_LABEL = "Any";
+
 type ActionTabProps = {
   blueprint: Blueprint;
   blueprints: Blueprint[];
@@ -85,15 +90,7 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
   );
 
   function handleAddActionTrigger() {
-    const definition = actions.ai;
-    if (!definition) {
-      throw new Error("AI action definition missing from registry.");
-    }
-    const aiAction: BehaviorAction = {
-      action: "ai",
-      settings: getDefaultActionSettings(definition.settings),
-    };
-    const nextBehavior = createBehaviorForTrigger("update", [aiAction]);
+    const nextBehavior = createBehaviorForTrigger("update", []);
     const nextBehaviors: BlueprintBehaviors = [
       ...behaviors,
       nextBehavior,
@@ -259,6 +256,25 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
     }
   }
 
+  function handleCollisionBlueprintChange(
+    index: number,
+    blueprintName: CollisionTriggerBlueprint
+  ) {
+    const target = behaviors[index];
+    if (!target || target.trigger !== "collision") {
+      return;
+    }
+    const nextBehaviors = behaviors.map((behavior, idx) =>
+      idx === index ? { ...behavior, blueprint: blueprintName } : behavior
+    );
+    dispatch({
+      type: "setBlueprintProperty",
+      blueprintName: blueprint.name,
+      property: "behaviors",
+      value: nextBehaviors,
+    });
+  }
+
   function renderTriggerInputs(
     behavior: BlueprintBehaviors[number],
     index: number
@@ -303,9 +319,33 @@ export function ActionTab({ blueprint, blueprints, dispatch }: ActionTabProps) {
             </select>
           </>
         );
+      case "collision": {
+        const options = getCollisionBlueprintOptions(
+          blueprintNames,
+          behavior.blueprint
+        );
+        return (
+          <select
+            className={INPUT_SELECT_CLASS}
+            value={behavior.blueprint}
+            aria-label="Collision blueprint"
+            onChange={(event) => {
+              const selected = event.target.value;
+              if (isCollisionTriggerBlueprint(selected)) {
+                handleCollisionBlueprintChange(index, selected);
+              }
+            }}
+          >
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        );
+      }
       case "create":
       case "update":
-      case "collision":
         return null;
     }
   }
@@ -416,6 +456,28 @@ function getActionOptions(trigger: TriggerName) {
   return Object.keys(actions)
     .filter((key) => actions[key].allowedTriggers.includes(trigger))
     .map((key) => ({ value: key, label: actionLabelFromKey(key) }));
+}
+
+function getCollisionBlueprintOptions(
+  blueprintNames: string[],
+  selected: CollisionTriggerBlueprint
+) {
+  const options: Array<{ value: CollisionTriggerBlueprint; label: string }> = [
+    { value: COLLISION_TRIGGER_ANY, label: COLLISION_BLUEPRINT_LABEL },
+  ];
+  if (
+    selected !== COLLISION_TRIGGER_ANY &&
+    !blueprintNames.includes(selected)
+  ) {
+    options.push({
+      value: selected,
+      label: `${selected} (missing)`,
+    });
+  }
+  for (const name of blueprintNames) {
+    options.push({ value: name, label: name });
+  }
+  return options;
 }
 
 function isTriggerName(value: string): value is TriggerName {
